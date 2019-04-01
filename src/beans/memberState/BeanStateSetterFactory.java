@@ -2,8 +2,6 @@ package beans.memberState;
 
 import java.lang.reflect.Field;
 
-import javax.swing.JTextField;
-
 
 public class BeanStateSetterFactory
 {

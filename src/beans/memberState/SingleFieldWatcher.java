@@ -3,12 +3,14 @@ package beans.memberState;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import beans.builder.GetterGetterGetter;
 import beans.builder.GetterGetterGetter.BooleanGetter;
 import beans.builder.GetterGetterGetter.DoubleGetter;
 import beans.builder.GetterGetterGetter.IntGetter;
+import beans.builder.GetterGetterGetter.ParsingBooleanGetter;
 import beans.builder.GetterGetterGetter.StringValGetter;
 import fields.FieldUtils;
 
@@ -27,9 +29,26 @@ public class SingleFieldWatcher <T> implements FieldWatcher<T>
 	private DoubleGetter<T> dblGetter;
 	private StringValGetter<T> stringGetter;
 	private BooleanGetter<T> boolGetter;
+	private ParsingBooleanGetter<T> parsingBoolGetter;
 
 	private SingleFieldWatcher() {}
 
+	public static <T> Map<String, SingleFieldWatcher<T>> getWatcherMap(Class<T> clazz, String dblFmt)
+	{
+		Map<String, SingleFieldWatcher<T>> out = new HashMap<>();
+		
+		Field[] fields = clazz.getDeclaredFields();
+		
+		for (Field f : fields)
+		{
+			f.setAccessible(true);
+			out.put(f.getName(), factory(f.getName(), null, dblFmt, clazz));
+		}
+		
+		return out;
+	}
+	
+	
 	/**
 	 *  Note: at least one of fieldName or displayName must be provided. <br>
 	 * 	Case 1:  fieldName !=  null and displayName == null: <br>
@@ -76,16 +95,18 @@ public class SingleFieldWatcher <T> implements FieldWatcher<T>
 
 	private void buildGetters()
 	{
+		stringGetter = GetterGetterGetter.stringValGetterGetter(getClazz(), field, dblFmt);
 		intGetter    = GetterGetterGetter.intGetterGetter(getClazz(), field);
 		dblGetter    = GetterGetterGetter.doubleGetterGetter(getClazz(), field);
 		boolGetter   = GetterGetterGetter.booleanGetterGetter(getClazz(), field);
-		stringGetter = GetterGetterGetter.stringValGetterGetter(getClazz(), field, dblFmt);
+		parsingBoolGetter   = GetterGetterGetter.parsingBooleanGetterGetter(getClazz(), field);
 	}
 
 	public String  getStringVal(T t) { return stringGetter.get(t); }
 	public double  getDoubleVal(T t) { return dblGetter.get(t); }
 	public int     getIntVal(T t)    { return intGetter.get(t); }
 	public boolean getBoolVal(T t) { return boolGetter.get(t); }
+	public boolean getParsedBoolVal(T t) { return parsingBoolGetter.get(t); }
 
 	public static <T> Field getWatchedField(String fieldName, Class<T> clazz)
 	{

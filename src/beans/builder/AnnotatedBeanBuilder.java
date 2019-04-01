@@ -157,9 +157,10 @@ public class AnnotatedBeanBuilder {
 	 * Parse a string to a boolean value
 	 * 
 	 * @param s string to parse
-	 * @return matches {"true", "t", "1"} to true and {"false", "f", "0"} to false.
+	 * @return matches {"true", "t", "1", and any numeric value greater than 0} to true and 
+	 *                 {"false", "f", "0", or any numeric value less than 0} to false.  
 	 */
-	private static boolean parseBool(String s) {
+	public static boolean parseBool(String s) {
 		String ss = s.trim();
 		if (ss.equalsIgnoreCase("true"))
 			return true;
@@ -173,6 +174,14 @@ public class AnnotatedBeanBuilder {
 			return true;
 		if (ss.equalsIgnoreCase("0"))
 			return false;
+		try 
+		{
+			double d = Double.parseDouble(s);
+			if (d > 0) return true;
+			else return false;
+		}
+		catch(Exception e) { }
+		
 		throw new IllegalArgumentException("Input: " + s + " could not be parsed to a boolean value");
 	}
 

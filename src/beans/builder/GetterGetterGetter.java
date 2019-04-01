@@ -16,6 +16,7 @@ public class GetterGetterGetter
 	@FunctionalInterface public interface IntGetter <T> { int get(T obj); }
 	@FunctionalInterface public interface DoubleGetter<T> { double get(T obj); }
 	@FunctionalInterface public interface BooleanGetter<T> { boolean get(T obj); }
+	@FunctionalInterface public interface ParsingBooleanGetter<T> { boolean get(T obj); }
 
 	@FunctionalInterface public interface StringGetter<T> { String get(T obj); }
 	@FunctionalInterface public interface CharGetter<T> { char get(T obj); }
@@ -38,7 +39,7 @@ public class GetterGetterGetter
 		return out;
 	}
 
-	
+
 	/** Get a list of getters for string representations
 	 *  of all the bean's fields. 
 	 * 
@@ -190,6 +191,29 @@ public class GetterGetterGetter
 		BooleanGetter<T> out = (T tt) ->
 		{
 			try { return f.getBoolean(tt);}
+			catch (IllegalArgumentException | IllegalAccessException e) 
+			{ e.printStackTrace(); throw new IllegalArgumentException();}
+		};
+		return out;
+	}
+
+	/** build a getter for a primitive boolean field
+	 * 
+	 * @param t annotated bean object
+	 * @param f annotated field
+	 * @param <T> type of bean
+	 * @return a getter
+	 */
+	public static <T> ParsingBooleanGetter<T> 
+	parsingBooleanGetterGetter(Class<T> t, Field f)
+	{
+		ParsingBooleanGetter<T> out = (T tt) ->
+		{
+			try 
+			{ 
+				String val = (String) f.get(tt);
+				return AnnotatedBeanBuilder.parseBool(val);
+			}
 			catch (IllegalArgumentException | IllegalAccessException e) 
 			{ e.printStackTrace(); throw new IllegalArgumentException();}
 		};
