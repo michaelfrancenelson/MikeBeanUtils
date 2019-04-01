@@ -4,6 +4,8 @@ import static org.junit.Assert.fail;
 
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -13,7 +15,6 @@ import org.junit.Test;
 
 import beans.builder.RandomBeanBuilder;
 import beans.sampleBeans.SimpleBean;
-import image.ObjectArrayImager.ObjectArrayImageSingleField1D;
 import swing.SwingUtils;
 
 public class ImageTest {
@@ -40,27 +41,21 @@ public class ImageTest {
 			beans[i][j] = RandomBeanBuilder.randomFactory(SimpleBean.class);
 		}
 
+		List<String> parsedB = Arrays.asList(new String[] { "i2", "d2" });
 
-		ObjectArrayImager<SimpleBean> oai = ObjectArrayImageSingleField1D.factory(
+		ObjectArrayImager<SimpleBean> oai = SimpleArrayImager.factory(
 				SimpleBean.class, beans,
 				"i", ColorUtils.HEAT_COLORS, ColorUtils.TOPO_COLORS,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-				dblFmt, null);
-		ObjectArrayImager<SimpleBean> oai2 = ObjectArrayImageSingleField1D.factory(
-				SimpleBean.class, beans,
-				"d", ColorUtils.TERRAIN_COLORS, ColorUtils.TOPO_COLORS,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-				dblFmt, null);
+				dblFmt, parsedB);
 
 		JFrame f = SwingUtils.frameFactory(600, 600);
 		f.setLayout(new GridLayout(1, 1));
 		JLabel lab = new JLabel();
 		JLabel labD = new JLabel();
 		lab.setIcon(new ImageIcon(oai.getImage()));
-		oai.setField("b");
+		oai.setField("d2");
 		labD.setIcon(new ImageIcon(oai.getImage()));
-//		labD.setIcon(new ImageIcon(oai2.getImage()));
-//		lab.setPreferredSize(new Dimension(400, 500));Xj
 		f.add(lab);
 		f.add(labD);
 		f.setVisible(true);

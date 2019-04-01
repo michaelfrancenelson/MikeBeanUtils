@@ -16,22 +16,22 @@ import org.junit.Test;
 import beans.builder.AnnotatedBeanBuilder;
 import beans.memberState.BeanStateSetterFactory;
 import beans.memberState.BeanStateSetterFactory.BeanPrimitiveFieldSetter;
-import beans.memberState.SingleFieldWatcher;
+import beans.memberState.SimpleFieldWatcher;
 import beans.sampleBeans.SimpleBean;
 import swing.MemberSetterTextField;
 import swing.MemberWatcherJLabel;
 
 public class WatchersTest {
 
-	static String fileCSV = "testData/TestBeanFactory.csv";	
+	static String fileCSV = "testData/AnnotatedTestBean.csv";	
 	static List<SimpleBean> lc = AnnotatedBeanBuilder.factory(SimpleBean.class, fileCSV);
 
 	static BeanPrimitiveFieldSetter<SimpleBean> s1;
 	static BeanPrimitiveFieldSetter<SimpleBean> s2; 
 
-	static SingleFieldWatcher<SimpleBean> w1;
-	static SingleFieldWatcher<SimpleBean> w2;
-	static SingleFieldWatcher<SimpleBean> w3;
+	static SimpleFieldWatcher<SimpleBean> w1;
+	static SimpleFieldWatcher<SimpleBean> w2;
+	static SimpleFieldWatcher<SimpleBean> w3;
 	
 	static MemberWatcherJLabel<SimpleBean> lab;
 	static MemberWatcherJLabel<SimpleBean> lab2;
@@ -42,7 +42,6 @@ public class WatchersTest {
 	static MemberSetterTextField<SimpleBean> ms3;
 	static int width;
 	private static MemberWatcherJLabel<SimpleBean> lab3;
-	private static SingleFieldWatcher<SimpleBean> w4;
 	private static MemberWatcherJLabel<SimpleBean> lab4;
 	private static MemberSetterTextField<SimpleBean> ms4;
 	private static MemberSetterTextField<SimpleBean> ms1;
@@ -57,16 +56,14 @@ public class WatchersTest {
 		
 		
 		font = new Font("times", 2, 45);
-		fileCSV = "testData/TestBeanFactory.csv";	
 		lc = AnnotatedBeanBuilder.factory(SimpleBean.class, fileCSV);
 
 		s1 = BeanStateSetterFactory.factory(SimpleBean.class, "i");
 		s2 = BeanStateSetterFactory.factory(SimpleBean.class, "d");
 
-		w1 = SingleFieldWatcher.factory("i", null, null, SimpleBean.class);
-		w2 = SingleFieldWatcher.factory(null, "Double field d", null, SimpleBean.class);
-		w3 = SingleFieldWatcher.factory("iSt", null, null, SimpleBean.class);
-		w4 = SingleFieldWatcher.factory("b", null, null, SimpleBean.class);
+		w1 = SimpleFieldWatcher.factory("i", null, SimpleBean.class);
+		w2 = SimpleFieldWatcher.factory("d2",  null, SimpleBean.class);
+		w3 = SimpleFieldWatcher.factory("iSt", null, SimpleBean.class);
 
 		
 		f = new JFrame();

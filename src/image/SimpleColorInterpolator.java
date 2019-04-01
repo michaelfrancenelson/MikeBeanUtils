@@ -11,7 +11,7 @@ import sequences.Sequences;
  * @author michaelfrancenelson
  *
  */
-public class ColorInterpolatorSingleField implements ColorInterpolator
+public class SimpleColorInterpolator implements ColorInterpolator
 {
 	private Color[] colors;
 
@@ -92,7 +92,7 @@ public class ColorInterpolatorSingleField implements ColorInterpolator
 			double naDouble, int naInt, 
 			Color naColor, String dblFmt)
 	{
-		ColorInterpolatorSingleField ci = new ColorInterpolatorSingleField();
+		SimpleColorInterpolator ci = new SimpleColorInterpolator();
 		if (min > max) throw new IllegalArgumentException("max must be greater than or equal to min.");
 		ci.colors = colors; ci.naDouble = naDouble; ci.naInt = naInt; ci.naColor = naColor;
 		ci.minVal = min; ci.maxVal = max;

@@ -90,13 +90,13 @@ public class RandomBeanBuilder extends AnnotatedBeanBuilder
 	{
 		String val = "";
 		switch (shortName) {
-		case("int"):     val = String.format("%d", randInt(0, 100)); break;
-		case("double"):  val = String.format("%f", randDouble(0, 100)); break;
+		case("int"):     val = String.format("%d", randInt(-100, 100)); break;
+		case("double"):  val = String.format("%f", randDouble(-100, 100)); break;
 		case("boolean"): val = Boolean.toString(randBool(0.5)); break;
 		case("String"):	 val = randomString(r.nextInt(12) + 1, '9', 'Z'); break; 
 
-		case("Integer"): val = String.format("%d", randInt(0, 100)); break;
-		case("Double"):  val = String.format("%f", randDouble(0, 100)); break;
+		case("Integer"): val = String.format("%d", randInt(-100, 100)); break;
+		case("Double"):  val = String.format("%f", randDouble(-100, 100)); break;
 		case("Boolean"): val = Boolean.toString(randBool(0.5)); break;
 
 		case("char"):    val = String.format("%s", randChar('9', 'Z')); break;

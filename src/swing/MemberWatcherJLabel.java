@@ -4,7 +4,7 @@ import java.awt.Font;
 
 import javax.swing.JLabel;
 
-import beans.memberState.SingleFieldWatcher;
+import beans.memberState.SimpleFieldWatcher;
 
 public class MemberWatcherJLabel<T> extends JLabel
 {
@@ -14,13 +14,13 @@ public class MemberWatcherJLabel<T> extends JLabel
 	 */
 	private static final long serialVersionUID = -4970053063569717554L;
 
-	private SingleFieldWatcher<T> watcher;
+	private SimpleFieldWatcher<T> watcher;
 	private T t;
 	
 	
 	
 	
-	private MemberWatcherJLabel(T t, SingleFieldWatcher<T> watcher)
+	private MemberWatcherJLabel(T t, SimpleFieldWatcher<T> watcher)
 	{
 		this.t = t; this.watcher = watcher;
 	}
@@ -31,13 +31,14 @@ public class MemberWatcherJLabel<T> extends JLabel
 	}
 	
 	public T getObject() { return t; }
-	public SingleFieldWatcher<T> getWatcher() { return this.watcher; }
+	public SimpleFieldWatcher<T> getWatcher() { return this.watcher; }
 	
 	public static <T> MemberWatcherJLabel<T> factory(
 			Class<T> clazz, T t, String fieldName, String displayName, String dblFmt,
 			Font font)
 	{
-		SingleFieldWatcher<T> watcher = SingleFieldWatcher.factory(fieldName, displayName, dblFmt, clazz);
+		SimpleFieldWatcher<T> watcher = SimpleFieldWatcher.factory(fieldName, dblFmt, clazz);
+//		SimpleFieldWatcher<T> watcher = SimpleFieldWatcher.factory(fieldName, displayName, dblFmt, clazz);
 		MemberWatcherJLabel<T> label = new MemberWatcherJLabel<T>(t, watcher);
 		label.setFont(font);
 		label.refresh();

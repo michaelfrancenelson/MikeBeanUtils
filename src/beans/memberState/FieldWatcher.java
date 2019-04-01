@@ -2,97 +2,82 @@ package beans.memberState;
 
 import java.lang.reflect.Field;
 
+
+/** Monitor the state of beans.
+ * 
+ * @author michaelfrancenelson
+ *
+ * @param <T> Type of bean to watch.
+ */
 public interface FieldWatcher<T>
 {
+	/**
+	 * 
+	 * @param t
+	 * @return a String representation of the field.
+	 *         If the field is numeric or boolean, the value is parsed to a String.
+	 */
 	public String  getStringVal(T t);
+	
+	/**
+	 * 
+	 * @param t bean instance
+	 * @return an int representation of the field.  
+	 *         If the field is not 'int', may throw an exception.
+	 */
 	public int     getIntVal(T t);
+
+	/**
+	 * 
+	 * @param t bean instance
+	 * @return a double representation of the field. 
+	 *         If the field is not 'double' may throw an exception
+	 */
 	public double  getDoubleVal(T t);
+	
+	/**
+	 * 
+	 * @param t bean instance
+	 * @return a boolean representation of the field.  
+	 *         If the field is not 'boolean' may throw an exception
+	 */
 	public boolean getBoolVal(T t);
 	
-	public String getFieldName();
-	public String getDisplayName();
+	/**
+	 * 
+	 * @param t bean instance
+	 * @return a boolean representation of the field.
+	 *           If the field is not 'boolean' an attempt is made to parse it as boolean.
+	 */
+	public boolean getParsedBoolVal(T t);
 
-	public void setWatchedField(Field f);
+	/**
+	 * 
+	 * @return get the name of the field
+	 */
+	public String getFieldName();
+	
+	/**
+	 * 
+	 * @return get the display name (for menus, etc.) of the watched field.
+	 */
+	public String getDisplayName();
+//
+//	/**
+//	 * 
+//	 * @param f Set the watched field to this
+//	 */
+//	public void setWatchedField(Field f);
+	
+	/**
+	 * 
+	 * @param fieldName Set the watched field to this
+	 */
 	public void setWatchedField(String fieldName);
 	
+	/**
+	 * 
+	 * @return The field currently being watched.
+	 */
 	public Field getField();
-	
-	
-	
-	
-	
-	public static class ObjectFieldWatcher<T> implements FieldWatcher<T>
-	{
-		
-		private String dblFmt;
-		private Class<T> clazz;
-		
-		
-		
-		
-		
-		
-
-		@Override
-		public String getStringVal(T t) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public int getIntVal(T t) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getDoubleVal(T t) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public boolean getBoolVal(T t) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public String getFieldName() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getDisplayName() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public void setWatchedField(Field f) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void setWatchedField(String fieldName) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public Field getField() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-		
-		
-		
-	}
-	
-	
-	
-	
 }

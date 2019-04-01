@@ -15,7 +15,7 @@ import javax.swing.KeyStroke;
 
 import beans.memberState.BeanStateSetterFactory;
 import beans.memberState.BeanStateSetterFactory.BeanPrimitiveFieldSetter;
-import beans.memberState.SingleFieldWatcher;
+import beans.memberState.SimpleFieldWatcher;
 
 /** Text input field for setting values of fields in an object
  * 
@@ -32,7 +32,7 @@ public class MemberSetterTextField<T> extends JTextField
 	private static final long serialVersionUID = 3521358047052455671L;
 
 	BeanPrimitiveFieldSetter<T> fieldSetter;
-	SingleFieldWatcher<T> watcher;
+	SimpleFieldWatcher<T> watcher;
 	T t;
 	Font font;
 	boolean entryOK;
@@ -60,7 +60,7 @@ public class MemberSetterTextField<T> extends JTextField
 			T t,
 			Font font,
 			int width, 
-			SingleFieldWatcher<T> watcher,
+			SimpleFieldWatcher<T> watcher,
 			MemberWatcherJLabel<T> watcherLabel
 			)
 	{
@@ -72,7 +72,7 @@ public class MemberSetterTextField<T> extends JTextField
 		m.fieldSetter = BeanStateSetterFactory.factory(clazz, fieldName);
 		
 		if (watcher == null)
-		m.watcher = SingleFieldWatcher.factory(fieldName, null, null, clazz);
+		m.watcher = SimpleFieldWatcher.factory(fieldName, null, clazz);
 		else m.watcher = watcher;
 		
 		if (watcherLabel != null) m.watcherLabel = watcherLabel;

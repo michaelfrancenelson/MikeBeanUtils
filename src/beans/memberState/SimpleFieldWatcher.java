@@ -14,14 +14,14 @@ import beans.builder.GetterGetterGetter.ParsingBooleanGetter;
 import beans.builder.GetterGetterGetter.StringValGetter;
 import fields.FieldUtils;
 
-public class SingleFieldWatcher <T> implements FieldWatcher<T>
+public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 {
 	@Retention(RetentionPolicy.RUNTIME)
 	public static @interface WatchField{ public String name(); }
 
 	private String dblFmt;
 	private String fieldName;
-	private String displayName;
+	//	private String displayName;
 	private Field field;
 	private Class<T> clazz;
 
@@ -31,24 +31,30 @@ public class SingleFieldWatcher <T> implements FieldWatcher<T>
 	private BooleanGetter<T> boolGetter;
 	private ParsingBooleanGetter<T> parsingBoolGetter;
 
-	private SingleFieldWatcher() {}
+	private SimpleFieldWatcher() {}
 
-	public static <T> Map<String, SingleFieldWatcher<T>> getWatcherMap(Class<T> clazz, String dblFmt)
+	/**
+	 * 
+	 * @param clazz
+	 * @param dblFmt
+	 * @return
+	 */
+	public static <T> Map<String, SimpleFieldWatcher<T>> getWatcherMap(Class<T> clazz, String dblFmt)
 	{
-		Map<String, SingleFieldWatcher<T>> out = new HashMap<>();
-		
+		Map<String, SimpleFieldWatcher<T>> out = new HashMap<>();
+
 		Field[] fields = clazz.getDeclaredFields();
-		
+
 		for (Field f : fields)
 		{
 			f.setAccessible(true);
-			out.put(f.getName(), factory(f.getName(), null, dblFmt, clazz));
+			out.put(f.getName(), factory(f.getName(), dblFmt, clazz));
+			//			out.put(f.getName(), factory(f.getName(), null, dblFmt, clazz));
 		}
-		
+
 		return out;
 	}
-	
-	
+
 	/**
 	 *  Note: at least one of fieldName or displayName must be provided. <br>
 	 * 	Case 1:  fieldName !=  null and displayName == null: <br>
@@ -66,33 +72,50 @@ public class SingleFieldWatcher <T> implements FieldWatcher<T>
 	 *   <li> throws an exception - there is no way to determine the desired field;
 	 *    
 	 * @param fieldName name of the field in the bean, must match exactly.
-	 * @param displayName name to print for the field values
+//	 * @param displayName name to print for the field values
 	 * @param dblFmt format for displaying doubles;
 	 * @param clazz Bean type to watch
 	 * @return
 	 */
-	public static <T> SingleFieldWatcher<T> factory(
-			String fieldName, String displayName, String dblFmt, Class<T> clazz) 
+	public static <T> SimpleFieldWatcher<T> factory(
+			String fieldName, String dblFmt, Class<T> clazz) 
+	//	public static <T> SimpleFieldWatcher<T> factory(
+	//			String fieldName, String displayName, String dblFmt, Class<T> clazz) 
 	{ 
-		SingleFieldWatcher<T> bw = new SingleFieldWatcher<T>();
-		Field field = FieldUtils.getWatchedField(fieldName, displayName, clazz);
-		bw.field = field; 
-		bw.field.setAccessible(true);
-
-		if (displayName == null) 
-		{
-			if (bw.field.isAnnotationPresent(WatchField.class))
-			displayName = bw.field.getAnnotation(WatchField.class).name();
-			else displayName = bw.field.getName();
-		}
-		bw.fieldName = fieldName; bw.displayName = displayName; 
+		SimpleFieldWatcher<T> bw = new SimpleFieldWatcher<T>();
 		bw.setClazz(clazz);
+
+		bw.fieldName = fieldName; 
+
+		//		bw.displayName = displayName;
+
+		bw.initField();
+
 		if (dblFmt == null) dblFmt = "%.4f";
 		bw.dblFmt = dblFmt;
+
 		bw.buildGetters();
 		return bw;
 	}
 
+
+	private void initField()
+	{
+		field = FieldUtils.getWatchedField(fieldName, null, clazz);
+		//		field = FieldUtils.getWatchedField(fieldName, displayName, clazz);
+		field.setAccessible(true);
+	}
+
+	//	private void initFieldNames()
+	//	{
+	////		if (field.isAnnotationPresent(WatchField.class))
+	////			displayName = field.getAnnotation(WatchField.class).name();
+	////		else displayName = field.getName();
+	//	}
+
+	/**
+	 * 
+	 */
 	private void buildGetters()
 	{
 		stringGetter = GetterGetterGetter.stringValGetterGetter(getClazz(), field, dblFmt);
@@ -102,11 +125,19 @@ public class SingleFieldWatcher <T> implements FieldWatcher<T>
 		parsingBoolGetter   = GetterGetterGetter.parsingBooleanGetterGetter(getClazz(), field);
 	}
 
-	public String  getStringVal(T t) { return stringGetter.get(t); }
-	public double  getDoubleVal(T t) { return dblGetter.get(t); }
-	public int     getIntVal(T t)    { return intGetter.get(t); }
-	public boolean getBoolVal(T t) { return boolGetter.get(t); }
-	public boolean getParsedBoolVal(T t) { return parsingBoolGetter.get(t); }
+
+	@Override public String  getStringVal(T t) { return stringGetter.get(t); }
+	@Override public double  getDoubleVal(T t) { return dblGetter.get(t); }
+	@Override public int     getIntVal(T t)    { return intGetter.get(t); }
+	@Override public boolean getBoolVal(T t) { return boolGetter.get(t); }
+
+	/**
+	 * 
+	 * @param t
+	 * @return
+	 */
+	@Override public boolean getParsedBoolVal(T t) { return parsingBoolGetter.get(t); }
+
 
 	public static <T> Field getWatchedField(String fieldName, Class<T> clazz)
 	{
@@ -114,18 +145,30 @@ public class SingleFieldWatcher <T> implements FieldWatcher<T>
 		return field;
 	}
 
-	public String getFieldName() { return fieldName; }
-	public String getDisplayName() { return displayName; }
+	@Override public String getFieldName() { return field.getName(); }
+	@Override public String getDisplayName() 
+	{ 
+		if (field.isAnnotationPresent(WatchField.class))
+			return field.getAnnotation(WatchField.class).name();
+		else return field.getName();
+	}
 
 	public Class<T> getClazz() { return clazz; }
 	public void setClazz(Class<T> clazz) { this.clazz = clazz; }
 
-	@Override
-	public void setWatchedField(Field f) {
-	}
+	//	@Override
+	//	public void setWatchedField(Field f) 
+	//	{
+	//		field = f;
+	//		fieldName = f.getName();
+	//		initField();
+	//	}
 
 	@Override
-	public void setWatchedField(String fieldName) {
+	public void setWatchedField(String fieldName) 
+	{
+		this.fieldName = fieldName;
+
 	}
 
 	@Override

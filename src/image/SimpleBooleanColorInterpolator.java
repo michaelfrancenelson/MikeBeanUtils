@@ -7,7 +7,7 @@ import java.awt.Color;
  * @author michaelfrancenelson
  *
  */
-public class ColorInterpolatorBooleanSingleField implements ColorInterpolator
+public class SimpleBooleanColorInterpolator implements ColorInterpolator
 {
 	private Color[] colors;
 	private Color naColor = Color.GRAY;
@@ -65,7 +65,7 @@ public class ColorInterpolatorBooleanSingleField implements ColorInterpolator
 	public static ColorInterpolator factory(
 			Color[] colors, double naDouble, int naInt, Color naColor)
 	{
-		ColorInterpolatorBooleanSingleField ci = new ColorInterpolatorBooleanSingleField();
+		SimpleBooleanColorInterpolator ci = new SimpleBooleanColorInterpolator();
 
 		ci.colors = colors; 
 		ci.naDouble = naDouble; 

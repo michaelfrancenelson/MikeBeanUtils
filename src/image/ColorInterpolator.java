@@ -2,14 +2,13 @@ package image;
 
 import java.awt.Color;
 
-/**
+/** 
  * 
  * @author michaelfrancenelson
  *
  */
 public interface ColorInterpolator 
 {
-
 	/**
 	 * 
 	 * @param nLabels        Number of labels to generate.

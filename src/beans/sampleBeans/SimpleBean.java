@@ -2,13 +2,14 @@ package beans.sampleBeans;
 
 import beans.builder.AnnotatedBeanBuilder.FieldColumn;
 import beans.builder.AnnotatedBeanBuilder.Initialized;
-import beans.memberState.SingleFieldWatcher.WatchField;
+import beans.memberState.SimpleFieldWatcher.WatchField;
 
 /** Test class for the bean reader/writers
  * 
  * @author michaelfrancenelson
  *
  */
+@SuppressWarnings("unused")
 public class SimpleBean
 {
 	@WatchField (name = "Static integer")
@@ -17,8 +18,10 @@ public class SimpleBean
 	
 	@WatchField (name = "Integer field i")
 	@FieldColumn @Initialized private int i;
+	@FieldColumn private int i2;
 	@WatchField (name = "Double field d")
 	@FieldColumn @Initialized private double d;
+	@FieldColumn private double d2;
 	@FieldColumn @Initialized private Integer ii;
 	@FieldColumn @Initialized private Double dd;
 	@FieldColumn @Initialized private char c;
