@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 
+import beans.memberState.FieldWatcher;
+
 public interface ObjectArrayImager<T> 
 {
 
@@ -34,4 +36,35 @@ public interface ObjectArrayImager<T>
 	 *  Refresh data from the current field and rebuild the image;
 	 */
 	public void refresh();
+	
+	
+	/** Retrieve an object from the underlying array.
+	 * 
+	 * @param x first array index
+	 * @param y second array index
+	 * @return element of the data array at indices [x][y]
+	 */
+	public T getObjAt(int i, int j);
+	
+	/** Retrieve an object from the underlying array.
+	 * 
+	 * @param relativeX Relative position of the first index, in the interval 0.0 - 1.0, of the array.
+	 * @param relativeY Relative position of the first index, in the interval 0.0 - 1.0, of the array.
+	 * @return the element in the array nearest to the relative coordinates.
+	 */
+	public T getObjAt(double relativeI, double relativeJ);
+	
+	/**
+	 * 
+	 * @return a watcher for the currently selected field.
+	 */
+	FieldWatcher<T> getWatcher();
+	
+	/**
+	 *  Retrieve the underlying data array.
+	 * 
+	 * @return
+	 */
+	public T[][] getData();
+	
 }

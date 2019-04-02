@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import beans.memberState.FieldWatcher;
 import beans.memberState.SimpleFieldWatcher;
 
 /** Create images from numeric or boolean members of objects in 2D arrays.
@@ -114,7 +115,8 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		{
 			for (int row = 0; row < objArray.length; row++)
 				for (int col = 0; col < objArray[0].length; col++)
-					img.setRGB(row, col, interp.getColor(watcher.getBoolVal(objArray[row][col])));
+					img.setRGB(row, col, booleanCI.getColor(watcher.getBoolVal(objArray[row][col])));
+//			img.setRGB(row, col, interp.getColor(watcher.getBoolVal(objArray[row][col])));
 			break;
 		}
 		}
@@ -213,4 +215,40 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	@Override public Field getCurrentField() { return watcher.getField(); }
 	@Override public void setField(Field field) { setField(field.getName()); }
 	@Override public void setColors(Color[] colors) {	ci.updateColors(colors); }
+
+	/** 
+	 * Checks that the coordinates are valid
+	 */
+	@Override
+	public T getObjAt(int i, int j) 
+	{
+		if ((i > 0 && j > 0) &&  (i < objArray.length && j < objArray[0].length))
+			return objArray[i][j];
+		else throw new IllegalArgumentException("Input coordinates + (" + i + ", " + j + 
+				") are incompatible with the object array size (" + objArray.length + ", " + objArray[0].length+ ".");
+	}
+
+	/**
+	 * Adjusts coordinates > 1.0 or < 0.0 to fall within range 1.0 - 0.0
+	 */
+	@Override
+	public T getObjAt(double relativeI, double relativeJ) 
+	{
+		int i = (int) (((double) (objArray.length)) * relativeI);
+		int j = (int) (((double) (objArray[0].length)) * relativeJ);
+
+		i = Math.min(i, objArray.length - 1);
+		j = Math.min(j, objArray[0].length - 1);
+		
+//		System.out.println("SimpleArrayImager.getObjAt():  relative coords are " + relativeI + ", " + relativeJ + ").");
+//		System.out.println("SimpleArrayImager.getObjAt():  array coords are    " + i + ", " + j + ").");
+		
+		i = Math.min(objArray.length - 1, Math.max(0, i));
+		j = Math.min(objArray[0].length - 1, Math.max(0, j));
+		
+		return objArray[i][j];
+	}
+
+	@Override public FieldWatcher<T> getWatcher() { return this.watcher; }
+	@Override public T[][] getData() { return this.objArray; }
 }

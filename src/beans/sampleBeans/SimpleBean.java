@@ -9,7 +9,6 @@ import beans.memberState.SimpleFieldWatcher.WatchField;
  * @author michaelfrancenelson
  *
  */
-@SuppressWarnings("unused")
 public class SimpleBean
 {
 	@WatchField (name = "Static integer")

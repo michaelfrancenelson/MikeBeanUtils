@@ -54,6 +54,7 @@ public class WatchersTest {
 		
 		width = 20;
 		
+
 		
 		font = new Font("times", 2, 45);
 		lc = AnnotatedBeanBuilder.factory(SimpleBean.class, fileCSV);
