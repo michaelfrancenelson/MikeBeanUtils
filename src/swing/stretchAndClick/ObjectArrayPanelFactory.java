@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 
 import image.ObjectArrayImager;
 import image.SimpleArrayImager;
-import swing.PanelDecorator;
+import swing.ObjectArrayImageDecorator;
 
 /**
  * 
@@ -124,8 +124,10 @@ public class ObjectArrayPanelFactory
 	{
 		ObjectArrayJPanel<T> out = new ObjectArrayJPanel<T>();
 		out.setLabelVisibility(true);
+		out.setPtRelSize(decoratorRelPointSize);
 		out.init(imager.getImage(), fixedWidth, fixedHeight, keepAspectRatio, false, imager);
-		out.setDecorator(new PanelDecorator(decoratorRelPointSize));
+		out.setDecorator(new ObjectArrayImageDecorator(imager));
+//		out.setDecorator(new ObjectArrayImageDecorator(decoratorRelPointSize));
 		return out;
 	}
 	

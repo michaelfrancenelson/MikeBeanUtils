@@ -29,7 +29,6 @@ public class RiverDemo
 	public static void main(String[] args) {
 
 		arrayPanelDemo();
-		//		demo1();
 
 	}
 
@@ -47,7 +46,7 @@ public class RiverDemo
 		ObjectArrayJPanel<TerrainBean> pan1, pan2, pan3, pan4;
 		
 		
-		double ptSize = 0.05;
+		double ptSize = 0.15;
 		
 		JFrame f1 = SwingUtils.frameFactory(800, 1500);
 
@@ -83,9 +82,6 @@ public class RiverDemo
 		f1.setVisible(true);
 
 		pan1.setField("elevation");
-//		pan2.setField("stream");
-//		pan3.setField("elevation");
-//		pan4.setField("stream");
 
 		pan1.addLabel("label", 0.5, 0.5, font);
 		pan1.addValueLabel(0.1, 0.1, font);
@@ -93,12 +89,9 @@ public class RiverDemo
 		pan2.addLabel("center", 0.5, 0.5, font);
 		pan2.addValueLabel(0.1, 0.1, font);
 		
-//		pan2.setField("stream");
-		
-		
 		pan3.addLabel("right", 1.1, 0.5, font);
-		pan3.addPoint(0.51, 0.2, 4, Color.black);
-		pan3.addPoint(20, 10, 4, Color.black);
+		pan3.addPoint(0.51, 0.2, 0, Color.black);
+		pan3.addPoint(20, 10, 0, Color.black);
 
 		pan1.addValueLabel(0.1, 0.5, font);
 		pan2.addValueLabel(0.1, 0.5, font);
@@ -106,12 +99,12 @@ public class RiverDemo
 		pan4.addValueLabel(0.01, 0.6, font);
 		pan4.addValueLabel(0.2, 0.5, font);
 		
-		pan1.addPoint(0.1, 0.25, 4, Color.blue);
-		pan4.addPoint(0.1, 0.75, 4, Color.white);
+		pan1.addPoint(0.1, 0.25, 49, Color.blue);
+		pan1.addPoint(0.1, 0.35, 0, Color.blue);
+		pan4.addPoint(0.1, 0.75, 48, Color.white);
 		
-		pan2.addPoint(0.1, 0.25, 4, Color.blue);
+		pan2.addPoint(0.1, 0.25, 46, Color.blue);
 		pan2.addPoint(0.2, 0.25, 40, Color.blue);
-		
 
 		JFrame f2 = SwingUtils.frameFactory(800, 800);
 		f2.setLayout(new GridLayout(2, 2));

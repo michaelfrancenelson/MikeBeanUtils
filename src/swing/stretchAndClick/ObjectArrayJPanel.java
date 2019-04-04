@@ -14,16 +14,18 @@ import java.lang.reflect.Field;
 import javax.swing.JPanel;
 
 import image.ObjectArrayImager;
-import swing.PanelDecorator;
+import swing.ObjectArrayImagePanel;
+import swing.ObjectArrayImageDecorator;
 
-public class ObjectArrayJPanel<T> extends JPanel
+public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePanel<T>
 {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2893196948005659813L;
 
-	private PanelDecorator decorator;
+	private ObjectArrayImageDecorator decorator;
 	private ObjectArrayImager<T> imager;
 	private double imageAspectRatio, compAspectRatio;
 	private boolean centerInPanel = true;
@@ -35,9 +37,11 @@ public class ObjectArrayJPanel<T> extends JPanel
 
 	private Image img = null;
 
+private double ptRelSize;
+	
 	private int 
 	panelWidth, panelHeight, 
-	imgWidth, imgHeight, 
+	imgDisplayWidth, imgDisplayHeight, 
 	imgCornerX, imgCornerY;
 
 	/** 
@@ -50,8 +54,19 @@ public class ObjectArrayJPanel<T> extends JPanel
 		paint(this.getGraphics());
 	}
 
+
+	public String queryDataArray(int i, int j)
+	{
+		T t = imager.getObjAt(i, j);
+		String out = imager.getWatcher().getStringVal(t);
+		return out;	
+	}
+
+
 	/**
 	 * Ignored if the label image is not derived from an <code>ObjectArrayImager</code>
+	 * 
+	 * Truncates queries with coordinates outside the panel's dimensions.
 	 * 
 	 * @param i pixel coordinate within the panel.
 	 * @param j pixel coordinate within the panel.
@@ -62,19 +77,19 @@ public class ObjectArrayJPanel<T> extends JPanel
 		if (fixedImg) return null;
 
 		/* determine which cell in the data array corresponds to the input pixel */
-		int relImgI = Math.max(0, Math.min(i - imgCornerX, getImgWidth()));;
-		int relImgJ = Math.max(0, Math.min(j - imgCornerY, getImgHeight()));;
+		int relImgI = Math.max(0, Math.min(i - imgCornerX, getImgDisplayWidth()));;
+		int relImgJ = Math.max(0, Math.min(j - imgCornerY, getImgDisplayHeight()));;
 
-		double relX = ((double) relImgI) / ((double) getImgWidth());
-		double relY = ((double) relImgJ) / ((double) getImgHeight());
+		double relX = ((double) relImgI) / ((double) getImgDisplayWidth());
+		double relY = ((double) relImgJ) / ((double) getImgDisplayHeight());
 
-		String out = query(relX, relY);
+		String out = queryRelative(relX, relY);
 		System.out.println("Value of " + imager.getCurrentFieldName() + ": " + out);
 
 		return out;
 	}
 
-	public String query(double relativeI, double relativeJ)
+	public String queryRelative(double relativeI, double relativeJ)
 	{
 		if (fixedImg) return null;
 		T t = imager.getObjAt(relativeI, relativeJ);
@@ -98,21 +113,21 @@ public class ObjectArrayJPanel<T> extends JPanel
 		this.imageAspectRatio = ((double) img.getWidth(null)) / ((double) img.getHeight(null));
 
 		fixedWidth = false; fixedHeight = false;
-		setImgWidth(img.getWidth(null));
-		setImgHeight(img.getHeight(null));
+		imgDisplayWidth = img.getWidth(null);
+		imgDisplayHeight = img.getHeight(null);
 
 		if (width > 0)  
 		{
 			fixedAspectRatio = false;
-			fixedWidth = true; 
-			setImgWidth(width);
+			fixedWidth = true;
+			imgDisplayWidth = width;
 		} 
 
 		if (height > 0)
 		{
 			fixedAspectRatio = false;
 			fixedHeight = true; 
-			setImgHeight(height);
+			imgDisplayHeight = height;
 		}
 
 		this.addMouseListener(new MouseListener() {
@@ -137,8 +152,8 @@ public class ObjectArrayJPanel<T> extends JPanel
 		imgRelativeI = ((double) objArrayI ) / ((double) imager.getData().length);
 		imgRelativeJ = ((double) objArrayJ ) / ((double) imager.getData()[0].length);
 
-		imgI = (int) (((double) getImgWidth()) * imgRelativeI);
-		imgJ = (int) (((double) getImgHeight()) * imgRelativeJ);
+		imgI = (int) (((double) getImgDisplayWidth()) * imgRelativeI);
+		imgJ = (int) (((double) getImgDisplayHeight()) * imgRelativeJ);
 
 		return new int[] { imgI + imgCornerX, imgJ + imgCornerY };
 	}
@@ -147,13 +162,13 @@ public class ObjectArrayJPanel<T> extends JPanel
 	{
 		Insets insets = getInsets();
 		Graphics2D g2d = (Graphics2D) g.create();
-		int fixedX = this.getImgWidth(), fixedY = this.getImgHeight();
-		
+		int fixedX = this.getImgDisplayWidth(), fixedY = this.getImgDisplayHeight();
+
 		this.panelWidth = getWidth() - insets.right;
 		this.panelHeight = getHeight() - insets.bottom;
 
-		this.setImgWidth(panelWidth); 
-		this.setImgHeight(panelHeight);
+		this.imgDisplayWidth = panelWidth; 
+		this.imgDisplayHeight = panelHeight;
 
 		compAspectRatio = (double) panelWidth / (double) panelHeight;
 
@@ -163,20 +178,20 @@ public class ObjectArrayJPanel<T> extends JPanel
 			if (imageAspectRatio < compAspectRatio)	
 			{
 				double w = (((double) panelHeight) * imageAspectRatio);
-				this.setImgWidth((int) w);
+				this.imgDisplayWidth = (int) w;
 			}
-			else this.setImgHeight((int) (((double) panelWidth) / imageAspectRatio));
+			else this.imgDisplayHeight = (int) (((double) panelWidth) / imageAspectRatio);
 		}
 		else
 		{
-			if (this.fixedHeight) this.setImgHeight(fixedY);
-			if (this.fixedWidth) this.setImgWidth(fixedX);
+			if (this.fixedHeight) this.imgDisplayHeight = fixedY;
+			if (this.fixedWidth) this.imgDisplayWidth = fixedX;
 		}
 
 		if (centerInPanel)
 		{
-			int widthRemainder = panelWidth - getImgWidth();
-			int heightRemainder = panelHeight - getImgHeight();
+			int widthRemainder = panelWidth - getImgDisplayWidth();
+			int heightRemainder = panelHeight - getImgDisplayHeight();
 			imgCornerX = (int)(0.5 * ((double) widthRemainder));
 			imgCornerY = (int)(0.5 * ((double) heightRemainder));
 		}
@@ -186,43 +201,66 @@ public class ObjectArrayJPanel<T> extends JPanel
 			imgCornerY = 0;
 		}
 
-		g2d.drawImage(img, imgCornerX, imgCornerY, getImgWidth(), getImgHeight(), null);
+		g2d.drawImage(img, imgCornerX, imgCornerY, imgDisplayWidth, imgDisplayHeight, null);
 
 		if (this.decorate)
 		{
-			getDecorator().drawLabels(this, g2d);
-			getDecorator().drawPoints(this, g2d);
+			decorator.drawLabels(g2d, imgDisplayWidth, imgDisplayHeight, imgCornerX, imgCornerY);
+			drawPoints(g2d, ptRelSize);
+			//			getDecorator().drawPoints(this, g2d);
+			//			getDecorator().drawLabels(this, g2d);
+			//			getDecorator().drawPoints(this, g2d);
 		}
+
+
+
 
 		g2d.dispose();
 		g.dispose();
 	}
 
+	public void drawPoints(Graphics2D g2d, double relSize)
+	{
+		decorator.drawPoints(g2d, imgDisplayWidth, imgDisplayHeight, imgCornerX, imgCornerY, relSize);
+	}
 
 	public void setField(String name)  { imager.setField(name); updateImage(); }
 
 	public void setField(Field f) { imager.setField(f); updateImage(); }
 
-	public boolean addLabel(String label, double relI, double relJ, Font font)
+	public void addLabel(String label, double relI, double relJ, Font font)
 	{
 		int[] coords = imager.getArrayCoords(relI, relJ);
-		getDecorator().addLabel(coords[0], coords[1], label, font, Color.black, true, -1, this);
-		return true;
+		getDecorator().addLabel(coords[0], coords[1], label, font, Color.black, true, -1);
+		//		getDecorator().addLabel(coords[0], coords[1], label, font, Color.black, true, -1, this);
+		//		paintComponent(this.getGraphics());
+		paintComponent(this.getGraphics());
 	}
 
-	public boolean addValueLabel(double relI, double relJ, Font font)
+	public void addValueLabel(double relI, double relJ, Font font)
 	{
 		int[] coords = imager.getArrayCoords(relI, relJ);
-		getDecorator().addLabel(coords[0], coords[1], null, font, Color.black, true, -1, this);
-		return true;
+		decorator.addLabel(coords[0], coords[1], null, font, Color.black, true, -1);
+		//		paintComponent(this.getGraphics());
+		//		getDecorator().addLabel(coords[0], coords[1], null, font, Color.black, true, -1, this);
+		paintComponent(this.getGraphics());
 	}
 
-	public void addPoint(int i, int j, int size, Color color) { getDecorator().addLabel(i, j, null, null, color, true, size, this); }
+	public void addPoint(int i, int j, int size, Color color) 
+	{
+		decorator.addLabel(i, j, null, null, color, true, size); 
+		//		decorator.addLabel(i, j, null, null, color, true, size, this); 
+		paintComponent(this.getGraphics());
+
+	}
 
 	public void addPoint(double relI, double relJ, int size, Color color)
 	{
 		int[] coords = imager.getArrayCoords(relI, relJ);
-		getDecorator().addLabel(coords[0], coords[1], null, null, color, true, size, this);
+		decorator.addLabel(coords[0], coords[1], null, null, color, true, size);
+		paintComponent(this.getGraphics());
+
+		//		getDecorator().addLabel(coords[0], coords[1], null, null, color, true, size, this);
 	}
 
 
@@ -237,18 +275,33 @@ public class ObjectArrayJPanel<T> extends JPanel
 	 * @param keep  keep the decoration in the record of points so it will be redrawn later?
 	 */
 	public void addLabel(int i, int j, String label, Font font, Color color, boolean keep, int pointSize, ObjectArrayJPanel<?> p)
-	{ getDecorator().addLabel(i, j, label, font, color, keep, pointSize, this); }
+	{
+		decorator.addLabel(i, j, label, font, color, keep, pointSize); 
+		//		paintComponent(getGraphics());
+		//		decorator.addLabel(i, j, label, font, color, keep, pointSize, this); 
+		paintComponent(this.getGraphics());
+	}
 
 	public Image getImg() { return this.img; }
 
 	public RenderedImage getRenderedImage() { return (RenderedImage)this.img; }
 	public Class<T> getObjClass() { return this.imager.getObjClass(); }
 
-	public int getImgWidth() { return imgWidth; }
-	public void setImgWidth(int imgWidth) { this.imgWidth = imgWidth; }
-	public int getImgHeight() { return imgHeight; }
-	public void setImgHeight(int imgHeight) { this.imgHeight = imgHeight; }
-	public PanelDecorator getDecorator() { return decorator; }
-	public void setDecorator(PanelDecorator decorator) { this.decorator = decorator; }
+	public int getImgDisplayWidth() { return imgDisplayWidth; }
+	//	public void imgWidth = int imgWidth) { this.imgWidth = imgWidth; }
+	public int getImgDisplayHeight() { return imgDisplayHeight; }
+	//	public void imgHeight = int imgHeight) { this.imgHeight = imgHeight; }
+	public ObjectArrayImageDecorator getDecorator() { return decorator; }
+	public void setDecorator(ObjectArrayImageDecorator decorator) { this.decorator = decorator; }
 	public void setLabelVisibility(boolean b) { this.decorate = b; repaint();}
+
+
+	public double getPtRelSize() {
+		return ptRelSize;
+	}
+
+
+	public void setPtRelSize(double ptRelSize) {
+		this.ptRelSize = ptRelSize;
+	}
 }

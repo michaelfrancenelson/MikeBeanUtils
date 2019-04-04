@@ -60,6 +60,10 @@ public interface ObjectArrayImager<T>
 	 */
 	public T getObjAt(double relativeI, double relativeJ);
 	
+	
+	public String queryObjectAt(int i, int j);
+	
+	
 	/**
 	 * 
 	 * @return a watcher for the currently selected field.

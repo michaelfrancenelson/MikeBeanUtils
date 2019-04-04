@@ -17,16 +17,15 @@ import beans.memberState.SimpleFieldWatcher;
  */
 public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 {
-	public ColorInterpolator ci;
-	public ColorInterpolator booleanCI;
-	public Color naColor;
+	private ColorInterpolator ci;
+	private ColorInterpolator booleanCI;
 	private int rgbType = BufferedImage.TYPE_3BYTE_BGR;
 
 	private double[][] dataDouble = null;
 	private int[][] dataInt = null;
 	private boolean[][] dataBool = null;
 
-	double datMin, datMax;
+	private double datMin, datMax;
 	private BufferedImage img;
 	private T[][] objArray;
 	private SimpleFieldWatcher<T> watcher;
@@ -35,6 +34,62 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	private Map<String, SimpleFieldWatcher<T>> watchers;
 	private Map<String, Boolean> parsedBooleanFields;
 
+	
+	
+	public static class ArrayGradientLegendImager<T> extends SimpleArrayImager<T>
+	{
+
+	
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+//	public BufferedImage getLegend(int nLabels, int nSteps, double offset1, double offset2)
+//	{
+//		BufferedImage leg;
+//	
+//		
+//		
+//		
+//		
+//		switch (watcher.getField().getType().getSimpleName())
+//	case("int"):
+//	{
+//		for (int row = 0; row < objArray.length; row++)
+//			for (int col = 0; col < objArray[0].length; col++)
+//				img.setRGB(row, col, interp.getColor(watcher.getIntVal(objArray[row][col])));
+//		break;
+//	}
+//	case("double"): 
+//	{
+//		for (int row = 0; row < objArray.length; row++)
+//			for (int col = 0; col < objArray[0].length; col++)
+//				img.setRGB(row, col, interp.getColor(watcher.getDoubleVal(objArray[row][col])));
+//		break;
+//	}
+//	case("boolean"): 
+//	{
+//		for (int row = 0; row < objArray.length; row++)
+//			for (int col = 0; col < objArray[0].length; col++)
+//				img.setRGB(row, col, booleanCI.getColor(watcher.getBoolVal(objArray[row][col])));
+//		//			img.setRGB(row, col, interp.getColor(watcher.getBoolVal(objArray[row][col])));
+//		break;
+//	}
+//		
+//		
+//		return leg;
+//	}
+//	
+	
+	
+	
 	private int[] currentSelectionArrayCoords;
 
 	/**
@@ -220,6 +275,11 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	@Override public void setField(Field field) { setField(field.getName()); }
 	@Override public void setColors(Color[] colors) {	ci.updateColors(colors); }
 
+	
+	
+	@Override
+	public String queryObjectAt(int i, int j) { return watcher.getStringVal(getObjAt(i, j)); }
+	
 	/** 
 	 * Checks that the coordinates are valid.
 	 * Sets the current selection coordinates.
