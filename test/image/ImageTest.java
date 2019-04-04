@@ -29,8 +29,8 @@ public class ImageTest {
 	public static void testImage()
 	{
 
-		int nRows = 300;
-		int nCols = 500;
+		int nRows = 30;
+		int nCols = 50;
 
 		
 		String dblFmt = "%.2f";

@@ -1,17 +1,20 @@
 package swing.stretchAndClick;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.IOException;
+import java.awt.image.RenderedImage;
+import java.lang.reflect.Field;
 
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import image.ObjectArrayImager;
+import swing.PanelDecorator;
 
 public class ObjectArrayJPanel<T> extends JPanel
 {
@@ -20,17 +23,22 @@ public class ObjectArrayJPanel<T> extends JPanel
 	 */
 	private static final long serialVersionUID = -2893196948005659813L;
 
-	ObjectArrayImager<T> imager;
+	private PanelDecorator decorator;
+	private ObjectArrayImager<T> imager;
 	private double imageAspectRatio, compAspectRatio;
 	private boolean centerInPanel = true;
 
 	private boolean fixedAspectRatio;
 	private boolean fixedWidth, fixedHeight;
 	private boolean fixedImg;
+	private boolean decorate;
 
 	private Image img = null;
 
-	private int panelWidth, panelHeight, imgX, imgY, imgWidth, imgHeight, cornerX, cornerY;
+	private int 
+	panelWidth, panelHeight, 
+	imgWidth, imgHeight, 
+	imgCornerX, imgCornerY;
 
 	/** 
 	 *  If the image is derived form an <code>ObjectArrayImager</code>, refresh the image to
@@ -39,7 +47,7 @@ public class ObjectArrayJPanel<T> extends JPanel
 	public void updateImage()
 	{
 		if (!fixedImg) img = imager.getImage();
-		repaint();
+		paint(this.getGraphics());
 	}
 
 	/**
@@ -54,16 +62,11 @@ public class ObjectArrayJPanel<T> extends JPanel
 		if (fixedImg) return null;
 
 		/* determine which cell in the data array corresponds to the input pixel */
-		int relImgI = Math.max(0, Math.min(i - cornerX, imgWidth));;
-		int relImgJ = Math.max(0, Math.min(j - cornerY, imgHeight));;
+		int relImgI = Math.max(0, Math.min(i - imgCornerX, getImgWidth()));;
+		int relImgJ = Math.max(0, Math.min(j - imgCornerY, getImgHeight()));;
 
-		//		System.out.println("queryPixel():  image corner: " + imgX + ", " + imgY);
-		//		System.out.println("queryPixel():  image width:  " + imgWidth + ", height: " + imgHeight);
-		//		System.out.println("queryPixel():  panel width:  " + compWidth + ", height: " + compHeight);
-		//		System.out.println("queryPixel():  image coords: (" + relImgI + ", " + relImgJ + ").");
-
-		double relX = ((double) relImgI) / ((double) imgWidth);
-		double relY = ((double) relImgJ) / ((double) imgHeight);
+		double relX = ((double) relImgI) / ((double) getImgWidth());
+		double relY = ((double) relImgJ) / ((double) getImgHeight());
 
 		String out = query(relX, relY);
 		System.out.println("Value of " + imager.getCurrentFieldName() + ": " + out);
@@ -86,29 +89,30 @@ public class ObjectArrayJPanel<T> extends JPanel
 	 * @param height
 	 * @param keepAspectRatio
 	 */
-	private void init(Image img, int width, int height, boolean keepAspectRatio) 
+	void init(Image img, int width, int height, boolean keepAspectRatio, boolean fixedImage, ObjectArrayImager<T> imager) 
 	{
 		this.img = img;
+		this.imager = imager;
+		this.fixedImg = fixedImage;
 		this.fixedAspectRatio = keepAspectRatio;
 		this.imageAspectRatio = ((double) img.getWidth(null)) / ((double) img.getHeight(null));
-		//		this.imageAspectRatio = ((double) img.getHeight(null)) / ((double) img.getWidth(null));
 
 		fixedWidth = false; fixedHeight = false;
-		imgWidth = img.getWidth(null);
-		imgHeight = img.getHeight(null);
+		setImgWidth(img.getWidth(null));
+		setImgHeight(img.getHeight(null));
 
 		if (width > 0)  
 		{
 			fixedAspectRatio = false;
 			fixedWidth = true; 
-			imgWidth = width;
+			setImgWidth(width);
 		} 
 
 		if (height > 0)
 		{
 			fixedAspectRatio = false;
 			fixedHeight = true; 
-			imgHeight = height;
+			setImgHeight(height);
 		}
 
 		this.addMouseListener(new MouseListener() {
@@ -125,80 +129,31 @@ public class ObjectArrayJPanel<T> extends JPanel
 		});
 	}
 
-	/**
-	 *  Build a panel using an image file.  The panel won't return any values when clicked
-	 *  and refresh methods will have no effect.
-	 *  
-	 * @param imageFile
-	 * @param keepAspectRatio Should the aspect ratio of the image be maintained if the window is resized?
-	 *                        If false, the image will stretch to fill the window if it is resized.
-	 *                        If <code>fixedWidth</code> or <code>fixedHeight</code> are greater than 0, 
-	 *                        this parameter is ignored.
-	 * @param fixedWidth      If greater than 0, the width of the image will remain constant 
-	 *                        if the window is resized. The image height may still adjust to resizing.
-	 *                        Values of 0 or less are ignored.
-	 * @param fixedHeight     If greater than 0, the height of the image will remain constant 
-	 *                        if the window is resized. The width may still adjust to resizing.
-	 *                        Values of 0 or less are ignored.
-	 * @return
-	 */
-	public static <T> ObjectArrayJPanel<T> buildPanel(
-			String imageFile, boolean keepAspectRatio, 
-			int fixedWidth, int fixedHeight)
+	public int[] objArrayCoordsToPanelCoords(int objArrayI, int objArrayJ)
 	{
-		ObjectArrayJPanel<T> out = new ObjectArrayJPanel<T>();
-		Image img = null;
-		try {
-			img = ImageIO.read(new File(imageFile));
-		} catch (IOException e) { 
-			e.printStackTrace();
-		}
-		out.fixedImg = true;
-		out.init(img, fixedWidth, fixedHeight, keepAspectRatio);
+		int imgI, imgJ;
+		double imgRelativeI, imgRelativeJ;
 
-		return out;
+		imgRelativeI = ((double) objArrayI ) / ((double) imager.getData().length);
+		imgRelativeJ = ((double) objArrayJ ) / ((double) imager.getData()[0].length);
+
+		imgI = (int) (((double) getImgWidth()) * imgRelativeI);
+		imgJ = (int) (((double) getImgHeight()) * imgRelativeJ);
+
+		return new int[] { imgI + imgCornerX, imgJ + imgCornerY };
 	}
 
-	/**
-	 *  Build a panel using an <code>ObjectArrayImager</code> to generate the image from the states of
-	 *  objects in a 2D array.
-	 * 
-	 * @param imager 
-	 * @param keepAspectRatio Should the aspect ratio of the image be maintained if the window is resized?
-	 *                        If false, the image will stretch to fill the window if it is resized.
-	 *                        If <code>fixedWidth</code> or <code>fixedHeight</code> are greater than 0, 
-	 *                        this parameter is ignored.
-	 * @param fixedWidth      If greater than 0, the width of the image will remain constant 
-	 *                        if the window is resized. The image height may still adjust to resizing.
-	 *                        Values of 0 or less are ignored.
-	 * @param fixedHeight     If greater than 0, the height of the image will remain constant 
-	 *                        if the window is resized. The width may still adjust to resizing.
-	 *                        Values of 0 or less are ignored.
-	 * @return
-	 */
-	public static <T> ObjectArrayJPanel<T> buildPanel(
-			ObjectArrayImager<T> imager, boolean keepAspectRatio, 
-			int fixedWidth, int fixedHeight)
-	{
-		ObjectArrayJPanel<T> out = new ObjectArrayJPanel<T>();
-		out.imager = imager;
-		out.fixedImg = false;
-		out.init(imager.getImage(), fixedWidth, fixedHeight, keepAspectRatio);
-
-		return out;
-	}
-
-	@Override public void paint(Graphics g)
+	@Override public void paintComponent(Graphics g)
 	{
 		Insets insets = getInsets();
+		Graphics2D g2d = (Graphics2D) g.create();
+		int fixedX = this.getImgWidth(), fixedY = this.getImgHeight();
+		
+		this.panelWidth = getWidth() - insets.right;
+		this.panelHeight = getHeight() - insets.bottom;
 
-		int fixedX = this.imgWidth, fixedY = this.imgHeight;
-
-		this.panelWidth = getWidth() - imgX - insets.right;
-		this.panelHeight = getHeight() - imgY - insets.bottom;
-
-		this.imgWidth = panelWidth; 
-		this.imgHeight = panelHeight;
+		this.setImgWidth(panelWidth); 
+		this.setImgHeight(panelHeight);
 
 		compAspectRatio = (double) panelWidth / (double) panelHeight;
 
@@ -208,29 +163,92 @@ public class ObjectArrayJPanel<T> extends JPanel
 			if (imageAspectRatio < compAspectRatio)	
 			{
 				double w = (((double) panelHeight) * imageAspectRatio);
-				this.imgWidth = (int) w;
+				this.setImgWidth((int) w);
 			}
-			else this.imgHeight = (int) (((double) panelWidth) / imageAspectRatio);
+			else this.setImgHeight((int) (((double) panelWidth) / imageAspectRatio));
 		}
 		else
 		{
-			if (this.fixedHeight) this.imgHeight = fixedY;
-			if (this.fixedWidth) this.imgWidth = fixedX;
+			if (this.fixedHeight) this.setImgHeight(fixedY);
+			if (this.fixedWidth) this.setImgWidth(fixedX);
 		}
 
 		if (centerInPanel)
 		{
-			int widthRemainder = panelWidth - imgWidth;
-			int heightRemainder = panelHeight - imgHeight;
-			cornerX = imgX + (int)(0.5 * ((double) widthRemainder));
-			cornerY = imgY + (int)(0.5 * ((double) heightRemainder));
-
+			int widthRemainder = panelWidth - getImgWidth();
+			int heightRemainder = panelHeight - getImgHeight();
+			imgCornerX = (int)(0.5 * ((double) widthRemainder));
+			imgCornerY = (int)(0.5 * ((double) heightRemainder));
 		}
 		else 
 		{
-			cornerX = imgX;
-			cornerY = imgY;
+			imgCornerX = 0;
+			imgCornerY = 0;
 		}
-		g.drawImage(img, cornerX, cornerY, imgWidth, imgHeight, null);
+
+		g2d.drawImage(img, imgCornerX, imgCornerY, getImgWidth(), getImgHeight(), null);
+
+		if (this.decorate)
+		{
+			getDecorator().drawLabels(this, g2d);
+			getDecorator().drawPoints(this, g2d);
+		}
+
+		g2d.dispose();
+		g.dispose();
 	}
+
+
+	public void setField(String name)  { imager.setField(name); updateImage(); }
+
+	public void setField(Field f) { imager.setField(f); updateImage(); }
+
+	public boolean addLabel(String label, double relI, double relJ, Font font)
+	{
+		int[] coords = imager.getArrayCoords(relI, relJ);
+		getDecorator().addLabel(coords[0], coords[1], label, font, Color.black, true, -1, this);
+		return true;
+	}
+
+	public boolean addValueLabel(double relI, double relJ, Font font)
+	{
+		int[] coords = imager.getArrayCoords(relI, relJ);
+		getDecorator().addLabel(coords[0], coords[1], null, font, Color.black, true, -1, this);
+		return true;
+	}
+
+	public void addPoint(int i, int j, int size, Color color) { getDecorator().addLabel(i, j, null, null, color, true, size, this); }
+
+	public void addPoint(double relI, double relJ, int size, Color color)
+	{
+		int[] coords = imager.getArrayCoords(relI, relJ);
+		getDecorator().addLabel(coords[0], coords[1], null, null, color, true, size, this);
+	}
+
+
+	/**
+	 * 
+	 * @param i x-coordinate (array index of data array) of the label
+	 * @param j y-coordinate (array index of data array) of the label
+	 * @param label text of the label.  If <code>null</code>, label will be 
+	 *              either a point, or the text will display the value of the object at [i][j]
+	 * @param font display font (if applicable)
+	 * @param color color for text or point 
+	 * @param keep  keep the decoration in the record of points so it will be redrawn later?
+	 */
+	public void addLabel(int i, int j, String label, Font font, Color color, boolean keep, int pointSize, ObjectArrayJPanel<?> p)
+	{ getDecorator().addLabel(i, j, label, font, color, keep, pointSize, this); }
+
+	public Image getImg() { return this.img; }
+
+	public RenderedImage getRenderedImage() { return (RenderedImage)this.img; }
+	public Class<T> getObjClass() { return this.imager.getObjClass(); }
+
+	public int getImgWidth() { return imgWidth; }
+	public void setImgWidth(int imgWidth) { this.imgWidth = imgWidth; }
+	public int getImgHeight() { return imgHeight; }
+	public void setImgHeight(int imgHeight) { this.imgHeight = imgHeight; }
+	public PanelDecorator getDecorator() { return decorator; }
+	public void setDecorator(PanelDecorator decorator) { this.decorator = decorator; }
+	public void setLabelVisibility(boolean b) { this.decorate = b; repaint();}
 }

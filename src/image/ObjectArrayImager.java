@@ -9,6 +9,12 @@ import beans.memberState.FieldWatcher;
 public interface ObjectArrayImager<T> 
 {
 
+	/**
+	 * 
+	 * @return the class of objects from which the images are generated
+	 */
+	public Class<T> getObjClass();
+	
 	/** Return the current image, generated from the currently active field. */
 	public BufferedImage getImage();
 	public String getCurrentFieldName();
@@ -66,5 +72,23 @@ public interface ObjectArrayImager<T>
 	 * @return
 	 */
 	public T[][] getData();
+	
+	/**
+	 * 
+	 * @return the array indices of the currently selected object
+	 */
+	public int[] getCurrentSelectedCoords();
+	
+	/**
+	 * 
+	 * @return the currently selected object
+	 */
+	public T getCurrentSelectedObj();
+	
+	
+	public void setCurrentSelection(int i, int j);
+	public void setCurrentSelection(double relativeI, double relativeJ);
+
+	int[] getArrayCoords(double relativeI, double relativeJ);
 	
 }

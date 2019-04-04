@@ -2,7 +2,9 @@ package fields;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import beans.memberState.SimpleFieldWatcher.WatchField;
@@ -10,6 +12,53 @@ import beans.memberState.SimpleFieldWatcher.WatchField;
 public class FieldUtils 
 {
 
+
+	public static <T> Field[] getInstanceFields(Class<T> clazz)
+	{
+		Field[] fields = clazz.getDeclaredFields();
+		List<Field> ff = new ArrayList<>();
+
+		for (Field f: fields)
+		{
+			f.setAccessible(true);
+			if (!Modifier.isStatic(f.getModifiers()))
+			{
+				ff.add(f);
+//				System.out.println("FieldUtils: field name is " + f.getName());
+			}
+		}
+		Field[] fff = new Field[ff.size()];
+		for (int i = 0; i < fff.length; i++) { fff[i] = ff.get(i); }
+		return fff;
+	}
+	
+	public static <T> String[] getInstanceFieldNames(Class<T> clazz) 
+	{
+		System.out.println("FieldUtils: getting instance field names from class " + clazz.getName());
+		return getInstanceFieldNames(Arrays.asList(getInstanceFields(clazz)));
+	}
+	
+	public static <T> String[] getInstanceFieldNames(Iterable<Field> fields)
+	{
+		
+		System.out.println("FieldUtils: getting instance field names" );
+		List<String> fNames = new ArrayList<>();
+		
+		for (Field f: fields)
+		{
+			f.setAccessible(true);
+			if (!Modifier.isStatic(f.getModifiers()))
+				{
+				fNames.add(f.getName());
+				System.out.println("FieldUtils: field name is " + f.getName());
+				}
+		}
+		
+		String[] out = new String[fNames.size()];
+		for (int i = 0; i < out.length; i++) { out[i] = fNames.get(i); }
+		return out;
+	}
+	
 	/**
 	 * 
 	 * @param clazz    bean class

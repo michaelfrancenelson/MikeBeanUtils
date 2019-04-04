@@ -27,19 +27,22 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	private boolean[][] dataBool = null;
 
 	double datMin, datMax;
-	public BufferedImage img;
-	T[][] objArray;
-	SimpleFieldWatcher<T> watcher;
+	private BufferedImage img;
+	private T[][] objArray;
+	private SimpleFieldWatcher<T> watcher;
+	private Class<T> clazz;
 
-	Map<String, SimpleFieldWatcher<T>> watchers;
-	Map<String, Boolean> parsedBooleanFields;
+	private Map<String, SimpleFieldWatcher<T>> watchers;
+	private Map<String, Boolean> parsedBooleanFields;
+
+	private int[] currentSelectionArrayCoords;
 
 	/**
 	 * 
 	 * @param clazz
 	 * @param objArray 
 	 * @param fieldName the image will be built from values in this field.
-	 * @param colors color gradient
+	 * @param gradientColors color gradient
 	 * @param booleanColors Colors to use to plot a boolean member.  Only the first and last colors are used.
 	 * @param naDouble pixels with this value will be plotted with the 'naColor'
 	 * @param naInt pixels with this value will be plotted with the 'naColor'
@@ -51,15 +54,15 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	 * @return
 	 */
 	public static <T> ObjectArrayImager<T> factory(
-			Class<T> clazz, T[][] objArray,
-			String fieldName, 
-			Color[] colors, Color[] booleanColors,
+			Class<T> clazz, T[][] objArray,	String fieldName, 
+			Color[] gradientColors, Color[] booleanColors,
 			double naDouble, int naInt, Color naColor,
 			String dblFmt, Iterable<String> parsedBooleanFields
 			)
 	{
 		SimpleArrayImager<T> out = new SimpleArrayImager<T>();
-		out.ci = SimpleColorInterpolator.factory(colors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt);
+		out.clazz = clazz;
+		out.ci = SimpleColorInterpolator.factory(gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt);
 		out.booleanCI = SimpleBooleanColorInterpolator.factory(booleanColors, naDouble, naInt, naColor);
 		out.objArray = objArray;
 		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, dblFmt);
@@ -116,7 +119,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 			for (int row = 0; row < objArray.length; row++)
 				for (int col = 0; col < objArray[0].length; col++)
 					img.setRGB(row, col, booleanCI.getColor(watcher.getBoolVal(objArray[row][col])));
-//			img.setRGB(row, col, interp.getColor(watcher.getBoolVal(objArray[row][col])));
+			//			img.setRGB(row, col, interp.getColor(watcher.getBoolVal(objArray[row][col])));
 			break;
 		}
 		}
@@ -190,6 +193,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 			}
 	}
 
+
 	@Override
 	public void refresh() 
 	{
@@ -217,38 +221,65 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	@Override public void setColors(Color[] colors) {	ci.updateColors(colors); }
 
 	/** 
-	 * Checks that the coordinates are valid
+	 * Checks that the coordinates are valid.
+	 * Sets the current selection coordinates.
 	 */
 	@Override
 	public T getObjAt(int i, int j) 
 	{
+
 		if ((i > 0 && j > 0) &&  (i < objArray.length && j < objArray[0].length))
+		{
+			setCurrentSelection(i, j);
 			return objArray[i][j];
+		}
 		else throw new IllegalArgumentException("Input coordinates + (" + i + ", " + j + 
 				") are incompatible with the object array size (" + objArray.length + ", " + objArray[0].length+ ".");
 	}
 
 	/**
-	 * Adjusts coordinates > 1.0 or < 0.0 to fall within range 1.0 - 0.0
+	 * Adjusts coordinates > 1.0 or < 0.0 to fall within range 1.0 - 0.0 <br>
+	 * Sets the current selection coordinates.
 	 */
 	@Override
 	public T getObjAt(double relativeI, double relativeJ) 
+	{
+		setCurrentSelection(relativeI, relativeJ);
+		return getCurrentSelectedObj();
+	}
+
+	@Override
+	public int[] getArrayCoords(double relativeI, double relativeJ)
 	{
 		int i = (int) (((double) (objArray.length)) * relativeI);
 		int j = (int) (((double) (objArray[0].length)) * relativeJ);
 
 		i = Math.min(i, objArray.length - 1);
 		j = Math.min(j, objArray[0].length - 1);
-		
-//		System.out.println("SimpleArrayImager.getObjAt():  relative coords are " + relativeI + ", " + relativeJ + ").");
-//		System.out.println("SimpleArrayImager.getObjAt():  array coords are    " + i + ", " + j + ").");
-		
+
+		//		System.out.println("SimpleArrayImager.getObjAt():  relative coords are " + relativeI + ", " + relativeJ + ").");
+		//		System.out.println("SimpleArrayImager.getObjAt():  array coords are    " + i + ", " + j + ").");
+
 		i = Math.min(objArray.length - 1, Math.max(0, i));
 		j = Math.min(objArray[0].length - 1, Math.max(0, j));
-		
-		return objArray[i][j];
+		return new int[] {i, j};
+	}
+
+
+	@Override
+	public void setCurrentSelection(int i, int j) { currentSelectionArrayCoords = new int[] {i, j}; }
+
+	@Override
+	public void setCurrentSelection(double relativeI, double relativeJ)
+	{
+		int[] coords = getArrayCoords(relativeI, relativeJ);
+		currentSelectionArrayCoords = new int[] {coords[0], coords[1]};
 	}
 
 	@Override public FieldWatcher<T> getWatcher() { return this.watcher; }
 	@Override public T[][] getData() { return this.objArray; }
+	@Override public Class<T> getObjClass() { return clazz; }
+
+	@Override public int[] getCurrentSelectedCoords() { return currentSelectionArrayCoords; }
+	@Override public T getCurrentSelectedObj() { return objArray[currentSelectionArrayCoords[0]][currentSelectionArrayCoords[1]]; }
 }
