@@ -28,10 +28,45 @@ public class RiverDemo
 
 	public static void main(String[] args) {
 
-		arrayPanelDemo();
+		pointLabelDemo();
+		
+//		arrayPanelDemo();
 
 	}
 
+	public static void pointLabelDemo()
+	{
+		
+		int nRow = 8, nCol = 8;
+		
+		TerrainBean[][] cells1 = TerrainBean.factory(nRow, nCol, 1.5);
+		TerrainBean.randomRivers(cells1, 0.32, 0.528, 0.5, 0.5, 1);
+//		TerrainBean.randomRivers(cells1, 0.52, 0.628, 0.5, 0.5, 2);
+		ObjectArrayJPanel<TerrainBean> pan1;
+		
+		
+		double ptSize = 1.0 / ((double) Math.max(nRow, nCol));
+		
+		JFrame f1 = SwingUtils.frameFactory(1100, 1100);
+		
+		pan1 = ObjectArrayPanelFactory.buildPanel(
+				TerrainBean.class, cells1, "elevation", 
+				ColorUtils.HEAT_COLORS, bCol,
+				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null, null,
+				true, 0, 0, ptSize);
+		
+		f1.add(pan1);
+		f1.setVisible(true);
+		
+		for (int i = 0; i < nRow; i++)
+		{
+			pan1.addPoint(1, i, 30, Color.blue);
+			pan1.addPoint(i, 2, 0, Color.green);
+		}
+		
+	}
+	
+	
 	public static void comboBoxDemop()
 	{
 

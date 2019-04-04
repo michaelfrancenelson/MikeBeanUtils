@@ -24,7 +24,6 @@ public class ObjectArrayImageComboBox
 
 	public static <T> JComboBox<String> comboBoxFactory(
 			ObjectArrayJPanel<T> panel,
-//			Class<T> clazz,
 			Field[] fields, 
 			String[] dispNames,
 			Font font

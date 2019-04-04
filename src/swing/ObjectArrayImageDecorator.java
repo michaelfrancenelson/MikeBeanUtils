@@ -52,17 +52,13 @@ public class ObjectArrayImageDecorator
 		{
 			ObjectTextLabel lab = new ObjectTextLabel(i, j, label, font);
 			if (keep) labels.add(lab); 
-			//			p.paintComponent(p.getGraphics());
-			//			p.paintComponent(p.getGraphics());
 		}
 		else if (label == null && font != null)
 		{
 			ObjectTextLabel vab = new ObjectTextLabel(i, j, null, font);
 			if (keep) valueLabels.add(vab);
-			//			p.paintComponent(p.getGraphics());
 		}
 		else 
-			//			if (pointSize > 0)
 		{
 			ObjectPointLabel pab = new ObjectPointLabel(i, j, pointSize, color);
 			System.out.println("PanelDecorator.addLabel() creating a point label");
@@ -70,9 +66,7 @@ public class ObjectArrayImageDecorator
 			{
 				points.add(pab);
 			}
-			//			p.paintComponent(p.getGraphics());
 		}
-		//		else throw new IllegalArgumentException("Could not add the label.  Make sure you have specified the necessary parameters");
 	}
 
 	public void drawLabels(Graphics g, int imgWidth, int imgHeight, int imgCornerX, int imgCornerY)
@@ -129,8 +123,8 @@ public class ObjectArrayImageDecorator
 
 	private int[] getImageCoords(int objArrayI, int objArrayJ, int imageWidth, int imageHeight, int imageCornerX, int imageCornerY)
 	{
-		double relX = ((double) objArrayI) / ((double) objArrayWidth - 1); 
-		double relY = ((double) objArrayJ) / ((double) objArrayHeight - 1);
+		double relX = ((double) objArrayI) / ((double) objArrayWidth); 
+		double relY = ((double) objArrayJ) / ((double) objArrayHeight);
 
 		return new int[] {
 				imageCornerX + (int) (relX * ((double) imageWidth)), 
@@ -166,23 +160,6 @@ public class ObjectArrayImageDecorator
 			int[] coords = getImageCoords(this.objArrayI, this.objArrayJ, imageWidth, imageHeight, imageCornerX, imageCornerY);
 			g.fillOval(coords[0], coords[1], size, size);
 		}
-
-		//		void draw(Graphics g, ObjectArrayJPanel<?> p)
-		//		{
-		//			/* Need to rescale coords for the current image size */
-		//			g.setColor(color);
-		//			int[] coords = p.objArrayCoordsToPanelCoords(objArrayI, objArrayJ);
-		//			g.fillOval(coords[0], coords[1], size, size);
-		//		}
-		//
-		//		void draw(Graphics g, ObjectArrayJPanel<?> p, int scaledSize)
-		//		{
-		//			/* Need to rescale coords for the current image size */
-		//			g.setColor(color);
-		//			int[] coords = p.objArrayCoordsToPanelCoords(objArrayI, objArrayJ);
-		//			g.fillOval(coords[0], coords[1], scaledSize, scaledSize);
-		//		}
-
 	}
 
 
@@ -217,19 +194,6 @@ public class ObjectArrayImageDecorator
 				g.drawString(l, coords[0], coords[1]);
 			}
 		}
-
-		//		void draw(Graphics g, ObjectArrayJPanel<?> p)
-		//		{
-		//			g.setFont(this.font);
-		//			int[] coords = p.objArrayCoordsToPanelCoords(objArrayI, objArrayJ);
-		//			if (label != null)
-		//				g.drawString(this.label, coords[0], coords[1]);
-		//			else
-		//			{
-		//				String l = p.queryPixel(coords[0], coords[1]);
-		//				g.drawString(l, coords[0], coords[1]);
-		//			}
-		//		}
 	}
 
 	/**
@@ -273,29 +237,3 @@ public class ObjectArrayImageDecorator
 	//
 	//	}
 }
-
-
-
-
-
-
-//	public void drawTextLabels(ObjectArrayJPanel<?> p, Graphics g) 
-//	{ for (ObjectTextLabel l : labels) l.draw(g, p); }
-//	public void drawValueLabels(ObjectArrayJPanel<?> p, Graphics g) 
-//	{ for (ObjectTextLabel l : valueLabels) l.draw(g, p); }
-//	public void drawValueLabels(ObjectArrayJPanel<?> p, Graphics g) 
-//	{ for (ObjectTextLabel l : valueLabels) l.draw(g, p); }
-
-//	public void drawPoints(ObjectArrayJPanel<?> p, Graphics g)
-//	{
-//		if (pointRelativeSize > 0) drawPointsRelSize(p, g);
-//		else
-//			for (ObjectPointLabel l : points) l.draw(g, p); }
-//
-//	public void drawPointsRelSize(ObjectArrayJPanel<?> p, Graphics g)
-//	{
-//		/* Determine the number of pixels the relative size should be. */
-//		int minDim = Math.min(p.getImgDisplayWidth(), p.getImgDisplayHeight());
-//		int scaledSize = (int) (((double) minDim) * pointRelativeSize);
-//		for (ObjectPointLabel l : points) l.draw(g, p, scaledSize);
-//	}
