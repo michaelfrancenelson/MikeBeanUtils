@@ -196,4 +196,7 @@ public class SimpleColorInterpolator implements ColorInterpolator
 		this.colors = colors;
 		updateMinMax(this.minVal, this.maxVal);
 	}
+	
+	@Override
+	public int getNAColor() { return this.naColor.getRGB(); }
 }

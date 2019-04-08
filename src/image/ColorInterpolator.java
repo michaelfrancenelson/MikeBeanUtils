@@ -60,6 +60,12 @@ public interface ColorInterpolator
 	 */
 	public int getColor(boolean val);
 
+	/**
+	 * 
+	 * @return the color code to display for a NA pixel value
+	 */
+	public int getNAColor();
+	
 	/** Set new min and max for the color scale
 	 * 
 	 * @param min

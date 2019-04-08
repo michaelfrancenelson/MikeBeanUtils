@@ -17,80 +17,25 @@ import beans.memberState.SimpleFieldWatcher;
  */
 public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 {
-	private ColorInterpolator ci;
-	private ColorInterpolator booleanCI;
-	private int rgbType = BufferedImage.TYPE_3BYTE_BGR;
+	ColorInterpolator ci;
+	ColorInterpolator booleanCI;
+	int rgbType = BufferedImage.TYPE_3BYTE_BGR;
 
-	private double[][] dataDouble = null;
-	private int[][] dataInt = null;
-	private boolean[][] dataBool = null;
+	double[][]  dataDouble = null;
+	int[][]     dataInt = null;
+	boolean[][] dataBool = null;
 
-	private double datMin, datMax;
-	private BufferedImage img;
-	private T[][] objArray;
-	private SimpleFieldWatcher<T> watcher;
-	private Class<T> clazz;
+	double datMin, datMax;
 
-	private Map<String, SimpleFieldWatcher<T>> watchers;
-	private Map<String, Boolean> parsedBooleanFields;
+	BufferedImage img;
+	T[][] objArray;
+	SimpleFieldWatcher<T> watcher;
+	Class<T> clazz;
 
-	
-	
-	public static class ArrayGradientLegendImager<T> extends SimpleArrayImager<T>
-	{
+	Map<String, SimpleFieldWatcher<T>> watchers;
+	Map<String, Boolean> parsedBooleanFields;
 
-	
-		
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-//	public BufferedImage getLegend(int nLabels, int nSteps, double offset1, double offset2)
-//	{
-//		BufferedImage leg;
-//	
-//		
-//		
-//		
-//		
-//		switch (watcher.getField().getType().getSimpleName())
-//	case("int"):
-//	{
-//		for (int row = 0; row < objArray.length; row++)
-//			for (int col = 0; col < objArray[0].length; col++)
-//				img.setRGB(row, col, interp.getColor(watcher.getIntVal(objArray[row][col])));
-//		break;
-//	}
-//	case("double"): 
-//	{
-//		for (int row = 0; row < objArray.length; row++)
-//			for (int col = 0; col < objArray[0].length; col++)
-//				img.setRGB(row, col, interp.getColor(watcher.getDoubleVal(objArray[row][col])));
-//		break;
-//	}
-//	case("boolean"): 
-//	{
-//		for (int row = 0; row < objArray.length; row++)
-//			for (int col = 0; col < objArray[0].length; col++)
-//				img.setRGB(row, col, booleanCI.getColor(watcher.getBoolVal(objArray[row][col])));
-//		//			img.setRGB(row, col, interp.getColor(watcher.getBoolVal(objArray[row][col])));
-//		break;
-//	}
-//		
-//		
-//		return leg;
-//	}
-//	
-	
-	
-	
-	private int[] currentSelectionArrayCoords;
+	int[] currentSelectionArrayCoords;
 
 	/**
 	 * 
@@ -133,7 +78,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	/**
 	 * 
 	 */
-	private void buildDataArray()
+	void buildDataArray()
 	{
 		switch (watcher.getField().getType().getSimpleName())
 		{
@@ -146,7 +91,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	/**
 	 * 	
 	 */
-	private void buildImage()
+	void buildImage()
 	{
 		ColorInterpolator interp;
 		if (parsedBooleanFields.get(watcher.getFieldName()))
@@ -183,7 +128,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	/**
 	 * 
 	 */
-	private void buildDoubleDataArray()
+	void buildDoubleDataArray()
 	{
 		dataBool = null;
 		dataInt = null;
@@ -207,7 +152,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	/**
 	 * 
 	 */
-	private void buildBooleanDataArray()
+	void buildBooleanDataArray()
 	{
 		dataDouble = null;
 		dataInt = null;
@@ -224,7 +169,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	/**
 	 * 
 	 */
-	private void buildIntDataArray()
+	void buildIntDataArray()
 	{
 		dataBool = null;
 		dataDouble = null;
@@ -253,6 +198,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	public void refresh() 
 	{
 		buildDataArray();
+
 		ci.updateMinMax(datMin,  datMax);
 		buildImage();
 	}
@@ -275,11 +221,9 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	@Override public void setField(Field field) { setField(field.getName()); }
 	@Override public void setColors(Color[] colors) {	ci.updateColors(colors); }
 
-	
-	
 	@Override
 	public String queryObjectAt(int i, int j) { return watcher.getStringVal(getObjAt(i, j)); }
-	
+
 	/** 
 	 * Checks that the coordinates are valid.
 	 * Sets the current selection coordinates.
@@ -342,4 +286,49 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 
 	@Override public int[] getCurrentSelectedCoords() { return currentSelectionArrayCoords; }
 	@Override public T getCurrentSelectedObj() { return objArray[currentSelectionArrayCoords[0]][currentSelectionArrayCoords[1]]; }
+
+
 }
+
+
+
+
+
+//	public BufferedImage getLegend(int nLabels, int nSteps, double offset1, double offset2)
+//	{
+//		BufferedImage leg;
+//	
+//		
+//		
+//		
+//		
+//		switch (watcher.getField().getType().getSimpleName())
+//	case("int"):
+//	{
+//		for (int row = 0; row < objArray.length; row++)
+//			for (int col = 0; col < objArray[0].length; col++)
+//				img.setRGB(row, col, interp.getColor(watcher.getIntVal(objArray[row][col])));
+//		break;
+//	}
+//	case("double"): 
+//	{
+//		for (int row = 0; row < objArray.length; row++)
+//			for (int col = 0; col < objArray[0].length; col++)
+//				img.setRGB(row, col, interp.getColor(watcher.getDoubleVal(objArray[row][col])));
+//		break;
+//	}
+//	case("boolean"): 
+//	{
+//		for (int row = 0; row < objArray.length; row++)
+//			for (int col = 0; col < objArray[0].length; col++)
+//				img.setRGB(row, col, booleanCI.getColor(watcher.getBoolVal(objArray[row][col])));
+//		//			img.setRGB(row, col, interp.getColor(watcher.getBoolVal(objArray[row][col])));
+//		break;
+//	}
+//		
+//		
+//		return leg;
+//	}
+//	
+
+

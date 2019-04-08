@@ -123,4 +123,8 @@ public class SimpleBooleanColorInterpolator implements ColorInterpolator
 		this.colors = colors;
 		init();
 	}
+	
+	@Override
+	public int getNAColor() { return this.naColor.getRGB(); }
+
 }
