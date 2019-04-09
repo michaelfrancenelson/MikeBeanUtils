@@ -164,14 +164,7 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	//		initField();
 	//	}
 
-	@Override
-	public void setWatchedField(String fieldName) 
-	{
-		this.fieldName = fieldName;
-
-	}
-
-	@Override
-	public Field getField() { return field; }
-
+	@Override public void setWatchedField(String fieldName) { this.fieldName = fieldName; }
+	@Override public Field getField() { return field; }
+	@Override public String getDblFmt() { return dblFmt; }
 }

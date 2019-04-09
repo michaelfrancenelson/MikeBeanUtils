@@ -92,7 +92,32 @@ public interface ObjectArrayImager<T>
 	
 	public void setCurrentSelection(int i, int j);
 	public void setCurrentSelection(double relativeI, double relativeJ);
-
-	int[] getArrayCoords(double relativeI, double relativeJ);
+	public int[] getArrayCoords(double relativeI, double relativeJ);
+	
+	public static int[] getObjArrayCoords(double relativeI, double relativeJ, int arrayDim1, int arrayDim2)
+	{
+		int i, j; 
+		i = relativeIntCoord(relativeI, arrayDim1); 
+		j = relativeIntCoord(relativeJ, arrayDim2);
+		return new int[] {i, j};
+		//		i = (int) (((double) (objArray.length)) * relativeI);
+		//		j = (int) (((double) (objArray[0].length)) * relativeJ);
+		//
+		//		i = Math.min(i, objArray.length - 1);
+		//		j = Math.min(j, objArray[0].length - 1);
+		//
+		//		//		System.out.println("SimpleArrayImager.getObjAt():  relative coords are " + relativeI + ", " + relativeJ + ").");
+		//		//		System.out.println("SimpleArrayImager.getObjAt():  array coords are    " + i + ", " + j + ").");
+		//
+		//		i = Math.min(objArray.length - 1, Math.max(0, i));
+		//		j = Math.min(objArray[0].length - 1, Math.max(0, j));
+	}
+	
+	public static int relativeIntCoord(double relative, int length)
+	{
+		int i = (int)(((double) length) * relative);
+		i = Math.min(Math.max(0, i), length - 1);
+		return i;
+	}
 	
 }

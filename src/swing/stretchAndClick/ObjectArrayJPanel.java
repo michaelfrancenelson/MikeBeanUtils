@@ -23,22 +23,22 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -2893196948005659813L;
+	static final long serialVersionUID = -2893196948005659813L;
 
-	private ObjectArrayImageDecorator decorator;
+	ObjectArrayImageDecorator decorator;
 	private ObjectArrayImager<T> imager;
-	private double imageAspectRatio, compAspectRatio;
-	private boolean centerInPanel = true;
+	double imageAspectRatio, compAspectRatio;
+	boolean centerInPanel = true;
 
-	private boolean fixedAspectRatio;
-	private boolean fixedWidth, fixedHeight;
-	private boolean fixedImg;
-	private boolean decorate;
+	boolean fixedAspectRatio;
+	boolean fixedWidth, fixedHeight;
+	boolean fixedImg;
+	boolean decorate;
 
-	private Image img = null;
-	private double ptRelSize;
+	Image img = null;
+	double ptRelSize;
 
-	private int 
+	int 
 	panelWidth, panelHeight, 
 	imgDisplayWidth, imgDisplayHeight, 
 	imgCornerX, imgCornerY;
@@ -49,14 +49,14 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	 */
 	public void updateImage()
 	{
-		if (!fixedImg) img = imager.getImage();
+		if (!fixedImg) img = getImager().getImage();
 		paint(this.getGraphics());
 	}
 
 	public String queryDataArray(int i, int j)
 	{
-		T t = imager.getObjAt(i, j);
-		String out = imager.getWatcher().getStringVal(t);
+		T t = getImager().getObjAt(i, j);
+		String out = getImager().getWatcher().getStringVal(t);
 		return out;	
 	}
 
@@ -81,7 +81,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 		double relY = ((double) relImgJ) / ((double) getImgDisplayHeight());
 
 		String out = queryRelative(relX, relY);
-		System.out.println("Value of " + imager.getCurrentFieldName() + ": " + out);
+		System.out.println("Value of " + getImager().getCurrentFieldName() + ": " + out);
 
 		return out;
 	}
@@ -89,8 +89,8 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	public String queryRelative(double relativeI, double relativeJ)
 	{
 		if (fixedImg) return null;
-		T t = imager.getObjAt(relativeI, relativeJ);
-		String out = imager.getWatcher().getStringVal(t);
+		T t = getImager().getObjAt(relativeI, relativeJ);
+		String out = getImager().getWatcher().getStringVal(t);
 		return out;
 	}
 
@@ -104,7 +104,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	void init(Image img, int width, int height, boolean keepAspectRatio, boolean fixedImage, ObjectArrayImager<T> imager) 
 	{
 		this.img = img;
-		this.imager = imager;
+		this.setImager(imager);
 		this.fixedImg = fixedImage;
 		this.fixedAspectRatio = keepAspectRatio;
 		this.imageAspectRatio = ((double) img.getWidth(null)) / ((double) img.getHeight(null));
@@ -146,8 +146,8 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 		int imgI, imgJ;
 		double imgRelativeI, imgRelativeJ;
 
-		imgRelativeI = ((double) objArrayI ) / ((double) imager.getData().length);
-		imgRelativeJ = ((double) objArrayJ ) / ((double) imager.getData()[0].length);
+		imgRelativeI = ((double) objArrayI ) / ((double) getImager().getData().length);
+		imgRelativeJ = ((double) objArrayJ ) / ((double) getImager().getData()[0].length);
 
 		imgI = (int) (((double) getImgDisplayWidth()) * imgRelativeI);
 		imgJ = (int) (((double) getImgDisplayHeight()) * imgRelativeJ);
@@ -210,8 +210,8 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 		g.dispose();
 	}
 
-	public void setField(String name)  { imager.setField(name); updateImage(); }
-	public void setField(Field f) { imager.setField(f); updateImage(); }
+	public void setField(String name)  { getImager().setField(name); updateImage(); }
+	public void setField(Field f) { getImager().setField(f); updateImage(); }
 
 	/**
 	 * 
@@ -222,7 +222,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	 */
 	public void addLabel(String label, double relI, double relJ, Font font)
 	{
-		int[] coords = imager.getArrayCoords(relI, relJ);
+		int[] coords = getImager().getArrayCoords(relI, relJ);
 		getDecorator().addLabel(coords[0], coords[1], label, font, Color.black, true, -1);
 		paintComponent(this.getGraphics());
 	}
@@ -232,7 +232,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	 */
 	public void addValueLabel(double relI, double relJ, Font font)
 	{
-		int[] coords = imager.getArrayCoords(relI, relJ);
+		int[] coords = getImager().getArrayCoords(relI, relJ);
 		decorator.addLabel(coords[0], coords[1], null, font, Color.black, true, -1);
 		paintComponent(this.getGraphics());
 	}
@@ -251,7 +251,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	 */
 	public void addPoint(double relI, double relJ, int size, Color color)
 	{
-		int[] coords = imager.getArrayCoords(relI, relJ);
+		int[] coords = getImager().getArrayCoords(relI, relJ);
 		decorator.addLabel(coords[0], coords[1], null, null, color, true, size);
 		paintComponent(this.getGraphics());
 	}
@@ -275,7 +275,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	public Image getImg() { return this.img; }
 
 	public RenderedImage getRenderedImage() { return (RenderedImage)this.img; }
-	public Class<T> getObjClass() { return this.imager.getObjClass(); }
+	public Class<T> getObjClass() { return this.getImager().getObjClass(); }
 
 	public int getImgDisplayWidth() { return imgDisplayWidth; }
 	public int getImgDisplayHeight() { return imgDisplayHeight; }
@@ -285,4 +285,12 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 
 	public double getPtRelSize() { return ptRelSize; }
 	public void setPtRelSize(double ptRelSize) { this.ptRelSize = ptRelSize; }
+
+	public ObjectArrayImager<T> getImager() {
+		return imager;
+	}
+
+	public void setImager(ObjectArrayImager<T> imager) {
+		this.imager = imager;
+	}
 }

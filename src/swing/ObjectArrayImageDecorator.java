@@ -33,6 +33,15 @@ public class ObjectArrayImageDecorator
 		this.objArrayHeight = imager.getData()[0].length;
 		//		this.pointRelativeSize = pointRelSize; 
 	}
+	
+	
+	public ObjectArrayImageDecorator(ObjectArrayImager<?> imager, int width, int height) 
+	{
+		this.imager = imager;
+		this.objArrayWidth  = width;
+		this.objArrayHeight = height;
+		//		this.pointRelativeSize = pointRelSize; 
+	}
 
 	/**
 	 * 

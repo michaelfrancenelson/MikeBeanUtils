@@ -80,4 +80,6 @@ public interface FieldWatcher<T>
 	 * @return The field currently being watched.
 	 */
 	public Field getField();
+
+	String getDblFmt();
 }

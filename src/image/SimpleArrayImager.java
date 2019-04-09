@@ -61,7 +61,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 			)
 	{
 		SimpleArrayImager<T> out = new SimpleArrayImager<T>();
-		out.clazz = clazz;
+		out.setClazz(clazz);
 		out.ci = SimpleColorInterpolator.factory(gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt);
 		out.booleanCI = SimpleBooleanColorInterpolator.factory(booleanColors, naDouble, naInt, naColor);
 		out.objArray = objArray;
@@ -69,7 +69,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		Map<String, Boolean> mp = new HashMap<>();
 		for (String s : out.watchers.keySet()) mp.put(s, false);
 		if (parsedBooleanFields != null) for (String s : parsedBooleanFields)   mp.put(s, true);
-		out.parsedBooleanFields = mp;
+		out.setParsedBooleanFields(mp);
 		out.setField(fieldName);
 
 		return out;
@@ -80,7 +80,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	 */
 	void buildDataArray()
 	{
-		switch (watcher.getField().getType().getSimpleName())
+		switch (getWatcher().getField().getType().getSimpleName())
 		{
 		case("int"): buildIntDataArray(); break;
 		case("double"): buildDoubleDataArray(); break;
@@ -94,31 +94,31 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	void buildImage()
 	{
 		ColorInterpolator interp;
-		if (parsedBooleanFields.get(watcher.getFieldName()))
+		if (getParsedBooleanFields().get(getWatcher().getFieldName()))
 			interp = booleanCI;
 		else interp = ci;
 
-		switch (watcher.getField().getType().getSimpleName())
+		switch (getWatcher().getField().getType().getSimpleName())
 		{
 		case("int"):
 		{
 			for (int row = 0; row < objArray.length; row++)
 				for (int col = 0; col < objArray[0].length; col++)
-					img.setRGB(row, col, interp.getColor(watcher.getIntVal(objArray[row][col])));
+					img.setRGB(row, col, interp.getColor(getWatcher().getIntVal(objArray[row][col])));
 			break;
 		}
 		case("double"): 
 		{
 			for (int row = 0; row < objArray.length; row++)
 				for (int col = 0; col < objArray[0].length; col++)
-					img.setRGB(row, col, interp.getColor(watcher.getDoubleVal(objArray[row][col])));
+					img.setRGB(row, col, interp.getColor(getWatcher().getDoubleVal(objArray[row][col])));
 			break;
 		}
 		case("boolean"): 
 		{
 			for (int row = 0; row < objArray.length; row++)
 				for (int col = 0; col < objArray[0].length; col++)
-					img.setRGB(row, col, booleanCI.getColor(watcher.getBoolVal(objArray[row][col])));
+					img.setRGB(row, col, booleanCI.getColor(getWatcher().getBoolVal(objArray[row][col])));
 			//			img.setRGB(row, col, interp.getColor(watcher.getBoolVal(objArray[row][col])));
 			break;
 		}
@@ -142,7 +142,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		for (int row = 0; row < objArray.length; row++)
 			for (int col = 0; col < objArray[0].length; col++)
 			{
-				val = watcher.getDoubleVal(objArray[row][col]);
+				val = getWatcher().getDoubleVal(objArray[row][col]);
 				dataDouble[row][col] = val;
 				if (val < datMin) datMin = val;
 				if (val > datMax) datMax = val;
@@ -163,7 +163,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		img = new BufferedImage(objArray.length, objArray[0].length, rgbType);
 		for (int row = 0; row < objArray.length; row++)
 			for (int col = 0; col < objArray[0].length; col++)
-				dataBool[row][col] = watcher.getBoolVal(objArray[row][col]);
+				dataBool[row][col] = getWatcher().getBoolVal(objArray[row][col]);
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		for (int row = 0; row < objArray.length; row++)
 			for (int col = 0; col < objArray[0].length; col++)
 			{
-				val = watcher.getIntVal(objArray[row][col]);
+				val = getWatcher().getIntVal(objArray[row][col]);
 				dVal = (double) val;
 
 				dataInt[row][col] = val;
@@ -208,21 +208,15 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	 * 2: Build the data array and update the color interpolators. <br>
 	 * 3: Build the image.
 	 */
-	@Override
-	public void setField(String fieldName) 
-	{
-		this.watcher = watchers.get(fieldName);
-		refresh();
-	}
 
 	@Override public BufferedImage getImage() { return img; }
-	@Override public String getCurrentFieldName() { return watcher.getFieldName(); }
-	@Override public Field getCurrentField() { return watcher.getField(); }
+	@Override public String getCurrentFieldName() { return getWatcher().getFieldName(); }
+	@Override public Field getCurrentField() { return getWatcher().getField(); }
+	@Override public void setField(String fieldName) { this.setWatcher(watchers.get(fieldName)); refresh(); }
 	@Override public void setField(Field field) { setField(field.getName()); }
 	@Override public void setColors(Color[] colors) {	ci.updateColors(colors); }
 
-	@Override
-	public String queryObjectAt(int i, int j) { return watcher.getStringVal(getObjAt(i, j)); }
+	@Override public String queryObjectAt(int i, int j) { return getWatcher().getStringVal(getObjAt(i, j)); }
 
 	/** 
 	 * Checks that the coordinates are valid.
@@ -231,7 +225,6 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	@Override
 	public T getObjAt(int i, int j) 
 	{
-
 		if ((i > 0 && j > 0) &&  (i < objArray.length && j < objArray[0].length))
 		{
 			setCurrentSelection(i, j);
@@ -255,23 +248,28 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	@Override
 	public int[] getArrayCoords(double relativeI, double relativeJ)
 	{
-		int i = (int) (((double) (objArray.length)) * relativeI);
-		int j = (int) (((double) (objArray[0].length)) * relativeJ);
+		return ObjectArrayImager.getObjArrayCoords(relativeI, relativeJ, objArray.length, objArray[0].length);
+		//		int i, j; 
+		//		i = (int) (((double) (objArray.length)) * relativeI);
+		//		j = (int) (((double) (objArray[0].length)) * relativeJ);
+		//
+		//		i = Math.min(i, objArray.length - 1);
+		//		j = Math.min(j, objArray[0].length - 1);
+		//
+		//		//		System.out.println("SimpleArrayImager.getObjAt():  relative coords are " + relativeI + ", " + relativeJ + ").");
+		//		//		System.out.println("SimpleArrayImager.getObjAt():  array coords are    " + i + ", " + j + ").");
+		//
+		//		i = Math.min(objArray.length - 1, Math.max(0, i));
+		//		j = Math.min(objArray[0].length - 1, Math.max(0, j));
 
-		i = Math.min(i, objArray.length - 1);
-		j = Math.min(j, objArray[0].length - 1);
+//		i = ObjectArrayImager.relativeIntCoord(relativeI, objArray.length); 
+//		j = ObjectArrayImager.relativeIntCoord(relativeJ, objArray[0].length);
 
-		//		System.out.println("SimpleArrayImager.getObjAt():  relative coords are " + relativeI + ", " + relativeJ + ").");
-		//		System.out.println("SimpleArrayImager.getObjAt():  array coords are    " + i + ", " + j + ").");
-
-		i = Math.min(objArray.length - 1, Math.max(0, i));
-		j = Math.min(objArray[0].length - 1, Math.max(0, j));
-		return new int[] {i, j};
+//		return new int[] {i, j};
 	}
 
 
-	@Override
-	public void setCurrentSelection(int i, int j) { currentSelectionArrayCoords = new int[] {i, j}; }
+	@Override public void setCurrentSelection(int i, int j) { currentSelectionArrayCoords = new int[] {i, j}; }
 
 	@Override
 	public void setCurrentSelection(double relativeI, double relativeJ)
@@ -282,10 +280,29 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 
 	@Override public FieldWatcher<T> getWatcher() { return this.watcher; }
 	@Override public T[][] getData() { return this.objArray; }
-	@Override public Class<T> getObjClass() { return clazz; }
-
+	@Override public Class<T> getObjClass() { return getClazz(); }
 	@Override public int[] getCurrentSelectedCoords() { return currentSelectionArrayCoords; }
 	@Override public T getCurrentSelectedObj() { return objArray[currentSelectionArrayCoords[0]][currentSelectionArrayCoords[1]]; }
+
+	public Map<String, Boolean> getParsedBooleanFields() {
+		return parsedBooleanFields;
+	}
+
+	public void setParsedBooleanFields(Map<String, Boolean> parsedBooleanFields) {
+		this.parsedBooleanFields = parsedBooleanFields;
+	}
+
+	public void setWatcher(SimpleFieldWatcher<T> watcher) {
+		this.watcher = watcher;
+	}
+
+	public Class<T> getClazz() {
+		return clazz;
+	}
+
+	public void setClazz(Class<T> clazz) {
+		this.clazz = clazz;
+	}
 
 
 }
