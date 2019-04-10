@@ -22,7 +22,7 @@ public class SimpleArrayImagerWithLegend<T> extends SimpleArrayImager<T>
 		SimpleArrayImagerWithLegend<T> out = new SimpleArrayImagerWithLegend<T>();
 		out.setClazz(clazz);
 		out.ci = SimpleColorInterpolator.factory(gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt);
-		out.booleanCI = SimpleBooleanColorInterpolator.factory(booleanColors, naDouble, naInt, naColor);
+//		out.booleanCI = SimpleBooleanColorInterpolator.factory(booleanColors, naDouble, naInt, naColor);
 		out.objArray = objArray;
 		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, dblFmt);
 		Map<String, Boolean> mp = new HashMap<>();

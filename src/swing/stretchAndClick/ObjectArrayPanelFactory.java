@@ -9,7 +9,6 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import image.ObjectArrayImager;
-import image.GradientLegendImager;
 import image.SimpleArrayImager;
 import image.SimpleArrayImagerWithLegend;
 import swing.ObjectArrayImageDecorator;

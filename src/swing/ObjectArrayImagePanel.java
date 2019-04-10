@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Image;
 import java.lang.reflect.Field;
 
+import image.LegendPanel;
+
 public interface ObjectArrayImagePanel<T>
 {
 	public String queryPixel(int i, int j);
@@ -28,5 +30,5 @@ public interface ObjectArrayImagePanel<T>
 	public int getImgDisplayWidth(); 
 	public int getImgDisplayHeight();
 
-	
+	public LegendPanel<T> getLegendPanel(int fixedWidth, int fixedHeight);
 }

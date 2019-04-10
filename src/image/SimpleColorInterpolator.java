@@ -2,9 +2,8 @@ package image;
 
 import java.awt.Color;
 
-import search.Binary;
-import search.Binary.IndicesAndRelativePosition;
-import sequences.Sequences;
+import utils.Binary;
+import utils.Binary.IndicesAndRelativePosition;
 
 /**
  * 
@@ -123,7 +122,7 @@ public class SimpleColorInterpolator implements ColorInterpolator
 	 */
 	private void setBreaks()
 	{
-		double[] breaks = Sequences.spacedIntervals((double) minVal, (double) maxVal, colors.length - 1);
+		double[] breaks = ArrayImageFactory.spacedIntervals((double) minVal, (double) maxVal, colors.length - 1);
 		this.breaks = breaks;
 	}
 
@@ -151,7 +150,7 @@ public class SimpleColorInterpolator implements ColorInterpolator
 	public void updateMinMax(double min, double max) 
 	{
 		this.minVal = min; this.maxVal = max;
-		breaks = Sequences.spacedIntervals(minVal, maxVal, colors.length - 1); 
+		breaks = ArrayImageFactory.spacedIntervals(minVal, maxVal, colors.length - 1); 
 	}
 
 	/**
@@ -166,7 +165,7 @@ public class SimpleColorInterpolator implements ColorInterpolator
 		double offset = range * endpointOffset;
 		double gradMin = minVal + offset;
 		double gradMax = maxVal - offset;
-		double[] points = Sequences.spacedIntervals(gradMin, gradMax, nLabels - 1);
+		double[] points = ArrayImageFactory.spacedIntervals(gradMin, gradMax, nLabels - 1);
 		String[] labels = new String[nLabels];
 		for (int i = 0; i < points.length; i++)
 			labels[i] = String.format(dblFmt, points[i]);
@@ -179,7 +178,7 @@ public class SimpleColorInterpolator implements ColorInterpolator
 		double gradMin = 0.0 + endpointOffset;
 		double gradMax = 1.0 - endpointOffset;
 
-		return Sequences.spacedIntervals(gradMin, gradMax, nLabels - 1);
+		return ArrayImageFactory.spacedIntervals(gradMin, gradMax, nLabels - 1);
 	}
 
 	@Override

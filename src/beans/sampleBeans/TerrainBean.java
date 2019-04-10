@@ -5,19 +5,22 @@ import java.util.Random;
 public class TerrainBean 
 {
 
-	int elevation;
+	int age;
 	boolean stream = false;
+	double elevation;
+	byte road;
+
 	static Random r = new Random();
 
-	public TerrainBean(int elevation) { this.elevation = elevation; }
+	public TerrainBean(double elevation, int age) { this.elevation = elevation; this.age = age; }
 
-	public void perturbElevation(int range) { this.elevation += r.nextInt(range) - range / 2; }
+	public void perturbAge(int range) { this.age += r.nextInt(range) - range / 2; }
 
 	public static void randomRiver(TerrainBean[][] cells, int nRivers)
 	{
 		randomRivers(cells, 0.5, 0.5, 0.5, 0.5, nRivers);
 	}
-	
+
 	/**
 	 * 
 	 * @param cells
@@ -63,6 +66,11 @@ public class TerrainBean
 		}
 	}
 
+	
+	
+	
+	
+	
 	/**
 	 * 
 	 * @param current
@@ -84,27 +92,25 @@ public class TerrainBean
 	{
 		for (int i = 0; i < array.length; i++) {
 			for (int j = 0; j < array[0].length; j++) {
-				array[i][j].perturbElevation(range);
+				array[i][j].perturbAge(range);
 			}
 		}
 	}
 
-	/**
-	 * 
-	 * @param width
-	 * @param height
-	 * @param gradient
-	 * @return
-	 */
-	public static TerrainBean[][] factory(int width, int height, double gradient)
+	public static TerrainBean[][] factory(int width, int height, double elevGradient, int ageMod)
 	{
 		TerrainBean[][] out = new TerrainBean[width][height];
-
 		for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
-				out[i][j] = new TerrainBean(i + (int)(gradient * (double) j));
-
+			{
+				int age = ((int)Math.pow((int) Math.log(i * j), 2.4)  + j + i / 2 + (i / (1 + j))) % ageMod;
+				double elev = (double) i + (elevGradient * (double) j); 
+				out[i][j] = new TerrainBean(elev, age);
+			}
 		return out;
 	}
+
+
+
 
 }

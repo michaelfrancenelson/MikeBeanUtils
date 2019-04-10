@@ -39,9 +39,11 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	 * @param dblFmt
 	 * @return
 	 */
-	public static <T> Map<String, SimpleFieldWatcher<T>> getWatcherMap(Class<T> clazz, String dblFmt)
+	public static <T> Map<String, FieldWatcher<T>> getWatcherMap(Class<T> clazz, String dblFmt)
+//	public static <T> Map<String, SimpleFieldWatcher<T>> getWatcherMap(Class<T> clazz, String dblFmt)
 	{
-		Map<String, SimpleFieldWatcher<T>> out = new HashMap<>();
+		Map<String, FieldWatcher<T>> out = new HashMap<>();
+//		Map<String, SimpleFieldWatcher<T>> out = new HashMap<>();
 
 		Field[] fields = clazz.getDeclaredFields();
 
@@ -49,7 +51,6 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 		{
 			f.setAccessible(true);
 			out.put(f.getName(), factory(f.getName(), dblFmt, clazz));
-			//			out.put(f.getName(), factory(f.getName(), null, dblFmt, clazz));
 		}
 
 		return out;
@@ -79,15 +80,11 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	 */
 	public static <T> SimpleFieldWatcher<T> factory(
 			String fieldName, String dblFmt, Class<T> clazz) 
-	//	public static <T> SimpleFieldWatcher<T> factory(
-	//			String fieldName, String displayName, String dblFmt, Class<T> clazz) 
 	{ 
 		SimpleFieldWatcher<T> bw = new SimpleFieldWatcher<T>();
 		bw.setClazz(clazz);
 
 		bw.fieldName = fieldName; 
-
-		//		bw.displayName = displayName;
 
 		bw.initField();
 
@@ -164,7 +161,7 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	//		initField();
 	//	}
 
-	@Override public void setWatchedField(String fieldName) { this.fieldName = fieldName; }
+//	@Override public void setWatchedField(String fieldName) { this.fieldName = fieldName; }
 	@Override public Field getField() { return field; }
 	@Override public String getDblFmt() { return dblFmt; }
 }

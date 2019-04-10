@@ -19,9 +19,9 @@ public class LegendPanel<T> extends JPanel
 	 */
 	private static final long serialVersionUID = 4519017220282206654L;
 	Image img;
-	GradientLegendImager<T> imager;
+	ObjectArrayImager<T> imager;
 	ObjectArrayImageDecorator decorator;
-	
+
 	double imageAspectRatio, compAspectRatio;
 
 	boolean fixedWidth, fixedHeight, decorate;
@@ -31,7 +31,23 @@ public class LegendPanel<T> extends JPanel
 	panelWidth, panelHeight, 
 	imgDisplayWidth, imgDisplayHeight, 
 	imgCornerX, imgCornerY;
+
 	private double ptRelSize;
+
+	public static <T> LegendPanel<T> factory(
+			ObjectArrayImager<T> imager,
+			int fixedWidth, int fixedHeight,
+			boolean keepAspectRatio
+
+			)
+	{
+		LegendPanel<T> out = new LegendPanel<>();
+
+		out.imager = imager;
+		out.init(imager.getLegendImage(), fixedWidth, fixedHeight, keepAspectRatio);
+
+		return out;
+	}
 
 	/** Set the image and image scaling properties of the panel.
 	 * 
@@ -41,8 +57,8 @@ public class LegendPanel<T> extends JPanel
 	 * @param keepAspectRatio
 	 */
 	void init(Image img, int width, int height, 
-			boolean keepAspectRatio, 
-			boolean fixedImage, ObjectArrayImager<T> imager) 
+			boolean keepAspectRatio 
+			) 
 	{
 		this.img = img;
 		this.imageAspectRatio = ((double) img.getWidth(null)) / ((double) img.getHeight(null));
@@ -76,11 +92,11 @@ public class LegendPanel<T> extends JPanel
 			@Override public void mouseReleased(MouseEvent arg0) {}
 		});
 	}
-	
+
 	public String queryPixel(int i, int j)
 	{
-
 		/* determine which cell in the data array corresponds to the input pixel */
+
 		int relImgI = Math.max(0, Math.min(i - imgCornerX, imgDisplayWidth));;
 		int relImgJ = Math.max(0, Math.min(j - imgCornerY, imgDisplayHeight));;
 
@@ -95,13 +111,10 @@ public class LegendPanel<T> extends JPanel
 
 	public String queryRelative(double relativeI, double relativeJ)
 	{
-		T t = imager.getObjAt(relativeI, relativeJ);
-		String out = imager.getWatcher().getStringVal(t);
+		String out = imager.queryLegendAt(relativeI, relativeJ);
 		return out;
 	}
 
-	
-	
 	@Override public void paintComponent(Graphics g)
 	{
 		Insets insets = getInsets();
@@ -116,21 +129,8 @@ public class LegendPanel<T> extends JPanel
 
 		compAspectRatio = (double) panelWidth / (double) panelHeight;
 
-//		/* If keeping the original aspect ratio. */
-//		if (fixedAspectRatio)
-//		{
-//			if (imageAspectRatio < compAspectRatio)	
-//			{
-//				double w = (((double) panelHeight) * imageAspectRatio);
-//				this.imgDisplayWidth = (int) w;
-//			}
-//			else this.imgDisplayHeight = (int) (((double) panelWidth) / imageAspectRatio);
-//		}
-//		else
-//		{
-			if (this.fixedHeight) this.imgDisplayHeight = fixedY;
-			if (this.fixedWidth) this.imgDisplayWidth = fixedX;
-//		}
+		if (this.fixedHeight) this.imgDisplayHeight = fixedY;
+		if (this.fixedWidth) this.imgDisplayWidth = fixedX;
 
 		if (centerInPanel)
 		{
@@ -156,6 +156,4 @@ public class LegendPanel<T> extends JPanel
 		g2d.dispose();
 		g.dispose();
 	}
-	
-	
 }

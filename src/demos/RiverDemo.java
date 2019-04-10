@@ -3,6 +3,7 @@ package demos;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -39,7 +40,7 @@ public class RiverDemo
 		
 		int nRow = 8, nCol = 8;
 		
-		TerrainBean[][] cells1 = TerrainBean.factory(nRow, nCol, 1.5);
+		TerrainBean[][] cells1 = TerrainBean.factory(nRow, nCol, 1.5, 13);
 		TerrainBean.randomRivers(cells1, 0.32, 0.528, 0.5, 0.5, 1);
 //		TerrainBean.randomRivers(cells1, 0.52, 0.628, 0.5, 0.5, 2);
 		ObjectArrayJPanel<TerrainBean> pan1;
@@ -50,11 +51,11 @@ public class RiverDemo
 		JFrame f1 = SwingUtils.frameFactory(1100, 1100);
 		
 		pan1 = ObjectArrayPanelFactory.buildPanel(
-				TerrainBean.class, cells1, "elevation", 
+				TerrainBean.class, cells1, "age", 
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null, null,
 				true, 0, 0, ptSize);
-		
+		pan1.setField("elevation");
 		f1.add(pan1);
 		f1.setVisible(true);
 		
@@ -75,7 +76,7 @@ public class RiverDemo
 
 	public static void arrayPanelDemo()
 	{
-		TerrainBean[][] cells1 = TerrainBean.factory(150, 230, 1.5);
+		TerrainBean[][] cells1 = TerrainBean.factory(150, 230, 1.5, 13);
 		TerrainBean.randomRivers(cells1, 0.32, 0.528, 0.5, 0.5, 2);
 		TerrainBean.randomRivers(cells1, 0.52, 0.628, 0.5, 0.5, 2);
 		ObjectArrayJPanel<TerrainBean> pan1, pan2, pan3, pan4;
@@ -162,9 +163,9 @@ public class RiverDemo
 
 	public static void demo1()
 	{
-		int nRows = 3000;
-		int nCols = 3000;
-		int nRivers = 1400;
+		int nRows = 300;
+		int nCols = 300;
+		int nRivers = 10;
 
 		double probRight= 0.508;
 		double probDown = 0.75;
@@ -174,7 +175,7 @@ public class RiverDemo
 		String filename = String.format("riverDemo_diag_%.2f_vert_%.2f_right_%.2f_up_%.2f_rivers_%d_%d_by_%d.png",
 				probDiagonal, probVertical, probRight, probDown, nRivers, nRows, nCols);
 
-		TerrainBean[][] cells = TerrainBean.factory(nRows, nCols, 0);
+		TerrainBean[][] cells = TerrainBean.factory(nRows, nCols, 0, 13);
 		TerrainBean.randomRivers(
 				cells, 
 				probRight, probDown, 
@@ -195,7 +196,7 @@ public class RiverDemo
 		f1.setVisible(true);
 
 		try {
-			ImageIO.write(imager1.getImage(), "png", imgFile);
+			ImageIO.write((RenderedImage) imager1.getImage(), "png", imgFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

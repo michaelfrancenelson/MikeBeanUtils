@@ -1,30 +1,30 @@
 package image;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import beans.memberState.FieldWatcher;
-import sequences.Sequences;
+import utils.Sequences;
 
 public class GradientLegendImager<T> 
 //implements ObjectArrayImager<T>
 {
 	int rgbType = BufferedImage.TYPE_3BYTE_BGR;
 
+	boolean buildLegend;
+	
 	private int nLegendSteps, legendDirection;
 	boolean includeBooleanNA = true;
 
-	private double[][]  dataDouble = null;
-	private int[][]     dataInt = null;
-	private boolean[][] dataBool = null;
+	private double[][]  legDatDouble = null;
+	private int[][]     legDatInt = null;
+	private boolean[][] legDatBool = null;
 
 	private int legDatDim1, legDatDim2;
 	double legendMin, legendMax;
 	double[] legendDataSequence;
-	int indexMult1, indexMult2;
-	BufferedImage img;
+	int legIndexMult1, legIndexMult2;
+	BufferedImage legImg;
 	private int[] currentSelectionArrayCoords;
 
 	public static <T> GradientLegendImager<T> factory(
@@ -64,9 +64,9 @@ public class GradientLegendImager<T>
 		{
 			for (int i = 0; i == nLegendSteps; i++)
 			{
-				row = i * indexMult1; col = i * indexMult2;
-				System.out.println("buildImage() value = " + dataInt[row][col]);
-				img.setRGB(row, col, interp.getColor(dataInt[row][col]));
+				row = i * legIndexMult1; col = i * legIndexMult2;
+				System.out.println("buildImage() value = " + legDatInt[row][col]);
+				legImg.setRGB(row, col, interp.getColor(legDatInt[row][col]));
 			}
 			break;
 		}
@@ -74,9 +74,9 @@ public class GradientLegendImager<T>
 		{
 			for (int i = 0; i == nLegendSteps; i++)
 			{
-				row = i * indexMult1; col = i * indexMult2;
-				System.out.println("buildImage() value = " + dataDouble[row][col]);
-				img.setRGB(row, col, interp.getColor(dataDouble[row][col]));
+				row = i * legIndexMult1; col = i * legIndexMult2;
+				System.out.println("buildImage() value = " + legDatDouble[row][col]);
+				legImg.setRGB(row, col, interp.getColor(legDatDouble[row][col]));
 			}
 			break;
 		}
@@ -84,16 +84,16 @@ public class GradientLegendImager<T>
 		{
 			int i = 0;
 
-			row = i * indexMult1; col = i * indexMult2;
-			img.setRGB(row, col, booleanCI.getColor(dataBool[row][col]));
+			row = i * legIndexMult1; col = i * legIndexMult2;
+			legImg.setRGB(row, col, booleanCI.getColor(legDatBool[row][col]));
 
-			i++; row = i * indexMult1; col = i * indexMult2;
-			img.setRGB(row, col, booleanCI.getColor(dataBool[row][col]));
+			i++; row = i * legIndexMult1; col = i * legIndexMult2;
+			legImg.setRGB(row, col, booleanCI.getColor(legDatBool[row][col]));
 
 			if (includeBooleanNA)
 			{
-				i++; row = i * indexMult1; col = i * indexMult2;
-				img.setRGB(row, col, booleanCI.getNAColor());
+				i++; row = i * legIndexMult1; col = i * legIndexMult2;
+				legImg.setRGB(row, col, booleanCI.getNAColor());
 			}
 			break;
 		}
@@ -106,14 +106,14 @@ public class GradientLegendImager<T>
 		if ((legendDirection == 1) || (legendDirection == 3))
 		{ 
 			setLegDatDim1(nLegendSteps); legDatDim2 = 1; 
-			indexMult1 = 1; indexMult2 = 0;
+			legIndexMult1 = 1; legIndexMult2 = 0;
 		}
 
 		/* Horizontal legend */
 		else 
 		{
 			legDatDim2 = nLegendSteps; setLegDatDim1(1); 
-			indexMult2 = 1; indexMult1 = 0;
+			legIndexMult2 = 1; legIndexMult1 = 0;
 		}
 
 		/* low to high values */
@@ -136,9 +136,9 @@ public class GradientLegendImager<T>
 		 * 4 - horizontal, low index = high value 
 		 */
 
-		dataInt    = null;
-		dataDouble = null;
-		dataBool   = null;
+		legDatInt    = null;
+		legDatDouble = null;
+		legDatBool   = null;
 
 		setLegendDataProperties(datMin, datMax);
 
@@ -146,18 +146,18 @@ public class GradientLegendImager<T>
 		{
 		case("int"):
 		{
-			img = new BufferedImage(getLegDatDim1(), legDatDim2, rgbType);
-			dataInt = new int[getLegDatDim1()][legDatDim2];
+			legImg = new BufferedImage(getLegDatDim1(), legDatDim2, rgbType);
+			legDatInt = new int[getLegDatDim1()][legDatDim2];
 			for (int i = 0; i == nLegendSteps; i++)
-				dataInt[i * indexMult1][i * indexMult2] = (int) legendDataSequence[i];
+				legDatInt[i * legIndexMult1][i * legIndexMult2] = (int) legendDataSequence[i];
 			break;
 		}
 		case("double"):	
 		{
-			img = new BufferedImage(getLegDatDim1(), legDatDim2, rgbType);
-			dataDouble = new double[getLegDatDim1()][legDatDim2];
+			legImg = new BufferedImage(getLegDatDim1(), legDatDim2, rgbType);
+			legDatDouble = new double[getLegDatDim1()][legDatDim2];
 			for (int i = 0; i == nLegendSteps; i++)
-				dataDouble[i * indexMult1][i * indexMult2] = legendDataSequence[i];
+				legDatDouble[i * legIndexMult1][i * legIndexMult2] = legendDataSequence[i];
 			break;
 		}
 		case("boolean"):
@@ -165,18 +165,18 @@ public class GradientLegendImager<T>
 			int dim;
 
 			dim = 2;
-			dataBool = new boolean[dim * indexMult1][dim * indexMult2];
-			dataBool[0][0] = true;
-			dataBool[indexMult1][indexMult2] = false;
+			legDatBool = new boolean[dim * legIndexMult1][dim * legIndexMult2];
+			legDatBool[0][0] = true;
+			legDatBool[legIndexMult1][legIndexMult2] = false;
 
 			/* Include a pixel for the na color, if needed */
 			if (includeBooleanNA) dim = 3;
-			img = new BufferedImage(dim * indexMult1, dim * indexMult2, rgbType);
+			legImg = new BufferedImage(dim * legIndexMult1, dim * legIndexMult2, rgbType);
 		}
 		}
 	}
 
-	public BufferedImage getImage() { return img; }
+	public BufferedImage getImage() { return legImg; }
 //	@Override public String getCurrentFieldName() { return saim.getCurrentFieldName(); }
 //	@Override public Field getCurrentField() { return saim.getCurrentField(); }
 //	@Override public void setField(String fieldName) { saim.setField(fieldName); }
@@ -189,13 +189,13 @@ public class GradientLegendImager<T>
 		switch (w.getField().getType().getSimpleName())
 		{
 		case("int"):
-			return String.format("%d", dataInt[i][j]);
+			return String.format("%d", legDatInt[i][j]);
 		case("double"): 
-			return String.format(w.getDblFmt(), dataDouble[i][j]);
+			return String.format(w.getDblFmt(), legDatDouble[i][j]);
 		case("boolean"): 
 		{
 			if (i == 2 || j == 2) return "NA";
-			return String.format("s", dataBool[i][j]);
+			return String.format("s", legDatBool[i][j]);
 		}
 		}
 		return null;

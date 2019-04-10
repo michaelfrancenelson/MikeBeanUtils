@@ -13,9 +13,10 @@ import java.lang.reflect.Field;
 
 import javax.swing.JPanel;
 
+import image.LegendPanel;
 import image.ObjectArrayImager;
-import swing.ObjectArrayImagePanel;
 import swing.ObjectArrayImageDecorator;
+import swing.ObjectArrayImagePanel;
 
 public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePanel<T>
 {
@@ -79,7 +80,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 
 		double relX = ((double) relImgI) / ((double) getImgDisplayWidth());
 		double relY = ((double) relImgJ) / ((double) getImgDisplayHeight());
-
+		
 		String out = queryRelative(relX, relY);
 		System.out.println("Value of " + getImager().getCurrentFieldName() + ": " + out);
 
@@ -101,7 +102,8 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	 * @param height
 	 * @param keepAspectRatio
 	 */
-	void init(Image img, int width, int height, boolean keepAspectRatio, boolean fixedImage, ObjectArrayImager<T> imager) 
+	void init(Image img, int width, int height, 
+			boolean keepAspectRatio, boolean fixedImage, ObjectArrayImager<T> imager) 
 	{
 		this.img = img;
 		this.setImager(imager);
@@ -272,6 +274,13 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 		paintComponent(this.getGraphics());
 	}
 
+	@Override
+	public LegendPanel<T> getLegendPanel(int fixedWidth, int fixedHeight)
+	{
+		LegendPanel<T> out = LegendPanel.factory(imager, fixedWidth, fixedHeight, false);
+		return out;
+	}
+	
 	public Image getImg() { return this.img; }
 
 	public RenderedImage getRenderedImage() { return (RenderedImage)this.img; }

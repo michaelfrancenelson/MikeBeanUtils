@@ -4,7 +4,7 @@
   <artifactId>MikeBeanUtils</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <properties>
-  		<LightweightJavaUtils.version>1.0.2</LightweightJavaUtils.version>
+  		<LightweightJavaUtils.version>1.0.3</LightweightJavaUtils.version>
   </properties>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -21,11 +21,11 @@
     </plugins>
   </build>
   <dependencies>
-  		<dependency>
-			<groupId>michaelfrancenelson</groupId>
-			<artifactId>LightweightJavaUtils</artifactId>
-			<version>${LightweightJavaUtils.version}</version>
-		</dependency>
+<!--   		<dependency> -->
+<!-- 			<groupId>michaelfrancenelson</groupId> -->
+<!-- 			<artifactId>LightweightJavaUtils</artifactId> -->
+<!-- 			<version>${LightweightJavaUtils.version}</version> -->
+<!-- 		</dependency> -->
   </dependencies>
   	<repositories>
 

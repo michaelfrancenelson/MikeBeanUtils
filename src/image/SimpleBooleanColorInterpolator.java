@@ -63,14 +63,14 @@ public class SimpleBooleanColorInterpolator implements ColorInterpolator
 	 * @return
 	 */
 	public static ColorInterpolator factory(
-			Color[] colors, double naDouble, int naInt, Color naColor)
+			Color[] colors, 
+		Color naColor)
+//			double naDouble, int naInt, Color naColor)
 	{
 		SimpleBooleanColorInterpolator ci = new SimpleBooleanColorInterpolator();
 
 		ci.colors = colors; 
-		ci.naDouble = naDouble; 
-		ci.naInt = naInt;
-		ci.naColor = naColor;
+		if (naColor != null) ci.naColor = naColor;
 		ci.init();
 		return ci;
 	}

@@ -69,11 +69,11 @@ public interface FieldWatcher<T>
 //	 */
 //	public void setWatchedField(Field f);
 	
-	/**
-	 * 
-	 * @param fieldName Set the watched field to this
-	 */
-	public void setWatchedField(String fieldName);
+//	/**
+//	 * 
+//	 * @param fieldName Set the watched field to this
+//	 */
+//	public void setWatchedField(String fieldName);
 	
 	/**
 	 * 
