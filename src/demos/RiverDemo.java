@@ -119,13 +119,13 @@ public class RiverDemo
 
 		pan1.setField("elevation");
 
-		pan1.addLabel("label", 0.5, 0.5, font);
+		pan1.addTextLabel("label", 0.5, 0.5, font);
 		pan1.addValueLabel(0.1, 0.1, font);
 
-		pan2.addLabel("center", 0.5, 0.5, font);
+		pan2.addTextLabel("center", 0.5, 0.5, font);
 		pan2.addValueLabel(0.1, 0.1, font);
 		
-		pan3.addLabel("right", 1.1, 0.5, font);
+		pan3.addTextLabel("right", 1.1, 0.5, font);
 		pan3.addPoint(0.51, 0.2, 0, Color.black);
 		pan3.addPoint(20, 10, 0, Color.black);
 
@@ -190,7 +190,7 @@ public class RiverDemo
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null, null);
 
-		p1 = ObjectArrayPanelFactory.buildPanel(imager1, true, 0, 0, 0.1);
+		p1 = ObjectArrayPanelFactory.buildPanel(imager1, true, false, 0, 0, 0.1);
 		f1.setLayout(new GridLayout(1, 1));
 		f1.add(p1);
 		f1.setVisible(true);

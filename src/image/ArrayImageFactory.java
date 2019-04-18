@@ -144,6 +144,8 @@ public class ArrayImageFactory
 	}
 
 
+	
+	
 	public static Image buildGradientImage(int min, int max, int nSteps, ColorInterpolator ci, int direction, int orientation)
 	{
 		if (nSteps == 1) nSteps++;
