@@ -17,8 +17,8 @@ import beans.memberState.SimpleFieldWatcher;
  */
 public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 {
-	ColorInterpolator ci;
-	ColorInterpolator booleanCI;
+	private ColorInterpolator ci;
+	private ColorInterpolator booleanCI;
 	int rgbType = BufferedImage.TYPE_3BYTE_BGR;
 
 	double[][]  dataDouble = null;

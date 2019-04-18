@@ -2,22 +2,16 @@ package demos;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.border.Border;
 
-import beans.memberState.FieldWatcher;
-import beans.memberState.SimpleFieldWatcher;
 import beans.sampleBeans.TerrainBean;
 import image.ArrayImageFactory;
+import image.ArrayImageFactory.ImagePanel;
 import image.ColorInterpolator;
 import image.ColorUtils;
 import image.ObjectArrayImager;
@@ -30,131 +24,130 @@ public class ArrayImageFactoryDemo
 {
 	static Font font = new Font("times", 2, 45);
 	static Color[] bCol = new Color[] {Color.gray, Color.green};
+	static ImagePanel pp;
+	static ColorInterpolator c;
 
-static Border border = BorderFactory.createLineBorder(Color.black, 4);
-
+	static Border border = BorderFactory.createLineBorder(Color.black, 4);
+	static JFrame f;
+	static int cellSize = 200;
+	static List<ImagePanel> panels;
 	public static void main(String[] args) 
 	{
-		arrayImageDemo();
-		gradientImageDemo();
+		int nBreaks = 30;
+
+		intGradientImgDemo(nBreaks);
+		doubleGradientImgDemo(nBreaks);
+		booleanGradientImgDemo();
+		objectArrayImageDemo();
 	}
 
-	/** A simple panel, filled with a resizing image. */
-	public static class ImagePanel extends JPanel
-	{
-		private static final long serialVersionUID = 1L;
-		public ImagePanel(Image img) { this.img = img; }
-		Image img;
-
-		@Override public void paintComponent(Graphics g)
-		{
-			g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
-		}
-		
-		
-		
-		
-	}
-
-	public static void arrayImageDemo()
+	public static void objectArrayImageDemo()
 	{
 		int nRows = 303;
 		int nCols = 504;
 
 		TerrainBean[][] cells = TerrainBean.factory(nRows, nCols, 1.57, 75);
 
-		Map<String, FieldWatcher<TerrainBean>> watchers = SimpleFieldWatcher.getWatcherMap(TerrainBean.class, null);
-		
 		ObjectArrayImager<TerrainBean> imager1 = SimpleArrayImager.factory(
 				TerrainBean.class, cells, 
 				"elevation", 
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null, null);		
-		
 
-		ImagePanel pp;
-		List<ImagePanel> panels = new ArrayList<>();
-		List<ImagePanel> panelsAge = new ArrayList<>();
-		List<ImagePanel> panelsT = new ArrayList<>();
-		List<ImagePanel> panelsAgeT = new ArrayList<>();
+		panels = new ArrayList<>();
+		
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2;  j++)
 		{
-			imager1.setField("elevation");
-			pp = new ImagePanel(ArrayImageFactory.buildArrayImage(
-					cells, watchers.get("elevation"), imager1.getInterpolator(), i, j, false, true));
-			pp.setBorder(border);
-			panels.add(pp);
-			pp = new ImagePanel(ArrayImageFactory.buildArrayImage(
-					cells, watchers.get("elevation"), imager1.getInterpolator(), i, j, true, true));
-			pp.setBorder(border);
-			panelsT.add(pp);
-			imager1.setField("age");
-			pp = new ImagePanel(ArrayImageFactory.buildArrayImage(
-					cells, watchers.get("age"), imager1.getInterpolator(), i, j, false, true));
-			pp.setBorder(border);
-			panelsAge.add(pp);
-			imager1.setField("age");
-			pp = new ImagePanel(ArrayImageFactory.buildArrayImage(
-					cells, watchers.get("age"), imager1.getInterpolator(), i, j, true, true));
-			pp.setBorder(border);
-			panelsAgeT.add(pp);
+			TerrainBean.perturbElevations(cells, 300.0);
+			TerrainBean.perturbAges(cells, 20);
+			panels.add(new ImagePanel(ArrayImageFactory.buildArrayImage(
+					cells, imager1, "elevation", i, j, false, true)));
+			panels.add(new ImagePanel(ArrayImageFactory.buildArrayImage(
+					cells, imager1, "elevation", i, j, true, true)));
+			panels.add(new ImagePanel(ArrayImageFactory.buildArrayImage(
+					cells, imager1, "age", i, j, false, true)));
+			panels.add(new ImagePanel(ArrayImageFactory.buildArrayImage(
+					cells, imager1, "age", i, j, true, true)));
 		}
-		
-				
-		JFrame f = SwingUtils.frameFactory(1500, 1500);
 
-		f.setLayout(new GridLayout(4, 4));
-		for (ImagePanel pan : panels) f.add(pan);
-		for (ImagePanel pan : panelsAge) f.add(pan);
-		for (ImagePanel pan : panelsAgeT) f.add(pan);
-		for (ImagePanel pan : panelsT) f.add(pan);
+		
+		f = SwingUtils.frameFactory(4 * cellSize, 4 * cellSize, "Terrain Bean Array Demo", 4, 4);
+
+		for (ImagePanel pan : panels) { pan.setBorder(border); f.add(pan); }
 		f.setVisible(true);
 	}
-	
-	
-	public static void gradientImageDemo()
+
+	public static void intGradientImgDemo(int nBreaks)
 	{
-		int[] datInt = ArrayImageFactory.spacedIntervals(-50, 307, 5);
-		
+		int[] mins = new int[] {0, -1, -2, -1, 1, -50, -78};
+		int[] maxs = new int[] {0, -2, -1, -3, 4, -60, 555};
 
-		int nStepsD = 100, nStepsI = 6;
-		double minD = -150, maxD = 307;
-		int minI = -5, maxI = -3;
-		
-		
-		Border border = BorderFactory.createLineBorder(Color.black, 4);
+		panels = new ArrayList<>();
+		for(int dir = 1; dir < 3; dir++) for (int orient = 1; orient < 3; orient++)
+			for (int i = 0; i < mins.length; i++)
+			{
+				c = SimpleColorInterpolator.factory(
+						ColorUtils.TERRAIN_COLORS, mins[i], maxs[i],
+						Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null);
+				pp = new ImagePanel(ArrayImageFactory.buildGradientImage(
+						mins[i], maxs[i], nBreaks, c, dir, orient));
+				pp.setBorder(border);
+				panels.add(pp);
 
-		ColorInterpolator ci1 = SimpleColorInterpolator.factory(ColorUtils.TERRAIN_COLORS, -50, 307, Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null); 
-		ColorInterpolator ciI = SimpleColorInterpolator.factory(ColorUtils.TERRAIN_COLORS, minI, maxI, Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null); 
-		ColorInterpolator ci2 = SimpleBooleanColorInterpolator.factory(ColorUtils.BLUES, Color.gray); 
-		ColorInterpolator ci3 = SimpleColorInterpolator.factory(ColorUtils.TOPO_COLORS, -50, 307, Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null); 
+			}
 
-		List<ImagePanel> intImg = new ArrayList<>();
-		List<ImagePanel> dblImg = new ArrayList<>();
-		List<ImagePanel> boolImg = new ArrayList<>();
+		f = SwingUtils.frameFactory(cellSize * mins.length, 4 * cellSize, 
+				"Integer Image: Number of intervals: " + nBreaks, 4,  mins.length);
+		for (ImagePanel p : panels) f.add(p);
+		f.setVisible(true);
+	}
+
+	public static void doubleGradientImgDemo(int nBreaks)
+	{
+		double[] mins = new double[] {0, -1, -2, -50, -78};
+		double[] maxs = new double[] {0, -2, -1, -60, 555};
+
+		panels = new ArrayList<>();
+		for(int dir = 1; dir < 3; dir++) for (int orient = 1; orient < 3; orient++)
+			for (int i = 0; i < mins.length; i++)
+			{
+				c = SimpleColorInterpolator.factory(
+						ColorUtils.HEAT_COLORS, mins[i], maxs[i],
+						Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null);
+				pp = new ImagePanel(ArrayImageFactory.buildGradientImage(
+						mins[i], maxs[i], nBreaks, c, dir, orient));
+				pp.setBorder(border);
+				panels.add(pp);
+
+			}
+
+		f = SwingUtils.frameFactory(cellSize * mins.length, 4 * cellSize, 
+				"Double gradient: Number of intervals: " + nBreaks,
+				4,  mins.length);
+
+		for (ImagePanel p : panels) f.add(p);
+		f.setVisible(true);
+	}
+
+	public static void booleanGradientImgDemo()
+	{
+		border = BorderFactory.createLineBorder(Color.white, 4);
+		c = SimpleBooleanColorInterpolator.factory(ColorUtils.BLUES, Color.gray); 
+		panels = new ArrayList<>();
+
 		for (int i = 1; i < 3; i++) for (int j = 1; j < 3; j++)
 		{
-			ImagePanel pp = new ImagePanel(ArrayImageFactory.buildGradientImage(minI, maxI, nStepsI, ciI, i, j));
+			pp = new ImagePanel(ArrayImageFactory.buildGradientImage(true, c, i, j));
 			pp.setBorder(border);
-			intImg.add(pp);
-			pp = new ImagePanel(ArrayImageFactory.buildGradientImage(minD, maxD, nStepsD, ci3, i, j));
+			panels.add(pp);
+			pp = new ImagePanel(ArrayImageFactory.buildGradientImage(false, c, i, j));
 			pp.setBorder(border);
-			dblImg.add(pp);
-			pp = new ImagePanel(ArrayImageFactory.buildGradientImage(true, ci2, i, j));
-			pp.setBorder(border);
-			boolImg.add(pp);
+			panels.add(pp);
 		}
 
-		JFrame f = SwingUtils.frameFactory(1200, 1200);
-		f.setLayout(new GridLayout(3, 4));
-		for (ImagePanel p : intImg) f.add(p);
-		for (ImagePanel p : dblImg) f.add(p);
-		for (ImagePanel p : boolImg) f.add(p);
-		
+		f = SwingUtils.frameFactory(4 * cellSize, 2 * cellSize, "Boolean Gradient Demo", 2, 4);
+		for (ImagePanel p : panels) f.add(p);
+
 		f.setVisible(true);
 	}
-	
-	
-	
-	
 }

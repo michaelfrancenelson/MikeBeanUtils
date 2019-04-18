@@ -92,7 +92,14 @@ public class SimpleColorInterpolator implements ColorInterpolator
 			Color naColor, String dblFmt)
 	{
 		SimpleColorInterpolator ci = new SimpleColorInterpolator();
-		if (min > max) throw new IllegalArgumentException("max must be greater than or equal to min.");
+		if (min > max)
+		{
+			double t = min;
+			min = max; max = t;
+		}
+//		if (min > max) throw new IllegalArgumentException("max must be greater than or equal to min.");
+
+		
 		ci.colors = colors; ci.naDouble = naDouble; ci.naInt = naInt; ci.naColor = naColor;
 		ci.minVal = min; ci.maxVal = max;
 		ci.dblFmt = dblFmt;

@@ -2,24 +2,30 @@ package beans.sampleBeans;
 
 import java.util.Random;
 
+/** Demonstration bean type. 
+ * 
+ * @author michaelfrancenelson
+ *
+ */
 public class TerrainBean 
 {
+	static Random r = new Random();
 
 	int age;
 	boolean stream = false;
 	double elevation;
 	byte road;
 
-	static Random r = new Random();
-
 	public TerrainBean(double elevation, int age) { this.elevation = elevation; this.age = age; }
 
-	public void perturbAge(int range) { this.age += r.nextInt(range) - range / 2; }
 
+	/** Create a random river with equal probability of flow in any direction.
+	 * 
+	 * @param cells
+	 * @param nRivers
+	 */
 	public static void randomRiver(TerrainBean[][] cells, int nRivers)
-	{
-		randomRivers(cells, 0.5, 0.5, 0.5, 0.5, nRivers);
-	}
+	{ randomRivers(cells, 0.5, 0.5, 0.5, 0.5, nRivers); }
 
 	/**
 	 * 
@@ -51,14 +57,9 @@ public class TerrainBean
 
 				double draw1 = r.nextDouble();
 
-				if (draw1 < probDiagonal)
-				{
-					x = newX; y = newY;
-				}
-				else if (r.nextDouble() < probVertical) 
-					y = newY;
-				else
-					x = newX;
+				if (draw1 < probDiagonal) { x = newX; y = newY; }
+				else if (r.nextDouble() < probVertical) y = newY;
+				else x = newX;
 
 				if (((x < 0) || (y < 0)) || ((x >= cells.length) || (y >= cells[0].length)))
 					edge = true;
@@ -66,35 +67,43 @@ public class TerrainBean
 		}
 	}
 
-	
-	
-	
-	
-	
 	/**
 	 * 
-	 * @param current
-	 * @param prob
-	 * @return
+	 * @param current Current coordinate
+	 * @param probIncrement Probability that the coordinate increases
+	 * @return current coordinate +/- 1 depending on outcome of random draw
 	 */
-	public static int randomCoord(int current, double prob)
+	public static int randomCoord(int current, double probIncrement)
 	{
-		if (r.nextDouble() < prob) return current + 1;
+		if (r.nextDouble() < probIncrement) return current + 1;
 		else return current - 1;
 	}
 
-	/**
+	/** Add a uniformly-distributed age perturbabion to the bean.
 	 * 
-	 * @param array
-	 * @param range
+	 * @param range ages will be perturbed up or down within this range
 	 */
-	public static void perturbElevation(TerrainBean[][] array, int range)
+	public void perturbAge(int range) { this.age += r.nextInt(2 * range) - range; }
+	public void perturbElevation(double range) { this.elevation += r.nextDouble() * 2 * range - range; }
+	
+	/** Perturb the age values of a 2D array of beans.
+	 *  A uniformly distributed perturbabion is applied to each bean in the array.
+	 * 
+	 * @param array input array
+	 * @param range amount by which the age may be perturbed up or down
+	 */
+	public static void perturbAges(TerrainBean[][] array, int range)
 	{
-		for (int i = 0; i < array.length; i++) {
-			for (int j = 0; j < array[0].length; j++) {
+		for (int i = 0; i < array.length; i++) 
+			for (int j = 0; j < array[0].length; j++) 
 				array[i][j].perturbAge(range);
-			}
-		}
+	}
+
+	public static void perturbElevations(TerrainBean[][] array, double range)
+	{
+		for (int i = 0; i < array.length; i++) 
+			for (int j = 0; j < array[0].length; j++) 
+				array[i][j].perturbElevation(range);
 	}
 
 	public static TerrainBean[][] factory(int width, int height, double elevGradient, int ageMod)
@@ -109,8 +118,4 @@ public class TerrainBean
 			}
 		return out;
 	}
-
-
-
-
 }

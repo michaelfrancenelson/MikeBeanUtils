@@ -21,7 +21,6 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 
 	private String dblFmt;
 	private String fieldName;
-	//	private String displayName;
 	private Field field;
 	private Class<T> clazz;
 
@@ -40,10 +39,8 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	 * @return
 	 */
 	public static <T> Map<String, FieldWatcher<T>> getWatcherMap(Class<T> clazz, String dblFmt)
-//	public static <T> Map<String, SimpleFieldWatcher<T>> getWatcherMap(Class<T> clazz, String dblFmt)
 	{
 		Map<String, FieldWatcher<T>> out = new HashMap<>();
-//		Map<String, SimpleFieldWatcher<T>> out = new HashMap<>();
 
 		Field[] fields = clazz.getDeclaredFields();
 
@@ -73,7 +70,6 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	 *   <li> throws an exception - there is no way to determine the desired field;
 	 *    
 	 * @param fieldName name of the field in the bean, must match exactly.
-//	 * @param displayName name to print for the field values
 	 * @param dblFmt format for displaying doubles;
 	 * @param clazz Bean type to watch
 	 * @return
@@ -83,14 +79,10 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	{ 
 		SimpleFieldWatcher<T> bw = new SimpleFieldWatcher<T>();
 		bw.setClazz(clazz);
-
 		bw.fieldName = fieldName; 
-
 		bw.initField();
-
 		if (dblFmt == null) dblFmt = "%.4f";
 		bw.dblFmt = dblFmt;
-
 		bw.buildGetters();
 		return bw;
 	}
@@ -99,16 +91,8 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	private void initField()
 	{
 		field = FieldUtils.getWatchedField(fieldName, null, clazz);
-		//		field = FieldUtils.getWatchedField(fieldName, displayName, clazz);
 		field.setAccessible(true);
 	}
-
-	//	private void initFieldNames()
-	//	{
-	////		if (field.isAnnotationPresent(WatchField.class))
-	////			displayName = field.getAnnotation(WatchField.class).name();
-	////		else displayName = field.getName();
-	//	}
 
 	/**
 	 * 
@@ -122,7 +106,6 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 		parsingBoolGetter   = GetterGetterGetter.parsingBooleanGetterGetter(getClazz(), field);
 	}
 
-
 	@Override public String  getStringVal(T t) { return stringGetter.get(t); }
 	@Override public double  getDoubleVal(T t) { return dblGetter.get(t); }
 	@Override public int     getIntVal(T t)    { return intGetter.get(t); }
@@ -134,7 +117,6 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	 * @return
 	 */
 	@Override public boolean getParsedBoolVal(T t) { return parsingBoolGetter.get(t); }
-
 
 	public static <T> Field getWatchedField(String fieldName, Class<T> clazz)
 	{
@@ -153,15 +135,6 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	public Class<T> getClazz() { return clazz; }
 	public void setClazz(Class<T> clazz) { this.clazz = clazz; }
 
-	//	@Override
-	//	public void setWatchedField(Field f) 
-	//	{
-	//		field = f;
-	//		fieldName = f.getName();
-	//		initField();
-	//	}
-
-//	@Override public void setWatchedField(String fieldName) { this.fieldName = fieldName; }
 	@Override public Field getField() { return field; }
 	@Override public String getDblFmt() { return dblFmt; }
 }

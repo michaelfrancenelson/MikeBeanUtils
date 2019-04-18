@@ -1,18 +1,41 @@
 package image;
 
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+
+import javax.swing.JPanel;
 
 import beans.memberState.FieldWatcher;
 
 
 public class ArrayImageFactory 
 {
-
 	public static final int RGB_TYPE = BufferedImage.TYPE_3BYTE_BGR;
 
-
 	
+	public static <T> Image buildArrayImage(
+			T[][] data, ObjectArrayImager<T> imager, String field,
+			int orientation1, int orientation2, boolean transpose, boolean boolNA)
+	{
+		ColorInterpolator ci;
+		imager.setField(field);
+		if (imager.getWatcher().getField().getType().getSimpleName().equals("boolean"))
+			ci = imager.getBooleanInterpolator();
+		else ci = imager.getInterpolator();
+		return buildArrayImage(data, imager.getWatcher(), ci, orientation1, orientation2, transpose, boolNA);
+	}
+	
+	public static <T> Image buildArrayImage(
+			T[][] data, ObjectArrayImager<T> imager,
+			int orientation1, int orientation2, boolean transpose, boolean boolNA)
+	{
+		ColorInterpolator ci;
+		if (imager.getWatcher().getField().getType().getSimpleName().equals("boolean"))
+			ci = imager.getBooleanInterpolator();
+		else ci = imager.getInterpolator();
+		return buildArrayImage(data, imager.getWatcher(), ci, orientation1, orientation2, transpose, boolNA);
+	}
 	
 	
 	public static <T> Image buildArrayImage(
@@ -22,17 +45,16 @@ public class ArrayImageFactory
 		int imgType = RGB_TYPE;
 		ImageDimensions dim = new ImageDimensions(data.length, data[0].length, orientation1, orientation2, transpose);
 		BufferedImage img = new BufferedImage(dim.dim1, dim.dim2, imgType);
-		
+
 		String fieldType = w.getField().getType().getSimpleName();
-		
+
 		int datIndex1 = 0, datIndex2 = 0;
-		
+
 		switch(fieldType)
 		{
 		case("int"):
 		{
 			if (!transpose)
-			{
 				for (int i = dim.start1; i != dim.end1; i += dim.increment1)
 				{
 					for (int j = dim.start2; j != dim.end2; j += dim.increment2)
@@ -44,9 +66,7 @@ public class ArrayImageFactory
 					datIndex1++;
 					datIndex2 = 0;
 				}
-			}
 			else
-			{
 				for (int i = dim.start1; i != dim.end1; i += dim.increment1)
 				{
 					for (int j = dim.start2; j != dim.end2; j += dim.increment2)
@@ -57,12 +77,10 @@ public class ArrayImageFactory
 					datIndex2++;
 					datIndex1 = 0;
 				}
-			}
 			break;
 		}
 		case("double"):
 			if (!transpose)
-			{
 				for (int i = dim.start1; i != dim.end1; i += dim.increment1)
 				{
 					for (int j = dim.start2; j != dim.end2; j += dim.increment2)
@@ -75,9 +93,7 @@ public class ArrayImageFactory
 					datIndex1++;
 					datIndex2 = 0;
 				}
-			}
 			else
-			{
 				for (int i = dim.start1; i != dim.end1; i += dim.increment1)
 				{
 					for (int j = dim.start2; j != dim.end2; j += dim.increment2)
@@ -88,24 +104,24 @@ public class ArrayImageFactory
 					datIndex2++;
 					datIndex1 = 0;
 				}
-			}
-			break;
+		break;
 		case("boolean"):
 		{
-			
+
 			break;
 		}
-		
+
 		}
-		
+
 		return img;
 	}
-	
-	
+
 	public static Image buildGradientImage(double min, double max, int nSteps, ColorInterpolator ci, int direction, int orientation)
 	{
-		double[] data = spacedIntervals(min, max, nSteps);
 		
+		if (nSteps == 1) nSteps = 2;
+		if (nSteps <= 0) nSteps = 100;
+		double[] data = spacedIntervals(min, max, nSteps - 1);
 		int imgType = RGB_TYPE;
 		ImageDimensions dir = new ImageDimensions(data.length, direction, orientation);
 		BufferedImage img = new BufferedImage(dir.dim1, dir.dim2, imgType);
@@ -125,12 +141,15 @@ public class ArrayImageFactory
 
 		return img;
 	}
-	
-	
+
+
 	public static Image buildGradientImage(int min, int max, int nSteps, ColorInterpolator ci, int direction, int orientation)
 	{
-		int[] data = spacedIntervals(min, max, nSteps);
 		
+		
+		if (nSteps == 1) nSteps++;
+		int[] data = spacedIntervals(min, max, nSteps);
+
 		int imgType = RGB_TYPE;
 		ImageDimensions dir = new ImageDimensions(data.length, direction, orientation);
 		BufferedImage img = new BufferedImage(dir.dim1, dir.dim2, imgType);
@@ -150,7 +169,7 @@ public class ArrayImageFactory
 
 		return img;
 	}
-	
+
 	public static Image buildGradientImage(boolean includeNABoolean, ColorInterpolator ci, int direction, int orientation)
 	{
 		int imgType = RGB_TYPE;
@@ -179,9 +198,7 @@ public class ArrayImageFactory
 
 		return img;
 	}
-	
-	
-	
+
 	/** Evenly spaced intervals.
 	 * @param min lower limit for the set of intervals
 	 * @param max upper limit for the set of intervals
@@ -198,29 +215,65 @@ public class ArrayImageFactory
 		return out;
 	}
 
+	/**
+	 * 
+	 * @param min interval endpoint
+	 * @param max interval endpoint
+	 * @param nBreaks number of breaks.  If < 1, breaks are calculated automatically.
+	 * @return
+	 */
 	public static int[] spacedIntervals(int min, int max, int nBreaks)
 	{
-	
-		double interval = ((double) (max - min)) / ((double) (nBreaks - 1));
-		if (interval <= 1 )
-			nBreaks = Math.abs(max - min) + 1;
+		double interval;
+		double sign = 1.0; if (max < min) sign = -1.0;
+		int range = (int) Math.abs(max - min);
 		
-		int[] out = new int[nBreaks];
+		int nElements;
+
+//		System.out.println("ArrayImageFactory.spacedIntervals: min = " + min + " max = " + max);	
+//		System.out.println("ArrayImageFactory.spacedIntervals: range = " +
+//				range + " requested number of breaks (nBreaks) = " + nBreaks);
+
+		/* If the number of breaks is greater than the range, truncate nElenemts to range.
+		 * If the number of breaks is less than 1, automatically create number of breaks from the range.
+		 */
 		
+		if (min == max)
+		{
+			nElements = 1;
+			interval = 0;
+//			System.out.println("ArrayImageFactory.spacedIntervals: min and max qre equal");
+		}
+		else if ((nBreaks > range) ||  (nBreaks < 1))
+		{
+			nElements = range + 1;
+			interval = sign;
+//			System.out.println("ArrayImageFactory.spacedIntervals: auto interval = " + interval);
+		}
+		else
+		{
+			nElements = nBreaks;
+			interval = sign * (double)(range + 0) / ((double)nElements - 1.0);
+//			System.out.println("ArrayImageFactory.spacedIntervals: calculated interval = " + interval);
+		}
+
+//		System.out.println("ArrayImageFactory.spacedIntervals:  nElements = " + nElements);
+		int[] out = new int[nElements];
+
 		/* In case of non-integer intervals, this allows rounding to maintain the right number of breaks. */
 		double sum = 0.0;
 		out[0] = min;
-		for (int i = 1; i < nBreaks - 1; i++)
+		for (int i = 1; i < nElements - 1; i++)
 		{
 			sum += interval;
 			out[i] = min + (int) sum;
 		}
-		out[nBreaks - 1] = max;
+		out[nElements - 1] = max;
+
+//		for (int i = 0; i < out.length; i++) System.out.println("ArrayImageFactory.spacedIntervals() out[" + i + "] = " + out[i]);
 		return out;
 	}
 
-
-	
 	private static class ImageDimensions
 	{
 		public int dim1, dim2;
@@ -231,14 +284,14 @@ public class ArrayImageFactory
 		private void transpose()
 		{
 			int t1;
-			
+
 			t1 = dim1; dim1 = dim2; dim2 = t1;
 			t1 = start1; start1 = start2; start2 = t1;
 			t1 = end1; end1 = end2; end2 = t1;
 			t1 = increment1; increment1 = increment2; increment2 = t1;
 		}
-		
-		
+
+
 		ImageDimensions(int d1, int d2, int direction1, int direction2, boolean transpose)
 		{
 			dim1 = d1; dim2 = d2;
@@ -252,7 +305,7 @@ public class ArrayImageFactory
 				start1 = dim1 - 1; end1 = -1;
 				increment1 = -1;
 			}
-			
+
 			if (direction2 == 1)
 			{
 				start2 = 0; end2 = dim2;
@@ -265,8 +318,8 @@ public class ArrayImageFactory
 			}
 			if (transpose) this.transpose();
 		}
-		
-		
+
+
 		/**
 		 * Direction codes:
 		 * <li> 1: low index = low value
@@ -314,6 +367,19 @@ public class ArrayImageFactory
 				}
 			}
 		}
-
 	}
+
+	/** A simple panel, filled with a resizing image. */
+	public static class ImagePanel extends JPanel
+	{
+		private static final long serialVersionUID = 1L;
+		public ImagePanel(Image img) { this.img = img; }
+		Image img;
+
+		@Override public void paintComponent(Graphics g)
+		{
+			g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
+		}
+	}
+
 }

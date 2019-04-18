@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 
 import beans.memberState.FieldWatcher;
-import utils.Sequences;
 
 public class GradientLegendImager<T> 
 //implements ObjectArrayImager<T>
@@ -124,7 +123,7 @@ public class GradientLegendImager<T>
 		else { legendMax = datMin; legendMin = datMax; }
 
 		legendDataSequence = new double[nLegendSteps];
-		legendDataSequence = Sequences.spacedIntervals(legendMin, legendMax, nLegendSteps);
+		legendDataSequence = ArrayImageFactory.spacedIntervals(legendMin, legendMax, nLegendSteps);
 	}
 
 	private void buildLegendDataArray(FieldWatcher<T> w, double datMin, double datMax)
