@@ -8,9 +8,9 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import image.ObjectArrayImager;
-import image.SimpleArrayImager;
-import image.SimpleArrayImagerWithLegend;
+import image.arrayImager.ObjectArrayImager;
+import image.arrayImager.SimpleArrayImager;
+import image.arrayImager.SimpleArrayImagerWithLegend;
 import swing.ObjectArrayImageDecorator;
 
 /**
@@ -39,11 +39,11 @@ public class ObjectArrayPanelFactory
 	 *                        Values of 0 or less are ignored.
 	 * @return
 	 */
-	public static <T> ObjectArrayJPanel<T> buildPanel(
+	public static <T> ObjectArrayImagePanel<T> buildPanel(
 			String imageFile, boolean keepAspectRatio, 
 			int fixedWidth, int fixedHeight)
 	{
-		ObjectArrayJPanel<T> out = new ObjectArrayJPanel<T>();
+		ObjectArrayImagePanel<T> out = new ObjectArrayImagePanel<T>();
 		Image img = null;
 		try {
 			img = ImageIO.read(new File(imageFile));
@@ -126,7 +126,7 @@ public class ObjectArrayPanelFactory
 	 *                        Values of 0 or less are ignored.
 	 * @return
 	 */
-	public static <T> ObjectArrayJPanel<T> buildPanel(
+	public static <T> ObjectArrayImagePanel<T> buildPanel(
 			Class<T> clazz, T[][] objArray, String fieldName,
 			Color[] gradientColors, Color[] booleanColors,
 			double naDouble, int naInt, Color naColor, 
@@ -175,7 +175,7 @@ public class ObjectArrayPanelFactory
 	 *                        Values of 0 or less are ignored.
 	 * @return
 	 */
-	public static <T> ObjectArrayJPanel<T> buildPanel(
+	public static <T> ObjectArrayImagePanel<T> buildPanel(
 			Class<T> clazz, T[][] objArray, String fieldName,
 			Color[] gradientColors, Color[] booleanColors,
 			double naDouble, int naInt, Color naColor, 
@@ -192,6 +192,20 @@ public class ObjectArrayPanelFactory
 		return buildPanel(imager, keepAspectRatio, fixedWidth, fixedHeight, decoratorRelPointSize);
 	}
 
+	public static <T> ObjectArrayImagePanel<T> buildPanel(
+			ObjectArrayImager<T> imager, String fieldName,
+			boolean keepAspectRatio, 
+			int fixedWidth, int fixedHeight, double decoratorRelPointSize)
+	{
+		ObjectArrayImagePanel<T> out = new ObjectArrayImagePanel<T>();
+		out.setLabelVisibility(true);
+		out.setPtRelSize(decoratorRelPointSize);
+		imager.setField(fieldName);
+		out.init(imager.getImage(), fixedWidth, fixedHeight, keepAspectRatio, false, imager);
+		out.setDecorator(new ObjectArrayImageDecorator(imager));
+		return out;
+	}
+	
 	/**
 	 *  Build a panel using an already existing <code>ObjectArrayImager</code> to generate the image from the states of
 	 *  objects in a 2D array.
@@ -209,12 +223,12 @@ public class ObjectArrayPanelFactory
 	 *                        Values of 0 or less are ignored.
 	 * @return
 	 */
-	public static <T> ObjectArrayJPanel<T> buildPanel(
+	public static <T> ObjectArrayImagePanel<T> buildPanel(
 			ObjectArrayImager<T> imager,
 			boolean keepAspectRatio, 
 			int fixedWidth, int fixedHeight, double decoratorRelPointSize)
 	{
-		ObjectArrayJPanel<T> out = new ObjectArrayJPanel<T>();
+		ObjectArrayImagePanel<T> out = new ObjectArrayImagePanel<T>();
 		out.setLabelVisibility(true);
 		out.setPtRelSize(decoratorRelPointSize);
 		out.init(imager.getImage(), fixedWidth, fixedHeight, keepAspectRatio, false, imager);

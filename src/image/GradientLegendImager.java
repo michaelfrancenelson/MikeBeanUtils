@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 
 import beans.memberState.FieldWatcher;
+import image.arrayImager.ObjectArrayImager;
+import image.colorInterpolator.ColorInterpolator;
 
 public class GradientLegendImager<T> 
 //implements ObjectArrayImager<T>

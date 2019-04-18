@@ -6,8 +6,8 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
 
-import image.ObjectArrayImager;
-import swing.stretchAndClick.ObjectArrayJPanel;
+import image.arrayImager.ObjectArrayImager;
+import swing.stretchAndClick.ObjectArrayImagePanel;
 
 /**
  * 
@@ -24,23 +24,18 @@ public class ObjectArrayImageDecorator
 	private int objArrayWidth, objArrayHeight;
 	private ObjectArrayImager<?> imager;
 
-
-
 	public ObjectArrayImageDecorator(ObjectArrayImager<?> imager) 
 	{
 		this.imager = imager;
 		this.objArrayWidth  = imager.getData().length;
 		this.objArrayHeight = imager.getData()[0].length;
-		//		this.pointRelativeSize = pointRelSize; 
 	}
-	
 	
 	public ObjectArrayImageDecorator(ObjectArrayImager<?> imager, int width, int height) 
 	{
 		this.imager = imager;
 		this.objArrayWidth  = width;
 		this.objArrayHeight = height;
-		//		this.pointRelativeSize = pointRelSize; 
 	}
 
 	/**
@@ -55,7 +50,6 @@ public class ObjectArrayImageDecorator
 	 * @param p     Panel to decorate.  If null, the label will not be drawn.
 	 */
 	public void addLabel(int i, int j, String label, Font font, Color color, boolean keep, int pointSize)
-	//	public void addLabel(int i, int j, String label, Font font, Color color, boolean keep, int pointSize, ObjectArrayJPanel<?> p)
 	{
 		if (label != null && font != null)
 		{
@@ -117,7 +111,6 @@ public class ObjectArrayImageDecorator
 		}
 	}
 
-
 	public void clearAll()
 	{
 		labels = new ArrayList<>();
@@ -128,7 +121,6 @@ public class ObjectArrayImageDecorator
 	public void clearLabels() { labels = new ArrayList<>(); }
 	public void clearValueLabels() { valueLabels = new ArrayList<>(); }
 	public void clearPoints() { points = new ArrayList<>(); }
-
 
 	private int[] getImageCoords(int objArrayI, int objArrayJ, int imageWidth, int imageHeight, int imageCornerX, int imageCornerY)
 	{
@@ -171,8 +163,6 @@ public class ObjectArrayImageDecorator
 		}
 	}
 
-
-
 	/**
 	 * A label whose coordinates are calculated relative to the dimensions of the object array.
 	 * @author michaelfrancenelson
@@ -204,45 +194,4 @@ public class ObjectArrayImageDecorator
 			}
 		}
 	}
-
-	/**
-//	 * A label whose coordinates are calculated relative to the dimensions of the
-//	 * image created from the object array.
-//	 * 
-//	 * 
-//	 * @author michaelfrancenelson
-//	 *
-//	 */
-	//	private static class ImagePointLabel
-	//	{
-	//		double imageRelX, imageRelY;
-	//		int size;
-	//		Color color;
-	//
-	//		ImagePointLabel(double relX, double relY, int size, Color color)
-	//		{ this.imageRelX = relX; this.imageRelY = relY; this.size = size; this.color = color; }
-	//
-	//	}
-	//
-	//	/**
-	//	 * A label whose coordinates are calculated relative to the dimensions of the
-	//	 * image created from the object array.
-	//	 * 
-	//	 * 
-	//	 * @author michaelfrancenelson
-	//	 *
-	//	 */
-	//	private class ImageTextLabel
-	//	{
-	//		double imageRelX, imageRelY;
-	//		String label;
-	//		Font font;
-	//
-	//		ImageTextLabel(double relX, double relY, String label, Font font)
-	//		{this.imageRelX = relX; this.imageRelY = relY; this.label = label; this.font = font;}
-	//
-	//
-	//
-	//
-	//	}
 }

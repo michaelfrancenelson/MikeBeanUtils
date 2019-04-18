@@ -1,4 +1,4 @@
-package image;
+package image.colorInterpolator;
 
 import java.awt.Color;
 

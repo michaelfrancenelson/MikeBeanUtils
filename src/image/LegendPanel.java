@@ -9,6 +9,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
+import image.arrayImager.ObjectArrayImager;
 import swing.ObjectArrayImageDecorator;
 
 public class LegendPanel<T> extends JPanel

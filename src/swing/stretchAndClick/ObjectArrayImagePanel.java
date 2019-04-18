@@ -13,12 +13,18 @@ import java.lang.reflect.Field;
 
 import javax.swing.JPanel;
 
-import image.LegendPanel;
-import image.ObjectArrayImager;
+import beans.memberState.FieldWatcher;
+import image.arrayImager.ObjectArrayImager;
 import swing.ObjectArrayImageDecorator;
-import swing.ObjectArrayImagePanel;
 
-public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePanel<T>
+/**
+ * 
+ * @author michaelfrancenelson
+ *
+ * @param <T>
+ */
+public class ObjectArrayImagePanel<T> extends JPanel 
+//implements ObjectArrayImagePanel<T>
 {
 
 	/**
@@ -36,6 +42,8 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	boolean fixedImg;
 	boolean decorate;
 
+	FieldWatcher<T> watcher;
+	
 	Image img = null;
 	double ptRelSize;
 
@@ -50,6 +58,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	 */
 	public void updateImage()
 	{
+		this.watcher = imager.getWatcher();
 		if (!fixedImg) img = getImager().getImage();
 		paint(this.getGraphics());
 	}
@@ -57,7 +66,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	public String queryDataArray(int i, int j)
 	{
 		T t = getImager().getObjAt(i, j);
-		String out = getImager().getWatcher().getStringVal(t);
+		String out = watcher.getStringVal(t);
 		return out;	
 	}
 
@@ -82,7 +91,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 		double relY = ((double) relImgJ) / ((double) getImgDisplayHeight());
 		
 		String out = queryRelative(relX, relY);
-		System.out.println("Value of " + getImager().getCurrentFieldName() + ": " + out);
+		System.out.println("Value of " + watcher.getFieldName() + ": " + out);
 
 		return out;
 	}
@@ -91,7 +100,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	{
 		if (fixedImg) return null;
 		T t = getImager().getObjAt(relativeI, relativeJ);
-		String out = getImager().getWatcher().getStringVal(t);
+		String out = watcher.getStringVal(t);
 		return out;
 	}
 
@@ -111,6 +120,8 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 		this.fixedAspectRatio = keepAspectRatio;
 		this.imageAspectRatio = ((double) img.getWidth(null)) / ((double) img.getHeight(null));
 
+		this.watcher = imager.getWatcher();
+		
 		fixedWidth = false; fixedHeight = false;
 		imgDisplayWidth = img.getWidth(null);
 		imgDisplayHeight = img.getHeight(null);
@@ -132,9 +143,9 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 		this.addMouseListener(new MouseListener() {
 			@Override public void mouseClicked(MouseEvent arg0)
 			{
-				queryPixel(arg0.getX(), arg0.getY());
 				System.out.println("MouseListener: Mouse clicked at panel coordinate (" +
 						arg0.getX() + ", " + arg0.getY() + ").");
+				queryPixel(arg0.getX(), arg0.getY());
 			}
 			@Override public void mouseEntered(MouseEvent arg0) {}
 			@Override public void mouseExited(MouseEvent arg0) {}
@@ -208,6 +219,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 			decorator.drawPoints(g2d, imgDisplayWidth, imgDisplayHeight, imgCornerX, imgCornerY, ptRelSize);
 		}
 
+		if (this.getBorder() != null) paintBorder(g2d);
 		g2d.dispose();
 		g.dispose();
 	}
@@ -226,7 +238,6 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	{
 		int[] coords = getImager().getArrayCoords(relI, relJ);
 		getDecorator().addLabel(coords[0], coords[1], label, font, Color.black, true, -1);
-		paintComponent(this.getGraphics());
 	}
 
 	/**
@@ -236,7 +247,6 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	{
 		int[] coords = getImager().getArrayCoords(relI, relJ);
 		decorator.addLabel(coords[0], coords[1], null, font, Color.black, true, -1);
-		paintComponent(this.getGraphics());
 	}
 
 	/**
@@ -245,7 +255,6 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	public void addPoint(int i, int j, int size, Color color) 
 	{
 		decorator.addLabel(i, j, null, null, color, true, size); 
-		paintComponent(this.getGraphics());
 	}
 
 	/**
@@ -255,7 +264,7 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	{
 		int[] coords = getImager().getArrayCoords(relI, relJ);
 		decorator.addLabel(coords[0], coords[1], null, null, color, true, size);
-		paintComponent(this.getGraphics());
+//		paintComponent(this.getGraphics());
 	}
 
 	/**
@@ -268,18 +277,18 @@ public class ObjectArrayJPanel<T> extends JPanel implements ObjectArrayImagePane
 	 * @param color color for text or point 
 	 * @param keep  keep the decoration in the record of points so it will be redrawn later?
 	 */
-	public void addLabel(int i, int j, String label, Font font, Color color, boolean keep, int pointSize, ObjectArrayJPanel<?> p)
+	public void addLabel(int i, int j, String label, Font font, Color color, boolean keep, int pointSize, ObjectArrayImagePanel<?> p)
 	{
 		decorator.addLabel(i, j, label, font, color, keep, pointSize); 
-		paintComponent(this.getGraphics());
+//		paintComponent(this.getGraphics());
 	}
 
-	@Override
-	public LegendPanel<T> getLegendPanel(int fixedWidth, int fixedHeight)
-	{
-		LegendPanel<T> out = LegendPanel.factory(imager, fixedWidth, fixedHeight, false);
-		return out;
-	}
+//	@Override
+//	public LegendPanel<T> getLegendPanel(int fixedWidth, int fixedHeight)
+//	{
+//		LegendPanel<T> out = LegendPanel.factory(imager, fixedWidth, fixedHeight, false);
+//		return out;
+//	}
 	
 	public Image getImg() { return this.img; }
 

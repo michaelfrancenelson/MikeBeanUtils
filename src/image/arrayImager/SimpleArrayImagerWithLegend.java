@@ -1,4 +1,4 @@
-package image;
+package image.arrayImager;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -6,6 +6,8 @@ import java.util.Map;
 
 import beans.memberState.FieldWatcher;
 import beans.memberState.SimpleFieldWatcher;
+import image.GradientLegendImager;
+import image.colorInterpolator.SimpleColorInterpolator;
 
 public class SimpleArrayImagerWithLegend<T> extends SimpleArrayImager<T>
 {

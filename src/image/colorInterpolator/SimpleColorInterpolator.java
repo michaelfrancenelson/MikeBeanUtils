@@ -1,7 +1,8 @@
-package image;
+package image.colorInterpolator;
 
 import java.awt.Color;
 
+import image.ArrayImageFactory;
 import utils.Binary;
 import utils.Binary.IndicesAndRelativePosition;
 

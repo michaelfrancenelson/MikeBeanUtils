@@ -83,7 +83,14 @@ public class TerrainBean
 	 * 
 	 * @param range ages will be perturbed up or down within this range
 	 */
-	public void perturbAge(int range) { this.age += r.nextInt(2 * range) - range; }
+	public void perturbAge(int range) 
+	{
+		int adj = 0;
+		if (range > 0) adj = r.nextInt(2 * range) - range;  
+		this.age += adj;
+		
+//		System.out.println("TerrainBean.perturbAge(): range = " + range + " adj = " + adj);
+	}
 	public void perturbElevation(double range) { this.elevation += r.nextDouble() * 2 * range - range; }
 	
 	/** Perturb the age values of a 2D array of beans.

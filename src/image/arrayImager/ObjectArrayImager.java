@@ -1,10 +1,11 @@
-package image;
+package image.arrayImager;
 
 import java.awt.Color;
 import java.awt.Image;
 import java.lang.reflect.Field;
 
 import beans.memberState.FieldWatcher;
+import image.colorInterpolator.ColorInterpolator;
 
 public interface ObjectArrayImager<T> 
 {

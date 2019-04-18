@@ -7,13 +7,14 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 import beans.memberState.FieldWatcher;
+import image.arrayImager.ObjectArrayImager;
+import image.colorInterpolator.ColorInterpolator;
 
 
 public class ArrayImageFactory 
 {
 	public static final int RGB_TYPE = BufferedImage.TYPE_3BYTE_BGR;
 
-	
 	public static <T> Image buildArrayImage(
 			T[][] data, ObjectArrayImager<T> imager, String field,
 			int orientation1, int orientation2, boolean transpose, boolean boolNA)
@@ -145,8 +146,6 @@ public class ArrayImageFactory
 
 	public static Image buildGradientImage(int min, int max, int nSteps, ColorInterpolator ci, int direction, int orientation)
 	{
-		
-		
 		if (nSteps == 1) nSteps++;
 		int[] data = spacedIntervals(min, max, nSteps);
 

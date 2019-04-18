@@ -1,4 +1,4 @@
-package image;
+package image.arrayImager;
 
 import java.awt.Color;
 import java.awt.Image;
@@ -7,6 +7,8 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 import beans.memberState.FieldWatcher;
+import image.ArrayImageFactory;
+import image.colorInterpolator.ColorInterpolator;
 
 public class ArrayImager<T> implements ObjectArrayImager<T>
 {

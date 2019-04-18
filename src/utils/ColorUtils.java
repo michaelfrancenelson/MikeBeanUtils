@@ -1,4 +1,4 @@
-package image;
+package utils;
 
 import java.awt.Color;
 import java.lang.annotation.Retention;

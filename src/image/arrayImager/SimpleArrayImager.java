@@ -1,4 +1,4 @@
-package image;
+package image.arrayImager;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -8,6 +8,10 @@ import java.util.Map;
 
 import beans.memberState.FieldWatcher;
 import beans.memberState.SimpleFieldWatcher;
+import image.ArrayImageFactory;
+import image.colorInterpolator.ColorInterpolator;
+import image.colorInterpolator.SimpleBooleanColorInterpolator;
+import image.colorInterpolator.SimpleColorInterpolator;
 
 /** Create images from numeric or boolean members of objects in 2D arrays.
  * 
@@ -17,8 +21,8 @@ import beans.memberState.SimpleFieldWatcher;
  */
 public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 {
-	private ColorInterpolator ci;
-	private ColorInterpolator booleanCI;
+	ColorInterpolator ci;
+	ColorInterpolator booleanCI;
 	int rgbType = BufferedImage.TYPE_3BYTE_BGR;
 
 	double[][]  dataDouble = null;

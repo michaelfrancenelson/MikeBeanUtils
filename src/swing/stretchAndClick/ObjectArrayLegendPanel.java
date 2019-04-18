@@ -2,7 +2,7 @@ package swing.stretchAndClick;
 
 import image.GradientLegendImager;
 
-public class ObjectArrayLegendPanel<T> extends ObjectArrayJPanel<T>
+public class ObjectArrayLegendPanel<T> extends ObjectArrayImagePanel<T>
 {
 
 	/** */

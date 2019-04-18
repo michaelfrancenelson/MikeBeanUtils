@@ -15,7 +15,10 @@ import org.junit.Test;
 
 import beans.builder.RandomBeanBuilder;
 import beans.sampleBeans.SimpleBean;
+import image.arrayImager.ObjectArrayImager;
+import image.arrayImager.SimpleArrayImagerWithLegend;
 import swing.SwingUtils;
+import utils.ColorUtils;
 
 public class ImageTest {
 
