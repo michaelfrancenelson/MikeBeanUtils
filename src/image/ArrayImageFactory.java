@@ -15,30 +15,45 @@ public class ArrayImageFactory
 {
 	public static final int RGB_TYPE = BufferedImage.TYPE_3BYTE_BGR;
 
+	/**
+	 *  Build an image from a 2D array of objects using an already existing imager.
+	 *  Wrapper for {@link #buildArrayImage(Object[][], FieldWatcher, ColorInterpolator, int, int, boolean, boolean)}
+	 *  
+	 * @param data
+	 * @param imager
+	 * @param field optional field name.  If null, the image corresponding to the currently selected field in the imager will be build.
+	 * @param orientation1
+	 * @param orientation2
+	 * @param transpose
+	 * @param boolNA
+	 * @return
+	 */
 	public static <T> Image buildArrayImage(
 			T[][] data, ObjectArrayImager<T> imager, String field,
 			int orientation1, int orientation2, boolean transpose, boolean boolNA)
 	{
 		ColorInterpolator ci;
-		imager.setField(field);
+		if (field != null) imager.setField(field);
 		if (imager.getWatcher().getField().getType().getSimpleName().equals("boolean"))
 			ci = imager.getBooleanInterpolator();
 		else ci = imager.getInterpolator();
+		
 		return buildArrayImage(data, imager.getWatcher(), ci, orientation1, orientation2, transpose, boolNA);
 	}
-	
-	public static <T> Image buildArrayImage(
-			T[][] data, ObjectArrayImager<T> imager,
-			int orientation1, int orientation2, boolean transpose, boolean boolNA)
-	{
-		ColorInterpolator ci;
-		if (imager.getWatcher().getField().getType().getSimpleName().equals("boolean"))
-			ci = imager.getBooleanInterpolator();
-		else ci = imager.getInterpolator();
-		return buildArrayImage(data, imager.getWatcher(), ci, orientation1, orientation2, transpose, boolNA);
-	}
-	
-	
+
+	/**
+	 *  Build an image from a 2D array of objects using a field watcher and color interpolator.<br>
+	 *  This is the method that actually builds the image.
+	 * 
+	 * @param data
+	 * @param w
+	 * @param ci
+	 * @param orientation1
+	 * @param orientation2
+	 * @param transpose
+	 * @param boolNA
+	 * @return
+	 */
 	public static <T> Image buildArrayImage(
 			T[][] data, FieldWatcher<T> w, ColorInterpolator ci, 
 			int orientation1, int orientation2, boolean transpose, boolean boolNA)
@@ -117,14 +132,27 @@ public class ArrayImageFactory
 		return img;
 	}
 
-	public static Image buildGradientImage(double min, double max, int nSteps, ColorInterpolator ci, int direction, int orientation)
+	
+	/**
+	 * Build an image showing a color gradient using double data.
+	 * @param min
+	 * @param max
+	 * @param nSteps
+	 * @param ci
+	 * @param direction if 1, low index is min value; if 2, low index is max value
+	 * @param orientation if 1, gradient is oriented vertically; if 2, gradient is horizontal
+	 * @return
+	 */
+	public static Image buildGradientImage(
+			double min, double max, int nSteps, ColorInterpolator ci,
+			boolean lowToHigh, boolean horizontal)
 	{
 		
 		if (nSteps == 1) nSteps = 2;
 		if (nSteps <= 0) nSteps = 100;
 		double[] data = spacedIntervals(min, max, nSteps - 1);
 		int imgType = RGB_TYPE;
-		ImageDimensions dir = new ImageDimensions(data.length, direction, orientation);
+		ImageDimensions dir = new ImageDimensions(data.length, lowToHigh, horizontal);
 		BufferedImage img = new BufferedImage(dir.dim1, dir.dim2, imgType);
 		int datIndex = 0;
 		if (dir.increment2 == 0)
@@ -143,16 +171,25 @@ public class ArrayImageFactory
 		return img;
 	}
 
-
-	
-	
-	public static Image buildGradientImage(int min, int max, int nSteps, ColorInterpolator ci, int direction, int orientation)
+	/**
+	 * Build an image showing a color gradient using double data.
+	 * @param min
+	 * @param max
+	 * @param nSteps
+	 * @param ci
+	 * @param direction if 1, low index is min value; if 2, low index is max value
+	 * @param orientation if 1, gradient is oriented vertically; if 2, gradient is horizontal
+	 * @return
+	 */
+	public static Image buildGradientImage(
+			int min, int max, int nSteps, ColorInterpolator ci,
+			boolean lowToHigh, boolean horizontal)
 	{
 		if (nSteps == 1) nSteps++;
 		int[] data = spacedIntervals(min, max, nSteps);
 
 		int imgType = RGB_TYPE;
-		ImageDimensions dir = new ImageDimensions(data.length, direction, orientation);
+		ImageDimensions dir = new ImageDimensions(data.length, lowToHigh, horizontal);
 		BufferedImage img = new BufferedImage(dir.dim1, dir.dim2, imgType);
 		int datIndex = 0;
 		if (dir.increment2 == 0)
@@ -171,13 +208,16 @@ public class ArrayImageFactory
 		return img;
 	}
 
-	public static Image buildGradientImage(boolean includeNABoolean, ColorInterpolator ci, int direction, int orientation)
+	public static Image buildGradientImage(
+			boolean includeNABoolean, ColorInterpolator ci,
+			boolean lowToHigh, boolean horizontal)
 	{
 		int imgType = RGB_TYPE;
 
 		int n = 2;
 		if (includeNABoolean) n = 3;
-		ImageDimensions dir = new ImageDimensions(n, direction, orientation);
+		
+		ImageDimensions dir = new ImageDimensions(n, lowToHigh, horizontal);
 		boolean[] data = new boolean[] {true, false, false};
 		BufferedImage img = new BufferedImage(dir.dim1, dir.dim2, imgType);
 
@@ -292,7 +332,6 @@ public class ArrayImageFactory
 			t1 = increment1; increment1 = increment2; increment2 = t1;
 		}
 
-
 		ImageDimensions(int d1, int d2, int direction1, int direction2, boolean transpose)
 		{
 			dim1 = d1; dim2 = d2;
@@ -320,27 +359,26 @@ public class ArrayImageFactory
 			if (transpose) this.transpose();
 		}
 
-
 		/**
 		 * Direction codes:
 		 * <li> 1: low index = low value
-		 * <li> 2: low index = high value
+		 * <li> 2: low index = high value </li>
 		 * 
 		 * Orientation codes
 		 * <li> 1: gradient along first index.
 		 * <li> 2: gradient along second index.
 		 * 
 		 */
-		ImageDimensions (int dataLength, int direction, int orientation)
+		ImageDimensions (int dataLength, boolean lowToHigh, boolean horizontal)
 		{
 			int n = dataLength;
 
-			if (orientation == 1)
+			if (lowToHigh)
 			{
 				this.dim1 = n; this.dim2 = 1;
 				this.start2 = 0; this.end2 = 0;
 				this.increment2 = 0;
-				if (direction == 1)
+				if (horizontal)
 				{
 					this.start1 = 0; this.end1 = n;
 					this.increment1 = 1;
@@ -351,12 +389,12 @@ public class ArrayImageFactory
 					this.increment1 = -1;
 				}
 			}
-			else if (orientation == 2)
+			else
 			{
 				this.dim1 = 1; this.dim2 = n;
 				this.start1 = 0; this.end1 = 0;
 				this.increment1 = 0;
-				if (direction == 1)
+				if (horizontal)
 				{
 					this.start2 = 0; this.end2 = n;
 					this.increment2 = 1;
@@ -371,10 +409,10 @@ public class ArrayImageFactory
 	}
 
 	/** A simple panel, filled with a resizing image. */
-	public static class ImagePanel extends JPanel
+	public static class SimpleImagePanel extends JPanel
 	{
 		private static final long serialVersionUID = 1L;
-		public ImagePanel(Image img) { this.img = img; }
+		public SimpleImagePanel(Image img) { this.img = img; }
 		Image img;
 
 		@Override public void paintComponent(Graphics g)
@@ -383,4 +421,28 @@ public class ArrayImageFactory
 		}
 	}
 
+	
+	
+	/**
+	 * 
+	 * @param data
+	 * @param imager
+	 * @param orientation1
+	 * @param orientation2
+	 * @param transpose
+	 * @param boolNA
+	 * @return
+	 */
+	@Deprecated
+	public static <T> Image buildArrayImage(
+			T[][] data, ObjectArrayImager<T> imager,
+			int orientation1, int orientation2, boolean transpose, boolean boolNA)
+	{
+		ColorInterpolator ci;
+		if (imager.getWatcher().getField().getType().getSimpleName().equals("boolean"))
+			ci = imager.getBooleanInterpolator();
+		else ci = imager.getInterpolator();
+		return buildArrayImage(data, imager.getWatcher(), ci, orientation1, orientation2, transpose, boolNA);
+	}
+	
 }

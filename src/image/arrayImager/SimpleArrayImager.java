@@ -13,7 +13,7 @@ import image.colorInterpolator.ColorInterpolator;
 import image.colorInterpolator.SimpleBooleanColorInterpolator;
 import image.colorInterpolator.SimpleColorInterpolator;
 
-/** Create images from numeric or boolean members of objects in 2D arrays.
+/** Create images from int, double, or boolean members of objects in 2D arrays.
  * 
  * @author michaelfrancenelson
  *
@@ -21,25 +21,17 @@ import image.colorInterpolator.SimpleColorInterpolator;
  */
 public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 {
-	ColorInterpolator ci;
-	ColorInterpolator booleanCI;
+	T[][] objArray;
+	ColorInterpolator ci, booleanCI;
 	int rgbType = BufferedImage.TYPE_3BYTE_BGR;
 
-	double[][]  dataDouble = null;
-	int[][]     dataInt = null;
-	boolean[][] dataBool = null;
-
-	private double[][]  legDatDouble = null;
-	private int[][]     legDatInt = null;
-	private boolean[][] legDatBool = null;
-
+	double[][]  dataDouble = null, legDatDouble = null;
+	int[][]     dataInt = null, legDatInt = null;
+	boolean[][] dataBool = null, legDatBool = null;
 	double datMin, datMax;
 
 	BufferedImage img, legImg;
-
-	T[][] objArray;
 	SimpleFieldWatcher<T> watcher;
-
 	Class<T> clazz;
 	private int legDatDim1, legDatDim2;
 	double legendMin, legendMax;
@@ -53,6 +45,10 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 
 	int[] currentSelectionArrayCoords;
 	int nLegendSteps, nLegendStepsAdj, legendDirection;
+	private int orientation1 = 1;
+	private int orientation2 = 2;
+	private boolean transpose = false;
+//	private boolean boolNA = true;
 
 	/**
 	 * 
@@ -93,6 +89,23 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		return out;
 	}
 
+	/**
+	 * 
+	 * @param clazz
+	 * @param objArray
+	 * @param fieldName
+	 * @param gradientColors
+	 * @param booleanColors
+	 * @param naDouble
+	 * @param naInt
+	 * @param naColor
+	 * @param dblFmt
+	 * @param parsedBooleanFields
+	 * @param includeNABoolean
+	 * @param nLegendSteps
+	 * @param legendDirection
+	 * @return
+	 */
 	public static <T> ObjectArrayImager<T> factory(
 			Class<T> clazz, T[][] objArray,	String fieldName, 
 			Color[] gradientColors, Color[] booleanColors,
@@ -113,9 +126,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		out.setParsedBooleanFields(mp);
 
 		if (nLegendSteps > 0)
-		{
 			out.buildLegend = true;
-		}
 		out.nLegendSteps = nLegendSteps;
 		out.legendDirection = legendDirection;
 		out.includeNABoolean = includeNABoolean;
@@ -128,10 +139,11 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		return out;
 	}
 
-
+	/** Build the blank image of the appropriate dimensions. */
 	private void initImage() { img = new BufferedImage(objArray.length, objArray[0].length, rgbType);}
 
 	/**
+	 * Create the underlying data array from which the image is built.
 	 * 
 	 */
 	void buildDataArray()
@@ -144,9 +156,12 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		}
 
 		if (buildLegend) buildLegendData();
-
 	}
 
+	@Deprecated // This still needs work
+	/**
+	 * Create a data array from which to build a legend for the main object array image.
+	 */
 	void buildLegendData()
 	{
 		buildLegendSequenceDirection();
@@ -179,8 +194,6 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 			for (int i = 0; i < legendDoubleSequence.length; i++)
 				legDatDouble[i * legIndexMult1][i * legIndexMult2] = legendDoubleSequence[i];
 			break;
-			
-			
 		}
 
 		case("boolean"):
@@ -194,6 +207,9 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		}
 	}
 
+	/**
+	 * 
+	 */
 	void buildLegendImage()
 	{
 		ColorInterpolator interp;
@@ -256,30 +272,35 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 			interp = booleanCI;
 		else interp = ci;
 
-		switch (getWatcher().getField().getType().getSimpleName())
-		{
-		case("int"):
-		{
-			for (int row = 0; row < objArray.length; row++)
-				for (int col = 0; col < objArray[0].length; col++)
-					img.setRGB(row, col, interp.getColor(watcher.getIntVal(objArray[row][col])));
-			break;
-		}
-		case("double"): 
-		{
-			for (int row = 0; row < objArray.length; row++)
-				for (int col = 0; col < objArray[0].length; col++)
-					img.setRGB(row, col, interp.getColor(watcher.getDoubleVal(objArray[row][col])));
-			break;
-		}
-		case("boolean"): 
-		{
-			for (int row = 0; row < objArray.length; row++)
-				for (int col = 0; col < objArray[0].length; col++)
-					img.setRGB(row, col, booleanCI.getColor(watcher.getBoolVal(objArray[row][col])));
-			break;
-		}
-		}
+		img = (BufferedImage) ArrayImageFactory.buildArrayImage(objArray, watcher, interp,
+				orientation1, orientation2, transpose, includeNABoolean
+				);
+				
+//		
+//		switch (getWatcher().getField().getType().getSimpleName())
+//		{
+//		case("int"):
+//		{
+//			for (int row = 0; row < objArray.length; row++)
+//				for (int col = 0; col < objArray[0].length; col++)
+//					img.setRGB(row, col, interp.getColor(watcher.getIntVal(objArray[row][col])));
+//			break;
+//		}
+//		case("double"): 
+//		{
+//			for (int row = 0; row < objArray.length; row++)
+//				for (int col = 0; col < objArray[0].length; col++)
+//					img.setRGB(row, col, interp.getColor(watcher.getDoubleVal(objArray[row][col])));
+//			break;
+//		}
+//		case("boolean"): 
+//		{
+//			for (int row = 0; row < objArray.length; row++)
+//				for (int col = 0; col < objArray[0].length; col++)
+//					img.setRGB(row, col, booleanCI.getColor(watcher.getBoolVal(objArray[row][col])));
+//			break;
+//		}
+//		}
 	}
 
 	/**
@@ -395,26 +416,6 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		legImg = new BufferedImage(legDatDim1, legDatDim2, rgbType);
 	}
 
-	//	private void buildLegendIntSequence()
-	//	{
-	//		legDatBool = null;
-	//		legDatDouble = null;
-	//		legendDoubleSequence = null;
-	//		nLegendStepsAdj = (int) datMax - (int) datMin + 1;
-	//		nLegendStepsAdj = Math.min(nLegendStepsAdj, nLegendSteps);
-	//		legendIntSequence = Sequences.spacedIntervals((int) legendMin, (int) legendMax, nLegendStepsAdj);
-	//	}
-
-	//	private void buildLegendDoubleSequence()
-	//	{
-	//		legDatBool = null;
-	//		legDatInt = null;
-	//		legendIntSequence = null;
-	//
-	//		legendDoubleSequence = new double[nLegendSteps];
-	//		legendDoubleSequence = Sequences.spacedIntervals(legendMin, legendMax, nLegendSteps);
-	//	
-	//	}
 
 	private void buildLegendSequenceDirection()
 	{
@@ -423,12 +424,10 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		{ 
 			legendMin = datMin;
 			legendMax = datMax;
-
 		}
 
 		/* High to low values */
 		else { legendMax = datMin; legendMin = datMax; }
-
 	}
 
 
@@ -459,17 +458,13 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	@Override public void setField(String fieldName) { this.setWatcher((SimpleFieldWatcher<T>) watchers.get(fieldName)); refresh(); }
 	@Override public void setField(Field field) { setField(field.getName()); }
 	@Override public void setColors(Color[] colors) {	ci.updateColors(colors); }
-
 	@Override public String queryObjectAt(int i, int j) { return getWatcher().getStringVal(getObjAt(i, j)); }
-
 
 
 	@Override public String queryLegendAt(double relativeI, double relativeJ)
 	{
 		int[] coords = ObjectArrayImager.getObjArrayCoords(relativeI, relativeJ, legDatDim1, legDatDim2);
-		
 		System.out.println("SimpleArrayImager.queryLegendAt() legend data coords = " + coords[0] + " " + coords[1]);
-		
 		return queryLegendAt(coords[0], coords[1]);
 	}
 
@@ -581,46 +576,3 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	@Override public ColorInterpolator getInterpolator() { return ci; }
 	@Override public ColorInterpolator getBooleanInterpolator() { return booleanCI; }
 }
-
-
-
-
-
-//	public BufferedImage getLegend(int nLabels, int nSteps, double offset1, double offset2)
-//	{
-//		BufferedImage leg;
-//	
-//		
-//		
-//		
-//		
-//		switch (watcher.getField().getType().getSimpleName())
-//	case("int"):
-//	{
-//		for (int row = 0; row < objArray.length; row++)
-//			for (int col = 0; col < objArray[0].length; col++)
-//				img.setRGB(row, col, interp.getColor(watcher.getIntVal(objArray[row][col])));
-//		break;
-//	}
-//	case("double"): 
-//	{
-//		for (int row = 0; row < objArray.length; row++)
-//			for (int col = 0; col < objArray[0].length; col++)
-//				img.setRGB(row, col, interp.getColor(watcher.getDoubleVal(objArray[row][col])));
-//		break;
-//	}
-//	case("boolean"): 
-//	{
-//		for (int row = 0; row < objArray.length; row++)
-//			for (int col = 0; col < objArray[0].length; col++)
-//				img.setRGB(row, col, booleanCI.getColor(watcher.getBoolVal(objArray[row][col])));
-//		//			img.setRGB(row, col, interp.getColor(watcher.getBoolVal(objArray[row][col])));
-//		break;
-//	}
-//		
-//		
-//		return leg;
-//	}
-//	
-
-
