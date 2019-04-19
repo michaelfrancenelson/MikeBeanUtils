@@ -45,9 +45,8 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 
 	int[] currentSelectionArrayCoords;
 	int nLegendSteps, nLegendStepsAdj, legendDirection;
-	private int orientation1 = 1;
-	private int orientation2 = 2;
-	private boolean transpose = false;
+	private boolean transpose = false, flipAxisX = false, flipAxisY = false;
+	private boolean horizontalLegend = false, legendLowToHigh = true;
 //	private boolean boolNA = true;
 
 	/**
@@ -220,43 +219,64 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 
 		String type = watcher.getField().getType().getSimpleName();
 
+//		legImg = buildGradientImage(include)
+		
+		
 		switch (type)
 		{
 
 		case("int"):
 		{
-			int n = Math.max(legDatInt.length, legDatInt[0].length);
-			for (int i = 0; i < n; i++)
-			{
-				row = i * legIndexMult1; col = i * legIndexMult2;
-				legImg.setRGB(row, col, interp.getColor(legDatInt[row][col]));
-			}
+			legDatBool = null; legDatDouble = null;	legendDoubleSequence = null;
+			int intMin = (int) legendMin;
+			int intMax = (int) legendMax;
+			
+			
+			legDatInt = ArrayImageFactory.spacedIntervals((int) legendMin, (int) legendMax, nLegendSteps);
+			legImg = (BufferedImage) ArrayImageFactory.buildGradientImage(
+					(int) legendMin, (int) legendMax, nLegendSteps, interp, 
+					legendLowToHigh, horizontalLegend);
+//			int n = Math.max(legDatInt.length, legDatInt[0].length);
+//			for (int i = 0; i < n; i++)
+//			{
+//				row = i * legIndexMult1; col = i * legIndexMult2;
+//				legImg.setRGB(row, col, interp.getColor(legDatInt[row][col]));
+//			}
 			break;
 		}
 		case("double"): 
 		{
-			for (int i = 0; i < nLegendSteps; i++)
-			{
-				row = i * legIndexMult1; col = i * legIndexMult2;
-				legImg.setRGB(row, col, interp.getColor(legDatDouble[row][col]));
-			}
+			legImg = (BufferedImage) ArrayImageFactory.buildGradientImage(
+					legendMin, legendMax, nLegendSteps, interp, 
+					legendLowToHigh, horizontalLegend);
+			
+			
+//			for (int i = 0; i < nLegendSteps; i++)
+//			{
+//				row = i * legIndexMult1; col = i * legIndexMult2;
+//				legImg.setRGB(row, col, interp.getColor(legDatDouble[row][col]));
+//			}
 			break;
 		}
 		case("boolean"): 
 		{
-			int i = 0;
-
-			row = i * legIndexMult1; col = i * legIndexMult2;
-			legImg.setRGB(row, col, booleanCI.getColor(legDatBool[row][col]));
-
-			i++; row = i * legIndexMult1; col = i * legIndexMult2;
-			legImg.setRGB(row, col, booleanCI.getColor(legDatBool[row][col]));
-
-			if (includeNABoolean)
-			{
-				i++; row = i * legIndexMult1; col = i * legIndexMult2;
-				legImg.setRGB(row, col, booleanCI.getNAColor());
-			}
+			legImg = (BufferedImage) ArrayImageFactory.buildGradientImage(includeNABoolean, booleanCI,
+					legendLowToHigh, horizontalLegend);
+			
+//			
+//			int i = 0;
+//
+//			row = i * legIndexMult1; col = i * legIndexMult2;
+//			legImg.setRGB(row, col, booleanCI.getColor(legDatBool[row][col]));
+//
+//			i++; row = i * legIndexMult1; col = i * legIndexMult2;
+//			legImg.setRGB(row, col, booleanCI.getColor(legDatBool[row][col]));
+//
+//			if (includeNABoolean)
+//			{
+//				i++; row = i * legIndexMult1; col = i * legIndexMult2;
+//				legImg.setRGB(row, col, booleanCI.getNAColor());
+//			}
 			break;
 		}
 		}	
@@ -272,8 +292,9 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 			interp = booleanCI;
 		else interp = ci;
 
-		img = (BufferedImage) ArrayImageFactory.buildArrayImage(objArray, watcher, interp,
-				orientation1, orientation2, transpose, includeNABoolean
+		img = (BufferedImage) ArrayImageFactory.buildArrayImage(
+				objArray, watcher, interp,
+				flipAxisX, flipAxisY, transpose, includeNABoolean
 				);
 				
 //		
@@ -416,7 +437,7 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		legImg = new BufferedImage(legDatDim1, legDatDim2, rgbType);
 	}
 
-
+@Deprecated
 	private void buildLegendSequenceDirection()
 	{
 		/* low to high values */

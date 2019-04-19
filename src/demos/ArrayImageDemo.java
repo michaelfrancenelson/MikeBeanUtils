@@ -39,7 +39,7 @@ public class ArrayImageDemo
 	static List<ObjectArrayImagePanel<TerrainBean>> tPanels;
 	static double ptSize;
 	static ObjectArrayImager<TerrainBean> imagerAge, imagerElev;
-
+	static boolean[] test = new boolean[] {true, false};
 
 	public static void setup(int nRow, int nCol, double elevGradient, int ageMod)
 	{
@@ -121,13 +121,13 @@ public class ArrayImageDemo
 			TerrainBean.perturbElevations(cells, 300.0);
 			TerrainBean.perturbAges(cells, 20);
 			panels.add(new SimpleImagePanel(ArrayImageFactory.buildArrayImage(
-					cells, imagerAge, "elevation", i, j, false, true)));
+					cells, imagerAge, "elevation", test[i], test[j], false, true)));
 			panels.add(new SimpleImagePanel(ArrayImageFactory.buildArrayImage(
-					cells, imagerAge, "elevation", i, j, true, true)));
+					cells, imagerAge, "elevation", test[i], test[j], true, true)));
 			panels.add(new SimpleImagePanel(ArrayImageFactory.buildArrayImage(
-					cells, imagerAge, "age", i, j, false, true)));
+					cells, imagerAge, "age", test[i], test[j], false, true)));
 			panels.add(new SimpleImagePanel(ArrayImageFactory.buildArrayImage(
-					cells, imagerAge, "age", i, j, true, true)));
+					cells, imagerAge, "age", test[i], test[j], true, true)));
 		}
 
 		f = SwingUtils.frameFactory(4 * cellSize, 4 * cellSize, "Terrain Bean Array Demo", 4, 4);
