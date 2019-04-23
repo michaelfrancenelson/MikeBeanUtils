@@ -9,12 +9,14 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.border.Border;
 
+import beans.memberState.SimpleFieldWatcher.IntArrayMinMax;
 import beans.sampleBeans.TerrainBean;
-import image.ArrayImageFactory;
-import image.ArrayImageFactory.SimpleImagePanel;
 import image.arrayImager.ObjectArrayImager;
 import image.arrayImager.SimpleArrayImager;
 import image.colorInterpolator.ColorInterpolator;
+import image.imageFactories.ObjectImageFactory;
+import image.imageFactories.PrimitiveImageFactory;
+import image.imageFactories.PrimitiveImageFactory.SimpleImagePanel;
 import swing.SwingUtils;
 import swing.stretchAndClick.ObjectArrayImagePanel;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
@@ -52,7 +54,7 @@ public class ArrayImageDemo
 
 	public static void main(String[] args) 
 	{
-		SimpleImagePanelDemo();
+//		SimpleImagePanelDemo();
 		objectArrayImagePanelDemo();
 	}
 
@@ -72,10 +74,11 @@ public class ArrayImageDemo
 			{
 				TerrainBean.perturbElevations(cells, i * 10);
 				TerrainBean.perturbAges(cells, (int) (j * 2.75));
-				imagerAge = img(100, 1, "age");
-				imagerElev = img(100, 1, "Elevation");
+				imagerAge = img(100, true, true, "age");
+				imagerElev = img(100, true, true, "Elevation");
 
-				objPan = ObjectArrayPanelFactory.buildPanel(imagerElev, "elevation", true, 0, 0, ptSize);
+				objPan = ObjectArrayPanelFactory.buildPanel(
+						imagerElev, "elevation", true, 0, 0, ptSize);
 				objPan.addValueLabel(0.2, 0.4, font);
 				tPanels.add(objPan);
 				objPan = ObjectArrayPanelFactory.buildPanel(imagerAge, "age", true, 0, 0, ptSize);
@@ -95,38 +98,54 @@ public class ArrayImageDemo
 				f.setVisible(true);
 
 		JFrame f2 = SwingUtils.frameFactory(3 * cellSize, 4 * cellSize,
-				"Terrain Bean Object Array Image Demo");
+				"Terrain Bean Legend Demo");
 		f2.add(objPan.getLegendPanel());
-		f2.setVisible(true);
+//		f2.setVisible(true);
 
 	}
 
-	static ObjectArrayImager<TerrainBean> img(int nLegendSteps, int legendDirection, String field)
+	static ObjectArrayImager<TerrainBean> img(int nLegendSteps, 
+			boolean loToHi, boolean horiz, String field)
 	{
+		
+		
+		
+		
 		return SimpleArrayImager.factory(
 				TerrainBean.class, cells, 
 				"age", 
 				ColorUtils.HEAT_COLORS, bCol,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null, null,
-				true, nLegendSteps, legendDirection);	
+				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
+				null, null,
+				true, 
+				nLegendSteps, loToHi, horiz);	
 	}
 
 
 	public static void SimpleImagePanelDemo()
 	{
 		setup(303, 504, 1.57, 75);
-		imagerAge = img(100, 1, "elevation");
+		imagerAge = img(100, true, true, "elevation");
+		
+		
+		IntArrayMinMax datInt;
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2;  j++)
 		{
 			TerrainBean.perturbElevations(cells, 300.0);
 			TerrainBean.perturbAges(cells, 20);
-			panels.add(new SimpleImagePanel(ArrayImageFactory.buildArrayImage(
-					cells, imagerAge, "elevation", test[i], test[j], false, true)));
-			panels.add(new SimpleImagePanel(ArrayImageFactory.buildArrayImage(
+			datInt = imagerAge.getWatcher().getIntVal(cells);
+			panels.add(new SimpleImagePanel(
+					PrimitiveImageFactory.buildImage(
+							datInt.getDat(), imagerAge.getInterpolator())));
+					
+					
+//					ObjectImageFactory.buildArrayImage(
+//					cells, imagerAge, "elevation", test[i], test[j], false, true)));
+			panels.add(new SimpleImagePanel(ObjectImageFactory.buildArrayImage(
 					cells, imagerAge, "elevation", test[i], test[j], true, true)));
-			panels.add(new SimpleImagePanel(ArrayImageFactory.buildArrayImage(
+			panels.add(new SimpleImagePanel(ObjectImageFactory.buildArrayImage(
 					cells, imagerAge, "age", test[i], test[j], false, true)));
-			panels.add(new SimpleImagePanel(ArrayImageFactory.buildArrayImage(
+			panels.add(new SimpleImagePanel(ObjectImageFactory.buildArrayImage(
 					cells, imagerAge, "age", test[i], test[j], true, true)));
 		}
 

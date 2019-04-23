@@ -8,11 +8,11 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.border.Border;
 
-import image.ArrayImageFactory;
-import image.ArrayImageFactory.SimpleImagePanel;
 import image.colorInterpolator.ColorInterpolator;
 import image.colorInterpolator.SimpleBooleanColorInterpolator;
 import image.colorInterpolator.SimpleColorInterpolator;
+import image.imageFactories.GradientImageFactory;
+import image.imageFactories.PrimitiveImageFactory.SimpleImagePanel;
 import swing.SwingUtils;
 import utils.ColorUtils;
 
@@ -24,7 +24,6 @@ import utils.ColorUtils;
  */
 public class GradientImageDemo
 {
-
 	static Color[] bCol = new Color[] {Color.gray, Color.green};
 	static SimpleImagePanel pp;
 	static ColorInterpolator c;
@@ -35,7 +34,6 @@ public class GradientImageDemo
 	static List<SimpleImagePanel> panels;
 
 	static boolean horizontal, lowToHigh;
-
 
 	public static void main(String[] args) 
 	{
@@ -55,22 +53,22 @@ public class GradientImageDemo
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null);
 
 		horizontal = true;lowToHigh = true;
-		pp = new SimpleImagePanel(ArrayImageFactory.buildGradientImage(min, max, nBreaks, c, horizontal, lowToHigh));
+		pp = new SimpleImagePanel(GradientImageFactory.buildGradientImage(min, max, nBreaks, c, horizontal, lowToHigh));
 		f = SwingUtils.frameFactory(4 * cellSize , 2 * cellSize, "Horizontal, low to high", 1, 1);
 		f.add(pp); f.setVisible(true); f.setLocation(x, y);
 
 		horizontal = true; lowToHigh = false;
-		pp = new SimpleImagePanel(ArrayImageFactory.buildGradientImage(min, max, nBreaks, c, horizontal, lowToHigh));
+		pp = new SimpleImagePanel(GradientImageFactory.buildGradientImage(min, max, nBreaks, c, horizontal, lowToHigh));
 		f = SwingUtils.frameFactory(4 * cellSize , 2 * cellSize, "Horizontal, high to low", 1, 1);
 		f.add(pp); f.setVisible(true); f.setLocation(x, y + 2 * cellSize);
 
 		horizontal = false;	lowToHigh = true;
-		pp = new SimpleImagePanel(ArrayImageFactory.buildGradientImage(min, max, nBreaks, c, horizontal, lowToHigh));
+		pp = new SimpleImagePanel(GradientImageFactory.buildGradientImage(min, max, nBreaks, c, horizontal, lowToHigh));
 		f = SwingUtils.frameFactory(4 * cellSize , 2 * cellSize, "Vertical, low to high", 1, 1);
 		f.add(pp); f.setVisible(true); f.setLocation(x, y + 4 * cellSize);
 
 		horizontal = false;	lowToHigh = false;
-		pp = new SimpleImagePanel(ArrayImageFactory.buildGradientImage(min, max, nBreaks, c, horizontal, lowToHigh));
+		pp = new SimpleImagePanel(GradientImageFactory.buildGradientImage(min, max, nBreaks, c, horizontal, lowToHigh));
 		f = SwingUtils.frameFactory(4 * cellSize , 2 * cellSize,"Vertical, high to low", 1, 1);
 		f.add(pp); f.setVisible(true); f.setLocation(x , y + 6 * cellSize);
 	}
@@ -88,7 +86,7 @@ public class GradientImageDemo
 				c = SimpleColorInterpolator.factory(
 						ColorUtils.TERRAIN_COLORS, mins[i], maxs[i],
 						Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null);
-				pp = new SimpleImagePanel(ArrayImageFactory.buildGradientImage(
+				pp = new SimpleImagePanel(GradientImageFactory.buildGradientImage(
 						mins[i], maxs[i], nBreaks, c, test[dir], test[orient]));
 				pp.setBorder(border);
 				panels.add(pp);
@@ -114,7 +112,7 @@ public class GradientImageDemo
 				c = SimpleColorInterpolator.factory(
 						ColorUtils.HEAT_COLORS, mins[i], maxs[i],
 						Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null);
-				pp = new SimpleImagePanel(ArrayImageFactory.buildGradientImage(
+				pp = new SimpleImagePanel(GradientImageFactory.buildGradientImage(
 						mins[i], maxs[i], nBreaks, c, test[dir], test[orient]));
 				pp.setBorder(border);
 				panels.add(pp);
@@ -140,10 +138,10 @@ public class GradientImageDemo
 
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
 		{
-			pp = new SimpleImagePanel(ArrayImageFactory.buildGradientImage(true, c, test[i], test[j]));
+			pp = new SimpleImagePanel(GradientImageFactory.buildBooleanGradient(c, test[i], test[j]));
 			pp.setBorder(border);
 			panels.add(pp);
-			pp = new SimpleImagePanel(ArrayImageFactory.buildGradientImage(false, c, test[i], test[j]));
+			pp = new SimpleImagePanel(GradientImageFactory.buildBooleanGradient(c, test[i], test[j]));
 			pp.setBorder(border);
 			panels.add(pp);
 		}

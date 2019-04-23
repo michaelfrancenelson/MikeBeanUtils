@@ -8,10 +8,14 @@ import java.util.Map;
 
 import beans.memberState.FieldWatcher;
 import beans.memberState.SimpleFieldWatcher;
-import image.ArrayImageFactory;
+import beans.memberState.SimpleFieldWatcher.DblArrayMinMax;
+import beans.memberState.SimpleFieldWatcher.IntArrayMinMax;
 import image.colorInterpolator.ColorInterpolator;
 import image.colorInterpolator.SimpleBooleanColorInterpolator;
 import image.colorInterpolator.SimpleColorInterpolator;
+import image.imageFactories.GradientImageFactory;
+import image.imageFactories.PrimitiveImageFactory;
+import utils.Sequences;
 
 /** Create images from int, double, or boolean members of objects in 2D arrays.
  * 
@@ -19,24 +23,31 @@ import image.colorInterpolator.SimpleColorInterpolator;
  *
  * @param <T>
  */
+@Deprecated
 public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 {
 	T[][] objArray;
 	ColorInterpolator ci, booleanCI;
 	int rgbType = BufferedImage.TYPE_3BYTE_BGR;
 
-	double[][]  dataDouble = null, legDatDouble = null;
-	int[][]     dataInt = null, legDatInt = null;
+//	double[][]  dataDouble = null;
+//	double[][] legDatDouble = null;
+//	int[][]     dataInt = null; 
+//	int[][]     legDatInt = null;
+	
+	
+	IntArrayMinMax datInt, legDatInt;
+	DblArrayMinMax datDbl, legDatDbl;
+	
 	boolean[][] dataBool = null, legDatBool = null;
 	double datMin, datMax;
-
+	
 	BufferedImage img, legImg;
 	SimpleFieldWatcher<T> watcher;
 	Class<T> clazz;
 	private int legDatDim1, legDatDim2;
 	double legendMin, legendMax;
-	double[] legendDoubleSequence;
-	int[]    legendIntSequence;
+	
 	int legIndexMult1, legIndexMult2;
 	boolean includeNABoolean, buildLegend;
 
@@ -44,10 +55,9 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	Map<String, Boolean> parsedBooleanFields;
 
 	int[] currentSelectionArrayCoords;
-	int nLegendSteps, nLegendStepsAdj, legendDirection;
+	int nLegendSteps;
 	private boolean transpose = false, flipAxisX = false, flipAxisY = false;
 	private boolean horizontalLegend = false, legendLowToHigh = true;
-//	private boolean boolNA = true;
 
 	/**
 	 * 
@@ -77,7 +87,6 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		out.ci = SimpleColorInterpolator.factory(gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt);
 		out.booleanCI = SimpleBooleanColorInterpolator.factory(booleanColors, naColor);
 		out.objArray = objArray;
-		out.initImage();
 
 		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, dblFmt);
 		Map<String, Boolean> mp = new HashMap<>();
@@ -106,16 +115,19 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	 * @return
 	 */
 	public static <T> ObjectArrayImager<T> factory(
-			Class<T> clazz, T[][] objArray,	String fieldName, 
+			Class<T> clazz, T[][] objArray,
+			String fieldName, 
 			Color[] gradientColors, Color[] booleanColors,
 			double naDouble, int naInt, Color naColor,
 			String dblFmt, Iterable<String> parsedBooleanFields,
-			boolean includeNABoolean, int nLegendSteps, int legendDirection
+			boolean includeNABoolean,
+			int nLegendSteps, boolean legLowToHi, boolean horizLegend
 			)
 	{
 		SimpleArrayImager<T> out = new SimpleArrayImager<T>();
 		out.setClazz(clazz);
-		out.ci = SimpleColorInterpolator.factory(gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt);
+		out.ci = SimpleColorInterpolator.factory(
+				gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt);
 		out.booleanCI = SimpleBooleanColorInterpolator.factory(booleanColors, naColor);
 		out.objArray = objArray;
 		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, dblFmt);
@@ -127,34 +139,13 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		if (nLegendSteps > 0)
 			out.buildLegend = true;
 		out.nLegendSteps = nLegendSteps;
-		out.legendDirection = legendDirection;
+		out.horizontalLegend = horizLegend;
+		out.legendLowToHigh = legLowToHi;
 		out.includeNABoolean = includeNABoolean;
-
-		out.initImage();
-		//		out.initLegendImage();
 
 		out.setField(fieldName);
 		out.refresh();
 		return out;
-	}
-
-	/** Build the blank image of the appropriate dimensions. */
-	private void initImage() { img = new BufferedImage(objArray.length, objArray[0].length, rgbType);}
-
-	/**
-	 * Create the underlying data array from which the image is built.
-	 * 
-	 */
-	void buildDataArray()
-	{
-		switch (getWatcher().getField().getType().getSimpleName())
-		{
-		case("int"): buildIntDataArray(); break;
-		case("double"): buildDoubleDataArray(); break;
-		case("boolean"): buildBooleanDataArray(); break;
-		}
-
-		if (buildLegend) buildLegendData();
 	}
 
 	@Deprecated // This still needs work
@@ -163,46 +154,40 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 	 */
 	void buildLegendData()
 	{
-		buildLegendSequenceDirection();
 		switch (getWatcher().getField().getType().getSimpleName())
 		{
 		case("int"): 
 		{
-			legDatBool = null; legDatDouble = null;	legendDoubleSequence = null;
-			int intMin = (int) legendMin;
-			int intMax = (int) legendMax;
-			legendIntSequence = ArrayImageFactory.spacedIntervals(intMin, intMax, nLegendStepsAdj);
-			nLegendStepsAdj = legendIntSequence.length;
-
-			buildLegendDimensions(nLegendStepsAdj);
-//			System.out.println("SimpleArrayImager.buildLegendData() int min = " + intMin + " int max = " + intMax);
-
-			legDatInt = new int[legDatDim1][legDatDim2];
-
-			for (int i = 0; i < legendIntSequence.length; i++)
-				legDatInt[i * legIndexMult1][i * legIndexMult2] = legendIntSequence[i];
+			legDatBool = null; legDatDbl = null;
+			
+			/* Assumes that the int data has already been updated. */
+			int legMin = datInt.getMin(), legMax = datInt.getMax();
+			if (legendLowToHigh && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
+			
+			legDatInt = new IntArrayMinMax( 
+					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizontalLegend),
+					legMin, legMax);
 			break;
 		}
 
 		case("double"): 
 		{
-			legDatBool = null; legDatInt = null; legendIntSequence = null;
-			buildLegendDimensions(nLegendSteps + 1);
-			legendDoubleSequence = ArrayImageFactory.spacedIntervals(legendMin, legendMax, nLegendSteps);
-			legDatDouble = new double[legDatDim1][legDatDim2];
-			for (int i = 0; i < legendDoubleSequence.length; i++)
-				legDatDouble[i * legIndexMult1][i * legIndexMult2] = legendDoubleSequence[i];
+			legDatBool = null; legDatInt = null; 
+			double legMin = datDbl.getMin(), legMax = datInt.getMax();
+			if (legendLowToHigh && legMin > legMax) { double t = legMin; legMax = legMin; legMin = t; }
+			
+			legDatDbl = new DblArrayMinMax( 
+					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizontalLegend),
+					legMin, legMax);
 			break;
 		}
 
 		case("boolean"):
 		{
-			legDatBool = null; legDatInt = null; legendIntSequence = null;
-			if (includeNABoolean) buildLegendDimensions(3);
-			else buildLegendDimensions(2);
+			
 			break;
 		}
-			
+
 		}
 	}
 
@@ -216,67 +201,41 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 			interp = booleanCI;
 		else interp = ci;
 		int row = 0, col = 0;
-
 		String type = watcher.getField().getType().getSimpleName();
 
-//		legImg = buildGradientImage(include)
-		
-		
 		switch (type)
 		{
 
 		case("int"):
 		{
-			legDatBool = null; legDatDouble = null;	legendDoubleSequence = null;
+			legDatBool = null; legDatDbl = null;
 			int intMin = (int) legendMin;
 			int intMax = (int) legendMax;
-			
-			
-			legDatInt = ArrayImageFactory.spacedIntervals((int) legendMin, (int) legendMax, nLegendSteps);
-			legImg = (BufferedImage) ArrayImageFactory.buildGradientImage(
-					(int) legendMin, (int) legendMax, nLegendSteps, interp, 
-					legendLowToHigh, horizontalLegend);
-//			int n = Math.max(legDatInt.length, legDatInt[0].length);
-//			for (int i = 0; i < n; i++)
-//			{
-//				row = i * legIndexMult1; col = i * legIndexMult2;
-//				legImg.setRGB(row, col, interp.getColor(legDatInt[row][col]));
-//			}
+
+			legDatInt = new IntArrayMinMax(
+					Sequences.spacedIntervals2D(
+					intMin, intMax, 
+					nLegendSteps, horizontalLegend),
+					intMin, intMax);
+			legImg = (BufferedImage) PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp);
 			break;
 		}
 		case("double"): 
 		{
-			legImg = (BufferedImage) ArrayImageFactory.buildGradientImage(
-					legendMin, legendMax, nLegendSteps, interp, 
-					legendLowToHigh, horizontalLegend);
-			
-			
-//			for (int i = 0; i < nLegendSteps; i++)
-//			{
-//				row = i * legIndexMult1; col = i * legIndexMult2;
-//				legImg.setRGB(row, col, interp.getColor(legDatDouble[row][col]));
-//			}
+			legDatDbl = new DblArrayMinMax(
+					Sequences.spacedIntervals2D(
+							legendMin, legendMax,
+							nLegendSteps, horizontalLegend),
+							legendMin, legendMax);
+			legImg = (BufferedImage) 
+					PrimitiveImageFactory.buildImage(legDatDbl.getDat(), interp);
 			break;
 		}
 		case("boolean"): 
 		{
-			legImg = (BufferedImage) ArrayImageFactory.buildGradientImage(includeNABoolean, booleanCI,
-					legendLowToHigh, horizontalLegend);
+
 			
-//			
-//			int i = 0;
-//
-//			row = i * legIndexMult1; col = i * legIndexMult2;
-//			legImg.setRGB(row, col, booleanCI.getColor(legDatBool[row][col]));
-//
-//			i++; row = i * legIndexMult1; col = i * legIndexMult2;
-//			legImg.setRGB(row, col, booleanCI.getColor(legDatBool[row][col]));
-//
-//			if (includeNABoolean)
-//			{
-//				i++; row = i * legIndexMult1; col = i * legIndexMult2;
-//				legImg.setRGB(row, col, booleanCI.getNAColor());
-//			}
+			legImg = (BufferedImage) GradientImageFactory.buildBooleanGradient(interp, horizontalLegend, includeNABoolean);
 			break;
 		}
 		}	
@@ -292,176 +251,104 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 			interp = booleanCI;
 		else interp = ci;
 
-		img = (BufferedImage) ArrayImageFactory.buildArrayImage(
-				objArray, watcher, interp,
-				flipAxisX, flipAxisY, transpose, includeNABoolean
-				);
-				
-//		
-//		switch (getWatcher().getField().getType().getSimpleName())
-//		{
-//		case("int"):
-//		{
-//			for (int row = 0; row < objArray.length; row++)
-//				for (int col = 0; col < objArray[0].length; col++)
-//					img.setRGB(row, col, interp.getColor(watcher.getIntVal(objArray[row][col])));
-//			break;
-//		}
-//		case("double"): 
-//		{
-//			for (int row = 0; row < objArray.length; row++)
-//				for (int col = 0; col < objArray[0].length; col++)
-//					img.setRGB(row, col, interp.getColor(watcher.getDoubleVal(objArray[row][col])));
-//			break;
-//		}
-//		case("boolean"): 
-//		{
-//			for (int row = 0; row < objArray.length; row++)
-//				for (int col = 0; col < objArray[0].length; col++)
-//					img.setRGB(row, col, booleanCI.getColor(watcher.getBoolVal(objArray[row][col])));
-//			break;
-//		}
-//		}
-	}
 
-	/**
-	 * 
-	 */
-	void buildDoubleDataArray()
-	{
-		dataBool = null;
-		dataInt = null;
-
-		/* don't rebuild an already existing array. */
-		if (dataDouble == null)
-			dataDouble = new double[objArray.length][objArray[0].length];
-		datMin = Double.MAX_VALUE; datMax = Double.MIN_VALUE;
-		double val;
-		img = new BufferedImage(objArray.length, objArray[0].length, rgbType);
-		for (int row = 0; row < objArray.length; row++)
-			for (int col = 0; col < objArray[0].length; col++)
-			{
-				val = getWatcher().getDoubleVal(objArray[row][col]);
-				dataDouble[row][col] = val;
-				if (val < datMin) datMin = val;
-				if (val > datMax) datMax = val;
-			}
-//
-//		if (buildLegend)
-//		{
-//			buildLegendSequenceDirection();
-//			//			buildLegendDoubleSequence();
-//			buildLegendDimensions(nLegendSteps);
-//			legImg = new BufferedImage(legDatDim1, legDatDim2, rgbType);
-//			legDatDouble = new double[legDatDim1][legDatDim2];
-//			for (int i = 0; i < nLegendSteps; i++)
-//				legDatDouble[i * legIndexMult1][i * legIndexMult2] = legendDoubleSequence[i];
-//		}
-	}
-
-	/**
-	 * 
-	 */
-	void buildBooleanDataArray()
-	{
-		dataDouble = null;
-		dataInt = null;
-
-		/* don't rebuild an already existing array. */
-		if (dataBool == null)
-			dataBool = new boolean[objArray.length][objArray[0].length];
-		img = new BufferedImage(objArray.length, objArray[0].length, rgbType);
-		for (int row = 0; row < objArray.length; row++)
-			for (int col = 0; col < objArray[0].length; col++)
-				dataBool[row][col] = getWatcher().getBoolVal(objArray[row][col]);
-
-//		if (buildLegend)
-//		{
-//			legDatDouble = null;
-//			legDatInt = null;
-//
-//			int dim = 2;
-//			legDatBool = new boolean[dim * legIndexMult1][dim * legIndexMult2];
-//			legDatBool[0][0] = true;
-//			legDatBool[legIndexMult1][legIndexMult2] = false;
-//
-//			/* Include a pixel for the na color, if needed */
-//			if (includeNABoolean) dim = 3;
-//			legImg = new BufferedImage(dim * legIndexMult1, dim * legIndexMult2, rgbType);
-//		}
-	}
-
-	/**
-	 * 
-	 */
-	void buildIntDataArray()
-	{
-		dataBool = null;
-		dataDouble = null;
-
-
-		/* don't rebuild an already existing array. */
-		if (dataInt == null)
-			dataInt = new int[objArray.length][objArray[0].length];
-		datMin = Double.MAX_VALUE; datMax = Double.MIN_VALUE;
-		int val;
-		double dVal;
-		for (int row = 0; row < objArray.length; row++)
-			for (int col = 0; col < objArray[0].length; col++)
-			{
-				val = getWatcher().getIntVal(objArray[row][col]);
-				dVal = (double) val;
-
-				dataInt[row][col] = val;
-				if (dVal < datMin) datMin = dVal;
-				if (dVal > datMax) datMax = dVal;
-			}
-	}
-
-
-	private void buildLegendDimensions(int nSteps)
-	{
-		/* Vertical legend*/
-		if ((legendDirection == 1) || (legendDirection == 3))
-		{ 
-			legDatDim1 = nSteps; legDatDim2 = 1; 
-			legIndexMult1 = 1; legIndexMult2 = 0;
-		}
-
-		/* Horizontal legend */
-		else 
+		switch (getWatcher().getField().getType().getSimpleName())
 		{
-			legDatDim2 = nSteps; legDatDim1 = 1; 
-			legIndexMult2 = 1; legIndexMult1 = 0;
+		case("int"):
+		{
+			dataBool = null;
+			datDbl = null;
+			datInt = watcher.getIntVal(objArray);
+			interp.updateMinMax(datInt.getMin(), datInt.getMax());
+			img = (BufferedImage) PrimitiveImageFactory.buildImage(
+					datInt.getDat(), interp);
+			break;
 		}
-		legImg = new BufferedImage(legDatDim1, legDatDim2, rgbType);
+		case("double"): 
+		{
+			dataBool = null;
+			datInt = null;
+			datDbl = watcher.getDoubleVal(objArray);
+			interp.updateMinMax(datDbl.getMin(), datDbl.getMax());
+			img = (BufferedImage) PrimitiveImageFactory.buildImage(datDbl.getDat(), interp);
+			break;
+		}
+		case("boolean"): 
+		{
+			
+			
+			
+			for (int row = 0; row < objArray.length; row++)
+				for (int col = 0; col < objArray[0].length; col++)
+					img.setRGB(row, col, booleanCI.getColor(watcher.getBoolVal(objArray[row][col])));
+			break;
+		}
+		}
 	}
 
-@Deprecated
-	private void buildLegendSequenceDirection()
-	{
-		/* low to high values */
-		if ((legendDirection == 1) || (legendDirection == 2))
-		{ 
-			legendMin = datMin;
-			legendMax = datMax;
-		}
+	/**
+	 * 
+	 */
+//	void buildDoubleDataArray()
+//	{
+//		dataBool = null;
+//		datInt = null;
+//
+//		datDbl = watcher.getDoubleVal(objArray);
+//	}
 
-		/* High to low values */
-		else { legendMax = datMin; legendMin = datMax; }
-	}
+//	/**
+//	 * 
+//	 */
+//	void buildBooleanDataArray()
+//	{
+//		datDbl = null;
+//		datInt = null;
+//
+//		/* If not using 
+//		
+//		/* don't rebuild an already existing array. */
+//		if (dataBool == null)
+//			dataBool = new boolean[objArray.length][objArray[0].length];
+//		img = new BufferedImage(objArray.length, objArray[0].length, rgbType);
+//		for (int row = 0; row < objArray.length; row++)
+//			for (int col = 0; col < objArray[0].length; col++)
+//				dataBool[row][col] = getWatcher().getBoolVal(objArray[row][col]);
+//
+//		//		if (buildLegend)
+//		//		{
+//		//			legDatDouble = null;
+//		//			legDatInt = null;
+//		//
+//		//			int dim = 2;
+//		//			legDatBool = new boolean[dim * legIndexMult1][dim * legIndexMult2];
+//		//			legDatBool[0][0] = true;
+//		//			legDatBool[legIndexMult1][legIndexMult2] = false;
+//		//
+//		//			/* Include a pixel for the na color, if needed */
+//		//			if (includeNABoolean) dim = 3;
+//		//			legImg = new BufferedImage(dim * legIndexMult1, dim * legIndexMult2, rgbType);
+//		//		}
+//	}
 
+	/**
+	 * 
+	 */
+//	void buildIntDataArray()
+//	{
+//		dataBool = null;
+//		datDbl = null;
+//
+//		datInt = watcher.getIntVal(objArray);
+//	}		
 
 	@Override
 	public void refresh() 
 	{
-		buildDataArray();
-		ci.updateMinMax(datMin,  datMax);
 		buildImage();
 
 		if (buildLegend)
 		{
-			buildLegendSequenceDirection();
 			buildLegendImage();
 		}
 	}
@@ -495,9 +382,9 @@ public class SimpleArrayImager<T> implements ObjectArrayImager<T>
 		switch (watcher.getField().getType().getSimpleName())
 		{
 		case("int"):
-			return String.format("%d", legDatInt[i][j]);
+			return String.format("%d", legDatInt.getDat()[i][j]);
 		case("double"): 
-			return String.format(watcher.getDblFmt(), legDatDouble[i][j]);
+			return String.format(watcher.getDblFmt(), legDatDbl.getDat()[i][j]);
 		case("boolean"): 
 		{
 			if (i == 2 || j == 2) return "NA";

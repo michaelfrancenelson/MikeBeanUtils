@@ -16,6 +16,39 @@ import fields.FieldUtils;
 
 public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 {
+	/** 
+	 *  A container for an int array with its min and max values
+	 *  already calculated.
+	 * @author michaelfrancenelson
+	 *
+	 */
+	public static class IntArrayMinMax
+	{
+		public IntArrayMinMax(int[][] d, int mn, int mx)
+		{this.data = d; this.min = mn; this.max = mx; }
+		int[][] data; int min; int max;
+		public int[][] getDat() { return this.data; }
+		public int getMin() { return this.min; }
+		public int getMax() { return this.max; }
+	}
+
+	/**
+	 * A container for a double array with its min
+	 * and max values precalculated.
+	 * @author michaelfrancenelson
+	 *
+	 */
+	public static class DblArrayMinMax
+	{
+		public DblArrayMinMax(double[][] d, double mn, double mx)
+		{this.data = d; this.min = mn; this.max = mx; }
+		double[][] data; double min; double max;
+		public double[][] getDat() { return this.data; }
+		public double getMin() { return this.min; }
+		public double getMax() { return this.max; }
+	}
+
+
 	@Retention(RetentionPolicy.RUNTIME)
 	public static @interface WatchField{ public String name(); }
 
@@ -110,6 +143,52 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	@Override public double  getDoubleVal(T t) { return dblGetter.get(t); }
 	@Override public int     getIntVal(T t)    { return intGetter.get(t); }
 	@Override public boolean getBoolVal(T t) { return boolGetter.get(t); }
+
+	@Override public DblArrayMinMax  getDoubleVal(T[][] t) 
+	{
+		double[][] out = new double[t.length][t[0].length];
+		double min = Double.MAX_VALUE;; double max = Double.MIN_VALUE;
+		double val = 0.0;
+		for (int i = 0; i < t.length; i++) for (int j = 0; j < t[0].length; j++)
+		{		
+			val = dblGetter.get(t[i][j]);
+			if (val < min) min = val;
+			else if (val > max) max = val;
+			out[i][j] = val;
+		}
+		return new DblArrayMinMax(out, min, max);
+	}
+
+	@Override public IntArrayMinMax     getIntVal(T[][] t)    
+	{
+		int min = Integer.MAX_VALUE; int max = Integer.MIN_VALUE;
+		int val = 0;
+		int[][] out = new int[t.length][t[0].length];
+		for (int i = 0; i < t.length; i++) for (int j = 0; j < t[0].length; j++)
+		{
+			val = intGetter.get(t[i][j]);
+			if (val < min) min = val;
+			else if (val > max) max = val;
+			out[i][j] = val;
+		}
+		return new IntArrayMinMax(out, min, max);
+	}
+
+	@Override public boolean[][] getBoolVal(T[][] t) 
+	{
+		boolean[][] out = new boolean[t.length][t[0].length];
+		for (int i = 0; i < t.length; i++) for (int j = 0; j < t[0].length; j++) 
+			out[i][j] = boolGetter.get(t[i][j]); 
+		return out;
+	}
+
+	@Override public boolean[][] getParsedBoolVal(T[][] t) 
+	{ 
+		boolean[][] out = new boolean[t.length][t[0].length];
+		for (int i = 0; i < t.length; i++) for (int j = 0; j < t[0].length; j++) 
+			out[i][j] = parsingBoolGetter.get(t[i][j]); 
+		return out;
+	}
 
 	/**
 	 * 

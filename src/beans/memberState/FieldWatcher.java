@@ -2,6 +2,9 @@ package beans.memberState;
 
 import java.lang.reflect.Field;
 
+import beans.memberState.SimpleFieldWatcher.DblArrayMinMax;
+import beans.memberState.SimpleFieldWatcher.IntArrayMinMax;
+
 
 /** Monitor the state of beans.
  * 
@@ -11,6 +14,7 @@ import java.lang.reflect.Field;
  */
 public interface FieldWatcher<T>
 {
+	
 	/**
 	 * 
 	 * @param t
@@ -26,7 +30,9 @@ public interface FieldWatcher<T>
 	 *         If the field is not 'int', may throw an exception.
 	 */
 	public int     getIntVal(T t);
-
+	public IntArrayMinMax getIntVal(T[][] t);
+	
+	
 	/**
 	 * 
 	 * @param t bean instance
@@ -34,6 +40,7 @@ public interface FieldWatcher<T>
 	 *         If the field is not 'double' may throw an exception
 	 */
 	public double  getDoubleVal(T t);
+	public DblArrayMinMax getDoubleVal(T[][] t);
 	
 	/**
 	 * 
@@ -42,6 +49,13 @@ public interface FieldWatcher<T>
 	 *         If the field is not 'boolean' may throw an exception
 	 */
 	public boolean getBoolVal(T t);
+
+	/**
+	 * 
+	 * @param t 2D array of beans
+	 * @return
+	 */
+	public boolean[][] getBoolVal(T[][] t);
 	
 	/**
 	 * 
@@ -50,6 +64,13 @@ public interface FieldWatcher<T>
 	 *           If the field is not 'boolean' an attempt is made to parse it as boolean.
 	 */
 	public boolean getParsedBoolVal(T t);
+	/**
+	 * 
+	 * @param t 2D array of beans
+	 * @return 2D array of booleans.
+	 *           If the field is not 'boolean' an attempt is made to parse it as boolean.
+	 */
+	public boolean[][] getParsedBoolVal(T[][] t);
 
 	/**
 	 * 
