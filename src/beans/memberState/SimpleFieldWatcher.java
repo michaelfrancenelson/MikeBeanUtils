@@ -8,46 +8,18 @@ import java.util.Map;
 
 import beans.builder.GetterGetterGetter;
 import beans.builder.GetterGetterGetter.BooleanGetter;
+import beans.builder.GetterGetterGetter.ByteGetter;
 import beans.builder.GetterGetterGetter.DoubleGetter;
 import beans.builder.GetterGetterGetter.IntGetter;
 import beans.builder.GetterGetterGetter.ParsingBooleanGetter;
 import beans.builder.GetterGetterGetter.StringValGetter;
 import fields.FieldUtils;
+import utils.ArrayUtils.ByteArrayMinMax;
+import utils.ArrayUtils.DblArrayMinMax;
+import utils.ArrayUtils.IntArrayMinMax;
 
 public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 {
-	/** 
-	 *  A container for an int array with its min and max values
-	 *  already calculated.
-	 * @author michaelfrancenelson
-	 *
-	 */
-	public static class IntArrayMinMax
-	{
-		public IntArrayMinMax(int[][] d, int mn, int mx)
-		{this.data = d; this.min = mn; this.max = mx; }
-		int[][] data; int min; int max;
-		public int[][] getDat() { return this.data; }
-		public int getMin() { return this.min; }
-		public int getMax() { return this.max; }
-	}
-
-	/**
-	 * A container for a double array with its min
-	 * and max values precalculated.
-	 * @author michaelfrancenelson
-	 *
-	 */
-	public static class DblArrayMinMax
-	{
-		public DblArrayMinMax(double[][] d, double mn, double mx)
-		{this.data = d; this.min = mn; this.max = mx; }
-		double[][] data; double min; double max;
-		public double[][] getDat() { return this.data; }
-		public double getMin() { return this.min; }
-		public double getMax() { return this.max; }
-	}
-
 
 	@Retention(RetentionPolicy.RUNTIME)
 	public static @interface WatchField{ public String name(); }
@@ -57,6 +29,7 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	private Field field;
 	private Class<T> clazz;
 
+	private ByteGetter<T> byteGetter;
 	private IntGetter<T> intGetter;
 	private DoubleGetter<T> dblGetter;
 	private StringValGetter<T> stringGetter;
@@ -142,7 +115,9 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	@Override public String  getStringVal(T t) { return stringGetter.get(t); }
 	@Override public double  getDoubleVal(T t) { return dblGetter.get(t); }
 	@Override public int     getIntVal(T t)    { return intGetter.get(t); }
+	@Override public byte    getByteVal(T t) { return byteGetter.get(t); }
 	@Override public boolean getBoolVal(T t) { return boolGetter.get(t); }
+	@Override public boolean getParsedBoolVal(T t) { return parsingBoolGetter.get(t); }
 
 	@Override public DblArrayMinMax  getDoubleVal(T[][] t) 
 	{
@@ -173,6 +148,21 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 		}
 		return new IntArrayMinMax(out, min, max);
 	}
+	
+	@Override public ByteArrayMinMax  getByteVal(T[][] t)    
+	{
+		byte min = Byte.MAX_VALUE; byte max = Byte.MIN_VALUE;
+		byte val = 0;
+		byte[][] out = new byte[t.length][t[0].length];
+		for (byte i = 0; i < t.length; i++) for (byte j = 0; j < t[0].length; j++)
+		{
+			val = byteGetter.get(t[i][j]);
+			if (val < min) min = val;
+			else if (val > max) max = val;
+			out[i][j] = val;
+		}
+		return new ByteArrayMinMax(out, min, max);
+	}
 
 	@Override public boolean[][] getBoolVal(T[][] t) 
 	{
@@ -189,13 +179,6 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 			out[i][j] = parsingBoolGetter.get(t[i][j]); 
 		return out;
 	}
-
-	/**
-	 * 
-	 * @param t
-	 * @return
-	 */
-	@Override public boolean getParsedBoolVal(T t) { return parsingBoolGetter.get(t); }
 
 	public static <T> Field getWatchedField(String fieldName, Class<T> clazz)
 	{

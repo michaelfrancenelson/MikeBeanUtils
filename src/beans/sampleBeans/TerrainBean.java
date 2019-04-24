@@ -11,7 +11,7 @@ public class TerrainBean
 {
 	static Random r = new Random();
 
-	int age;
+	public int age;
 	boolean stream = false;
 	double elevation;
 	byte road;

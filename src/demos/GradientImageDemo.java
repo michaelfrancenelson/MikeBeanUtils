@@ -36,7 +36,7 @@ public class GradientImageDemo
 	static boolean horizontal, lowToHigh;
 
 	public static void main(String[] args) 
-	{
+	{ 
 		int nBreaks = 30;
 		directionOrientationDemo(nBreaks, 10, 10);
 		intGradientImgDemo(nBreaks, 10 + 4 * cellSize, 10);

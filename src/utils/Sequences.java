@@ -117,4 +117,42 @@ public class Sequences
 		return out;
 	}
 
+	public static byte[][] spacedIntervals2D(byte start, byte end, int nSteps, boolean horizontal)
+	{
+		byte[][] out;
+		int[] dat = spacedIntervals((int) start, (int) end, nSteps);
+
+		if (horizontal)
+		{
+			out = new byte[dat.length][1];
+			for (int i = 0; i < dat.length; i++) out[i][0] = (byte) dat[i];
+		}
+		else
+		{
+			out = new byte[1][dat.length];
+			for (int j = 0; j < dat.length; j++) out[0][j] = (byte) dat[j];
+		}
+		return out;
+	}
+
+	public static Boolean[][] booleanGradient2D(boolean includeNA, boolean horizontal)
+	{
+		Boolean[][] out;
+		Boolean[] dat;
+		if (includeNA) dat = new Boolean[] { true, false, null };
+		else dat = new Boolean[] { true, false};
+
+		if (horizontal)
+		{
+			out = new Boolean[dat.length][1];
+			for (int i = 0; i < dat.length; i++) out[i][0] = dat[i];
+		}
+		else
+		{
+			out = new Boolean[1][dat.length];
+			for (int j = 0; j < dat.length; j++) out[0][j] = dat[j];
+		}
+		return out;
+	}
+
 }

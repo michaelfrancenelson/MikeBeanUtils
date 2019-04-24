@@ -6,7 +6,9 @@ import java.util.Map;
 import beans.memberState.FieldWatcher;
 import image.arrayImager.ObjectArrayImager;
 import image.colorInterpolator.ColorInterpolator;
+import utils.Sequences;
 
+@Deprecated
 public class GradientLegendImager<T> 
 //implements ObjectArrayImager<T>
 {
@@ -125,7 +127,7 @@ public class GradientLegendImager<T>
 		else { legendMax = datMin; legendMin = datMax; }
 
 		legendDataSequence = new double[nLegendSteps];
-		legendDataSequence = ArrayImageFactory.spacedIntervals(legendMin, legendMax, nLegendSteps);
+		legendDataSequence = Sequences.spacedIntervals(legendMin, legendMax, nLegendSteps);
 	}
 
 	private void buildLegendDataArray(FieldWatcher<T> w, double datMin, double datMax)

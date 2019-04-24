@@ -2,8 +2,9 @@ package beans.memberState;
 
 import java.lang.reflect.Field;
 
-import beans.memberState.SimpleFieldWatcher.DblArrayMinMax;
-import beans.memberState.SimpleFieldWatcher.IntArrayMinMax;
+import utils.ArrayUtils.ByteArrayMinMax;
+import utils.ArrayUtils.DblArrayMinMax;
+import utils.ArrayUtils.IntArrayMinMax;
 
 
 /** Monitor the state of beans.
@@ -30,6 +31,18 @@ public interface FieldWatcher<T>
 	 *         If the field is not 'int', may throw an exception.
 	 */
 	public int     getIntVal(T t);
+	
+	
+	public byte            getByteVal(T t);
+	public ByteArrayMinMax getByteVal(T[][] t);
+	
+	
+	/**
+	 * 
+	 * @param t bean instance
+	 * @return a byte representation of the field.  
+	 *         If the field is not 'int', may throw an exception.
+	 */
 	public IntArrayMinMax getIntVal(T[][] t);
 	
 	

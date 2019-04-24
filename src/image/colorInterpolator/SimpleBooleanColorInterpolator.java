@@ -11,8 +11,6 @@ public class SimpleBooleanColorInterpolator implements ColorInterpolator
 {
 	private Color[] colors;
 	private Color naColor = Color.GRAY;
-	private int naInt = Integer.MIN_VALUE;
-	private double naDouble = Double.MIN_VALUE;
 	private int trueRGB, falseRGB, naRGB;
 
 	/** Set the color codes.  This should be called after setting or resetting RGB colors.
@@ -31,7 +29,7 @@ public class SimpleBooleanColorInterpolator implements ColorInterpolator
 	@Override
 	public int getColor(int... val)
 	{
-		if (val[0] == naInt) return naRGB;
+		if (val[0] == 0) return naRGB;
 		if (val[0] > 0) return trueRGB;
 		return falseRGB; 
 	}
@@ -42,16 +40,32 @@ public class SimpleBooleanColorInterpolator implements ColorInterpolator
 	@Override
 	public int getColor(double... val)
 	{
-		if (val[0] == naDouble) return naRGB;
+		if (val[0] == 0) return naRGB;
 		if (val[0] > 0) return trueRGB;
 		return falseRGB; 
 	}
 
 	@Override
-	public int getColor(boolean val)
+	public int getColor(boolean... val)
 	{
-		if (val) return trueRGB;
+		if (val[0]) return trueRGB;
 		return falseRGB;
+	}
+	
+	@Override
+	public int getBoxedColor(Boolean... val)
+	{
+		if (val[0] == null) return naRGB;
+		else if (val[0]) return trueRGB;
+		return falseRGB;
+	}
+	
+	@Override
+	public int getColor(byte... val)
+	{
+		if (val[0] == 0) return naRGB;
+		if (val[0] > 0) return trueRGB;
+		return falseRGB; 
 	}
 
 	/**
@@ -121,7 +135,6 @@ public class SimpleBooleanColorInterpolator implements ColorInterpolator
 		init();
 	}
 	
-	@Override
-	public int getNAColor() { return this.naColor.getRGB(); }
-
+	@Override public int getNAColor() { return this.naColor.getRGB(); }
+	@Override public String getDoubleFmt() { return null; }
 }

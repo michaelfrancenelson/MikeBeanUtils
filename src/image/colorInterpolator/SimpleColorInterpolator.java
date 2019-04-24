@@ -25,42 +25,6 @@ public class SimpleColorInterpolator implements ColorInterpolator
 
 	/**
 	 * 
-	 * @param val
-	 * @return
-	 */
-	public int getColor(int val) 
-	{
-		if (val == naInt) return naColor.getRGB();
-		return getColor((double) val); 
-	}
-
-	/**
-	 * 
-	 * @param val
-	 * @return
-	 */
-	public int getColor(double val)
-	{
-		if (val == naDouble) return naColor.getRGB();
-
-		IndicesAndRelativePosition pos = Binary.interpolateRelativePosition(breaks, val);
-		int out = interpolateColor(colors[pos.lowIndex], colors[pos.highIndex], pos.relativePosition);
-		return out;
-	}
-
-	/**
-	 * 
-	 * @param val
-	 * @return
-	 */
-	public int getColor(boolean val)
-	{
-		if (val) return colors[0].getRGB();
-		return colors[colors.length - 1].getRGB();
-	}
-
-	/**
-	 * 
 	 * @param c1
 	 * @param c2
 	 * @param proportion
@@ -98,9 +62,7 @@ public class SimpleColorInterpolator implements ColorInterpolator
 			double t = min;
 			min = max; max = t;
 		}
-//		if (min > max) throw new IllegalArgumentException("max must be greater than or equal to min.");
-
-		
+//		if (dblFmt == null) dblFmt = "%.2f";
 		ci.colors = colors; ci.naDouble = naDouble; ci.naInt = naInt; ci.naColor = naColor;
 		ci.minVal = min; ci.maxVal = max;
 		ci.dblFmt = dblFmt;
@@ -134,23 +96,6 @@ public class SimpleColorInterpolator implements ColorInterpolator
 		this.breaks = breaks;
 	}
 
-	@Override
-	/**
-	 * 
-	 * @param val only the first is used
-	 * @return
-	 */
-	public int getColor(int... val) { return getColor(val[0]); }
-
-	@Override
-	/**
-	 * 
-	 * @param val only the first is used
-	 * @return
-	 */
-	public int getColor(double... val) { return getColor(val[0]); }
-
-	
 	/**
 	 *  Updates the interpolation intervals;
 	 */
@@ -203,7 +148,62 @@ public class SimpleColorInterpolator implements ColorInterpolator
 		this.colors = colors;
 		updateMinMax(this.minVal, this.maxVal);
 	}
+
+	/**
+	 * @param val only the first is used
+	 * @return
+	 */
+	@Override public int getNAColor() { return this.naColor.getRGB(); }
+	/**
+	 * @param val only the first is used
+	 * @return
+	 */
+
+	@Override 
+	public int getColor(boolean... val)
+	{
+		if (val[0]) return colors[0].getRGB();
+		return colors[colors.length - 1].getRGB();
+	}
+
+	/**
+	 * @param val only the first is used
+	 * @return
+	 */
+	@Override public int getColor(byte... val) { return getColor((int) val[0]); }
+	/**
+	 * @param val only the first is used
+	 * @return
+	 */
 	
+	@Override 
+	public int getColor(int... val) 
+	{
+		if (val[0] == naInt) return naColor.getRGB();
+		return getColor((double) val[0]); 
+	}
+
+	/**
+	 * @param val only the first is used
+	 * @return
+	 */
+	@Override 
+	public int getColor(double... val) 
+	{ 
+		if (val[0] == naDouble) return naColor.getRGB();
+		IndicesAndRelativePosition pos = Binary.interpolateRelativePosition(breaks, val[0]);
+		int out = interpolateColor(colors[pos.lowIndex], colors[pos.highIndex], pos.relativePosition);
+		return out;
+	}
+
 	@Override
-	public int getNAColor() { return this.naColor.getRGB(); }
+	public int getBoxedColor(Boolean... val)
+	{
+		if (val[0] == null) return  naColor.getRGB();
+		if (val[0]) return colors[0].getRGB();
+		return colors[colors.length - 1].getRGB();
+	}
+
+	@Override public String getDoubleFmt() { return dblFmt; }
+	
 }

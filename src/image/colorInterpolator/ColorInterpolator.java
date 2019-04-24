@@ -58,8 +58,12 @@ public interface ColorInterpolator
 	 * @param val boolean value from which color is interpolated.  
 	 * @return resulting color. There is no NA color possible with this method.
 	 */
-	public int getColor(boolean val);
-
+	public int getColor(boolean... val);
+	public int getBoxedColor(Boolean... val);
+	
+	public int getColor(byte... val);
+	
+	
 	/**
 	 * 
 	 * @return the color code to display for a NA pixel value
@@ -85,6 +89,9 @@ public interface ColorInterpolator
 	 * @param colors
 	 */
 	public void updateColors(Color[] colors);
+
+	
+	public String getDoubleFmt();
 	
 }
 

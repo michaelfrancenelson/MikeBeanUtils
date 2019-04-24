@@ -1,8 +1,13 @@
 package swing;
 
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 public class SwingUtils 
@@ -23,5 +28,20 @@ public class SwingUtils
 		f.setLayout(new GridLayout(nRow, nCol));
 		return f;
 	}
+	
+	public static void saveFrameImage(JFrame frame, String fileName)
+	
+	{
+		 BufferedImage image = new BufferedImage(frame.getWidth(), frame.getHeight(), BufferedImage.TYPE_INT_RGB);
+		 Graphics2D graphics2D = image.createGraphics(); 
+		 frame.getContentPane().paint(graphics2D);
+		
+	     try {
+			ImageIO.write(image, "png", new File(fileName));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 }

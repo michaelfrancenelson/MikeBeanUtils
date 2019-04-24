@@ -17,9 +17,6 @@ public class MemberWatcherJLabel<T> extends JLabel
 	private SimpleFieldWatcher<T> watcher;
 	private T t;
 	
-	
-	
-	
 	private MemberWatcherJLabel(T t, SimpleFieldWatcher<T> watcher)
 	{
 		this.t = t; this.watcher = watcher;

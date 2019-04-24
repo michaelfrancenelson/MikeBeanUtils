@@ -14,6 +14,7 @@ public class GetterGetterGetter
 	@FunctionalInterface public interface StringValGetter<T> { String get(T t);};
 
 	@FunctionalInterface public interface IntGetter <T> { int get(T obj); }
+	@FunctionalInterface public interface ByteGetter <T> { byte get(T obj); }
 	@FunctionalInterface public interface DoubleGetter<T> { double get(T obj); }
 	@FunctionalInterface public interface BooleanGetter<T> { boolean get(T obj); }
 	@FunctionalInterface public interface ParsingBooleanGetter<T> { boolean get(T obj); }
@@ -155,6 +156,45 @@ public class GetterGetterGetter
 			try { return f.getInt(tt);}
 			catch (IllegalArgumentException | IllegalAccessException e) 
 			{ e.printStackTrace(); throw new IllegalArgumentException();}
+		};
+		return out;
+	}
+
+	/** build a getter for a primitive int field
+	 * 
+	 * @param t annotated bean object
+	 * @param f annotated field	 
+	 * @param <T> type of bean
+	 * @return a getter
+	 */
+	public static <T> ByteGetter<T> 
+	byteGetterGetter(Class<T> t, Field f)
+	{
+		ByteGetter<T> out = (T tt) -> 
+		{
+			switch(f.getType().getSimpleName())
+			{
+			case("byte"):
+			{
+				try { return f.getByte(tt);}
+				catch (IllegalArgumentException | IllegalAccessException e) 
+				{ e.printStackTrace(); throw new IllegalArgumentException();}
+			}
+			case("int"):
+			{
+				try { return (byte) f.getInt(tt);}
+				catch (IllegalArgumentException | IllegalAccessException e) 
+				{ e.printStackTrace(); throw new IllegalArgumentException();}
+			}
+			case("double"):
+			{
+				try { return (byte) f.getDouble(tt);}
+				catch (IllegalArgumentException | IllegalAccessException e) 
+				{ e.printStackTrace(); throw new IllegalArgumentException();
+			}
+			}
+			}
+			throw new IllegalArgumentException("Input could not be parsed as a byte value.");
 		};
 		return out;
 	}

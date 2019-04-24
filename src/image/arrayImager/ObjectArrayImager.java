@@ -61,7 +61,13 @@ public interface ObjectArrayImager<T>
 	 */
 	public T getObjAt(double relativeI, double relativeJ);
 
-
+	/**
+	 *  Get a string representation of the value of the cell for the currently 
+	 *   selected field watcher.
+	 * @param i
+	 * @param j
+	 * @return
+	 */
 	public String queryObjectAt(int i, int j);
 
 
@@ -116,5 +122,4 @@ public interface ObjectArrayImager<T>
 	
 	public ColorInterpolator getInterpolator();
 	public ColorInterpolator getBooleanInterpolator();
-
 }

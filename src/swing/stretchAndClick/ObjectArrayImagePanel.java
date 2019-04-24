@@ -2,21 +2,29 @@ package swing.stretchAndClick;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.RenderedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import beans.memberState.FieldWatcher;
+import fields.FieldUtils;
 import image.arrayImager.ObjectArrayImager;
+import swing.MemberSetterTextField;
+import swing.MemberWatcherJLabel;
 
 /**
  * 
@@ -26,7 +34,6 @@ import image.arrayImager.ObjectArrayImager;
  */
 public class ObjectArrayImagePanel<T> extends JPanel 
 {
-
 	/**
 	 * 
 	 */
@@ -37,22 +44,17 @@ public class ObjectArrayImagePanel<T> extends JPanel
 	private List<ObjectPointLabel> points = new ArrayList<>();
 
 	private ObjectArrayImager<T> imager;
+	ObjectArrayImagePanel<T> legendPanel;
+	FieldWatcher<T> watcher;
+	Image image = null;
+
+	JComboBox<String> controlComboBox;
+
 	double imageAspectRatio, compAspectRatio;
 	boolean centerInPanel = true;
-
-	boolean fixedAspectRatio;
-	boolean fixedWidth, fixedHeight;
-	boolean fixedImg;
-	boolean decorate;
-
-
-	boolean isLegend;
-
-	FieldWatcher<T> watcher;
-
-	Image img = null;
+	boolean fixedAspectRatio, fixedWidth, fixedHeight, fixedImg, decorate;
+	private boolean isLegend;
 	double ptRelSize;
-
 	int 
 	panelWidth, panelHeight, 
 	imgDisplayWidth, imgDisplayHeight, 
@@ -64,24 +66,69 @@ public class ObjectArrayImagePanel<T> extends JPanel
 	 */
 	public void updateImage()
 	{
-		this.watcher = imager.getWatcher();
 		if (!fixedImg) 
 		{
-			if (!isLegend) img = imager.getImage();
-			else img = imager.getLegendImage();
+			this.watcher = imager.getWatcher();
+			imager.refresh();
+			image = imager.getImage();
+			if (legendPanel != null)
+			{
+				System.out.println("ObjectArrayImagePanel: updating legend image to field " +
+						watcher.getFieldName());
+				legendPanel.watcher = watcher;
+				legendPanel.image = imager.getLegendImage();
+				legendPanel.paintComponent(legendPanel.getGraphics());
+			}
+			System.out.println("ObjectArrayImagePanel: updating array image to field " + watcher.getFieldName());
+			paintComponent(this.getGraphics());
 		}
-		paint(this.getGraphics());
+	}
+
+	public ObjectArrayImagePanel<T> getLegendPanel()
+	{
+		int w = 0, h = 0;
+		if (fixedWidth) w = imgDisplayWidth;
+		if (fixedHeight) h = imgDisplayHeight;
+		legendPanel = ObjectArrayPanelFactory.buildLegendPanel(
+				imager, watcher.getFieldName(),
+				fixedAspectRatio, 
+				w, h, ptRelSize
+				);
+		return legendPanel;
+	}
+
+	public JComboBox<String> getControlComboBox(
+			Font font
+			)
+	{
+		final Field[] f2;
+		f2 = FieldUtils.getInstanceFields(imager.getObjClass());
+		String[] dispNames = FieldUtils.getInstanceFieldNames(Arrays.asList(f2));
+		controlComboBox = new JComboBox<>(dispNames);
+
+		controlComboBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				System.out.println("ObjectArrayImagePanel: setting field to " +
+						f2[controlComboBox.getSelectedIndex()].getName());
+
+				setField(f2[controlComboBox.getSelectedIndex()]);
+			}
+		});
+
+		if (font != null) controlComboBox.setFont(font);
+		return controlComboBox;
 	}
 
 	public String queryDataArray(int i, int j)
 	{
 		if (!isLegend)
 		{
-			T t = getImager().getObjAt(i, j);
+			T t = imager.getObjAt(i, j);
 			return watcher.getStringVal(t);
 		}
-		else 
-			return imager.queryLegendAt(i, j);	
+		else return imager.queryLegendAt(i, j);	
 	}
 
 	/**
@@ -105,7 +152,8 @@ public class ObjectArrayImagePanel<T> extends JPanel
 		double relY = ((double) relImgJ) / ((double) imgDisplayHeight);
 
 		String out = queryRelative(relX, relY);
-		System.out.println("ObjectArrayImager.queryPixel() Value of " + watcher.getFieldName() + ": " + out);
+		System.out.println("ObjectArrayImagePanel.queryPixel() Value of " +
+				watcher.getFieldName() + ": " + out);
 
 		return out;
 	}
@@ -119,21 +167,11 @@ public class ObjectArrayImagePanel<T> extends JPanel
 			return watcher.getStringVal(t);
 		}
 		else
-			System.out.println("ObjectArrayImager.queryRelative() legend value at (" + relativeI + ", " + relativeJ + ")");
+		{
+			System.out.println("ObjectArrayImagePanel.queryRelative()"
+					+ " legend value at (" + relativeI + ", " + relativeJ + ")");
 			return imager.queryLegendAt(relativeI, relativeJ);
-	}
-
-
-	public ObjectArrayImagePanel<T> getLegendPanel()
-	{
-
-		int w = 0, h = 0;
-		if (fixedWidth) w = imgDisplayWidth;
-		if (fixedHeight) h = imgDisplayHeight;
-
-		ObjectArrayImagePanel<T> out = ObjectArrayPanelFactory.buildPanel(
-				imager, fixedAspectRatio, true, w, h, ptRelSize);
-		return out;
+		}
 	}
 
 	/** Set the image and image scaling properties of the panel.
@@ -143,34 +181,19 @@ public class ObjectArrayImagePanel<T> extends JPanel
 	 * @param height
 	 * @param keepAspectRatio
 	 */
-	@Deprecated
-	void init(Image img, int width, int height, 
-			boolean keepAspectRatio, boolean fixedImage, ObjectArrayImager<T> imager) 
+	void init(Image img, int width, int height, boolean keepAspectRatio) 
 	{
-		init(imager, width, height, keepAspectRatio, false, fixedImage);
+		this.image = img;
+		init(null, width, height, keepAspectRatio, false);
 	}
-	
-	void init(ObjectArrayImager<T> imager, 
+
+	void init(
+			ObjectArrayImager<T> imgr, 
 			int width, int height, 
-			//			void init(Image img, int width, int height, 
-			boolean keepAspectRatio, boolean isLegend, boolean fixedImage)
-
+			boolean keepAspectRatio, 
+			boolean legend)
 	{
-		this.setImager(imager);
-		this.isLegend = isLegend;
-		if (this.isLegend)
-			this.img = imager.getLegendImage();
-		else this.img = imager.getImage();
-		this.fixedImg = fixedImage;
-		this.fixedAspectRatio = keepAspectRatio;
-		this.imageAspectRatio = ((double) img.getWidth(null)) / ((double) img.getHeight(null));
-
-		this.watcher = imager.getWatcher();
-
 		fixedWidth = false; fixedHeight = false;
-		imgDisplayWidth = img.getWidth(null);
-		imgDisplayHeight = img.getHeight(null);
-
 		if (width > 0)  
 		{
 			fixedAspectRatio = false;
@@ -185,18 +208,35 @@ public class ObjectArrayImagePanel<T> extends JPanel
 			imgDisplayHeight = height;
 		}
 
-		this.addMouseListener(new MouseListener() {
-			@Override public void mouseClicked(MouseEvent arg0)
-			{
-				System.out.println("MouseListener: Mouse clicked at panel coordinate (" +
-						arg0.getX() + ", " + arg0.getY() + ").");
-				queryPixel(arg0.getX(), arg0.getY());
-			}
-			@Override public void mouseEntered(MouseEvent arg0) {}
-			@Override public void mouseExited(MouseEvent arg0) {}
-			@Override public void mousePressed(MouseEvent arg0) {}
-			@Override public void mouseReleased(MouseEvent arg0) {}
-		});
+		if (imgr == null)	this.fixedImg = true;
+		else
+		{
+			this.imager = imgr;
+			this.isLegend = legend;
+			this.watcher = imager.getWatcher();
+			if (isLegend) image = imager.getLegendImage();
+			else image = imager.getImage();
+
+			this.addMouseListener(new MouseListener() {
+				@Override public void mouseClicked(MouseEvent arg0)
+				{
+					System.out.println("ObjectArrayImagePanel, MouseListener: "
+							+ "Mouse clicked at panel coordinate (" +
+							arg0.getX() + ", " + arg0.getY() + ").");
+					queryPixel(arg0.getX(), arg0.getY());
+				}
+				@Override public void mouseEntered(MouseEvent arg0) {}
+				@Override public void mouseExited(MouseEvent arg0) {}
+				@Override public void mousePressed(MouseEvent arg0) {}
+				@Override public void mouseReleased(MouseEvent arg0) {}
+			});
+		}
+
+		this.fixedAspectRatio = keepAspectRatio;
+		this.imageAspectRatio = ((double) image.getWidth(null)) / ((double) image.getHeight(null));
+
+		imgDisplayWidth = image.getWidth(null);
+		imgDisplayHeight = image.getHeight(null);
 	}
 
 	public int[] objArrayCoordsToPanelCoords(int objArrayI, int objArrayJ)
@@ -256,7 +296,7 @@ public class ObjectArrayImagePanel<T> extends JPanel
 			imgCornerY = 0;
 		}
 
-		g2d.drawImage(img, imgCornerX, imgCornerY, imgDisplayWidth, imgDisplayHeight, null);
+		g2d.drawImage(image, imgCornerX, imgCornerY, imgDisplayWidth, imgDisplayHeight, null);
 
 		if (this.decorate)
 		{
@@ -325,20 +365,17 @@ public class ObjectArrayImagePanel<T> extends JPanel
 		addLabel(i, j, label, font, color, keep, pointSize); 
 	}
 
-	public Image getImg() { return this.img; }
+	public Image getImg() { return this.image; }
 
-	public RenderedImage getRenderedImage() { return (RenderedImage)this.img; }
+	public RenderedImage getRenderedImage() { return (RenderedImage)this.image; }
 	public Class<T> getObjClass() { return this.getImager().getObjClass(); }
 
-//	public int getImgDisplayWidth() { return imgDisplayWidth; }
-//	public int getImgDisplayHeight() { return imgDisplayHeight; }
 	public void setLabelVisibility(boolean b) { this.decorate = b; repaint();}
 
 	public double getPtRelSize() { return ptRelSize; }
 	public void setPtRelSize(double ptRelSize) { this.ptRelSize = ptRelSize; }
 
 	public ObjectArrayImager<T> getImager() { return imager; }
-	public void setImager(ObjectArrayImager<T> imager) { this.imager = imager; }
 
 
 	/**
@@ -358,7 +395,9 @@ public class ObjectArrayImagePanel<T> extends JPanel
 		void draw(Graphics g, int imageWidth, int imageHeight, int imageCornerX, int imageCornerY, int scaledSize)
 		{
 			g.setColor(color);
-			int[] coords = getImageCoords(this.objArrayI, this.objArrayJ, imageWidth, imageHeight, imageCornerX, imageCornerY);
+			int[] coords = getImageCoords(
+					this.objArrayI, this.objArrayJ,
+					imageWidth, imageHeight, imageCornerX, imageCornerY, true);
 			if (this.size > 0)
 				g.fillOval(coords[0], coords[1], size, size);
 			else
@@ -367,7 +406,9 @@ public class ObjectArrayImagePanel<T> extends JPanel
 
 		void draw(Graphics g, int imageWidth, int imageHeight, int imageCornerX, int imageCornerY)
 		{
-			int[] coords = getImageCoords(this.objArrayI, this.objArrayJ, imageWidth, imageHeight, imageCornerX, imageCornerY);
+			int[] coords = getImageCoords(
+					this.objArrayI, this.objArrayJ, 
+					imageWidth, imageHeight, imageCornerX, imageCornerY, true);
 			g.fillOval(coords[0], coords[1], size, size);
 		}
 	}
@@ -392,14 +433,26 @@ public class ObjectArrayImagePanel<T> extends JPanel
 		void draw(Graphics g, int imageWidth, int imageHeight, int imageCornerX, int imageCornerY)
 		{
 			g.setFont(font);
-			int[] coords = getImageCoords(this.objArrayI, this.objArrayJ, imageWidth, imageHeight, imageCornerX, imageCornerY);
-			if (label != null)
-				g.drawString(this.label, coords[0], coords[1]);
-			else
-			{
-				String l = imager.queryObjectAt(objArrayI, objArrayJ);
-				g.drawString(l, coords[0], coords[1]);
-			}
+			int[] coords;
+			coords = getImageCoords(this.objArrayI, this.objArrayJ,
+					imageWidth, imageHeight, imageCornerX, imageCornerY, true);
+			coords = getDataCellImageBoundingBox(this.objArrayI, this.objArrayJ,
+					imageWidth, imageHeight, imageCornerX, imageCornerY);
+
+			if (label == null) label = imager.queryObjectAt(objArrayI, objArrayJ);
+
+			int cellWidth = coords[2] - coords[0];
+			int cellHeight = coords[1] - coords[3];
+
+			FontMetrics metrics = g.getFontMetrics(font);
+			// Determine the X coordinate for the text
+			int x = coords[0] + (cellWidth - metrics.stringWidth(label)) / 2;
+			// Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top of the screen)
+			int y = coords[1] + ((cellHeight - metrics.getHeight()) / 2) + metrics.getAscent();
+			// Set the font
+			g.setFont(font);
+			// Draw the String
+			g.drawString(label, x, y);
 		}
 	}
 
@@ -411,7 +464,6 @@ public class ObjectArrayImagePanel<T> extends JPanel
 		}
 	}
 
-
 	public void drawPoints(Graphics g, int imgWidth, int imgHeight, int imgCornerX, int imgCornerY, double relSize) 
 	{
 		int minDim = Math.min(imgWidth, imgHeight);
@@ -420,10 +472,30 @@ public class ObjectArrayImagePanel<T> extends JPanel
 			l.draw(g, imgWidth, imgHeight, imgCornerX, imgCornerY, scaledSize);
 	}
 
-	private int[] getImageCoords(int objArrayI, int objArrayJ, int imageWidth, int imageHeight, int imageCornerX, int imageCornerY)
+	private int[] getDataCellImageBoundingBox(
+			int objArrayI, int objArrayJ,
+			int imageWidth, int imageHeight, int imageCornerX, int imageCornerY
+			)
 	{
-		double relX = ((double) objArrayI) / ((double) imager.getData().length); 
-		double relY = ((double) objArrayJ) / ((double) imager.getData()[0].length);
+		objArrayJ++;
+		int[] out = new int[4];
+		int[] xy0 = getImageCoords(objArrayI, objArrayJ, imageWidth, imageHeight, imageCornerX, imageCornerY, false);
+		int[] xy1 = getImageCoords(objArrayI + 1, objArrayJ + 1, imageWidth, imageHeight, imageCornerX, imageCornerY, false);
+		out = new int[] { xy0[0], xy0[1], 
+				Math.max(xy0[0], xy1[0] - 1), Math.max(xy0[1], xy1[1] - 1) }; 
+		return out;
+	}
+
+	private int[] getImageCoords(
+			int objArrayI, int objArrayJ,
+			int imageWidth, int imageHeight, int imageCornerX, int imageCornerY,
+			boolean center)
+	{
+		double relX, relY, offset;
+		if (center) offset = 0.5;
+		else offset = 0.0;
+		relX = ((double) objArrayI + offset) / ((double) imager.getData().length); 
+		relY = ((double) objArrayJ + offset) / ((double) imager.getData()[0].length);
 
 		return new int[] {
 				imageCornerX + (int) (relX * ((double) imageWidth)), 
@@ -441,7 +513,8 @@ public class ObjectArrayImagePanel<T> extends JPanel
 	 * @param keep  keep the decoration in the record of points so it will be redrawn later?
 	 * @param p     Panel to decorate.  If null, the label will not be drawn.
 	 */
-	public void addLabel(int i, int j, String label, Font font, Color color, boolean keep, int pointSize)
+	public void addLabel(int i, int j, String label, Font font, Color color, 
+			boolean keep, int pointSize)
 	{
 		if (label != null && font != null)
 		{

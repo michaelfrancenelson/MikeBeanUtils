@@ -15,6 +15,7 @@ import javax.swing.KeyStroke;
 
 import beans.memberState.BeanStateSetterFactory;
 import beans.memberState.BeanStateSetterFactory.BeanPrimitiveFieldSetter;
+import beans.memberState.FieldWatcher;
 import beans.memberState.SimpleFieldWatcher;
 
 /** Text input field for setting values of fields in an object
@@ -32,7 +33,7 @@ public class MemberSetterTextField<T> extends JTextField
 	private static final long serialVersionUID = 3521358047052455671L;
 
 	BeanPrimitiveFieldSetter<T> fieldSetter;
-	SimpleFieldWatcher<T> watcher;
+	FieldWatcher<T> watcher;
 	T t;
 	Font font;
 	boolean entryOK;
@@ -81,6 +82,9 @@ public class MemberSetterTextField<T> extends JTextField
 		return m;
 	}
 
+	
+	
+	
 	private void initialize()
 	{
 		setFocusTraversalKeysEnabled(false);
