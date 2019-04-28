@@ -10,7 +10,7 @@ import fields.FieldUtils;
  * 
  * @author michaelfrancenelson
  */
-public class AnnotatedBeanInitializer extends AnnotatedBeanBuilder
+public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 {
 
 	public static final int     NA_INT      = Integer.MIN_VALUE;
@@ -24,6 +24,10 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanBuilder
 
 	
 	/* Initializers */
+	/**
+	 * Initialize all the static fields (public and private) to NA
+	 * @param clazz
+	 */
 	public static <T> void initializeStaticFieldsToNA(Class<T> clazz)
 	{ initializeStaticFieldsToNA(clazz, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR);	}
 
@@ -44,8 +48,6 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanBuilder
 
 	public static <T> boolean checkInstanceInitialized( Class<T> clazz, Iterable<T> t, int naInt, double naDouble, String naString, char naChar)
 	{ return areBeansInitialized(clazz, t, noEnforce, naInt, naDouble, naString, naChar); }
-
-
 
 	/* Static checkers */
 	public static <T> boolean checkStaticInitialized(Class<T> clazz)
@@ -80,10 +82,18 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanBuilder
 
 	
 	
-	
+	/**
+	 * 
+	 * @param clazz
+	 * @param t
+	 * @param naInt
+	 * @param naDouble
+	 * @param naString
+	 * @param naChar
+	 */
 	private static <T> void initializeInstanceFieldsToNA(Class<T> clazz, T t, int naInt, double naDouble, String naString, char naChar)
 	{
-		for (Field f : FieldUtils.getAnnotatedFields(clazz, Initialized.class))
+		for (Field f : FieldUtils.getAnnotatedFields(clazz, InitializedField.class))
 		{
 			try { if (!Modifier.isStatic(f.getModifiers())) setNA(t, f, naInt, naDouble, naString, naChar); }
 			catch (IllegalArgumentException | IllegalAccessException e) { e.printStackTrace();}
@@ -92,7 +102,7 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanBuilder
 
 	private static <T> void initializeStaticFieldsToNA(Class<T> clazz, int naInt, double naDouble, String naString, char naChar)
 	{
-		for (Field f : FieldUtils.getAnnotatedFields(clazz, Initialized.class))
+		for (Field f : FieldUtils.getAnnotatedFields(clazz, InitializedField.class))
 		{
 			try { if (Modifier.isStatic(f.getModifiers())) setNA(null, f, naInt, naDouble, naString, naChar); }
 			catch (IllegalArgumentException | IllegalAccessException e) { e.printStackTrace();}
@@ -155,13 +165,14 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanBuilder
 		String message, typeName;
 		typeName = clazz.getSimpleName();
 
-		for (Field f : FieldUtils.getAnnotatedFields(clazz, Initialized.class))
+		for (Field f : FieldUtils.getAnnotatedFields(clazz, InitializedField.class))
 		{
 			if (!Modifier.isStatic(f.getModifiers()))
 			{
 				message = "Instance Field: " + f.getName() + " in type " + typeName + " is not initialized.";
 				try {
-					if (AnnotatedBeanReporter.isNA(clazz, bean, f, naInt, naDouble, naString, naChar)) 
+					if (AnnotatedBeanReporter.isNA(
+							clazz, bean, f, naInt, naDouble, naString, naChar)) 
 					{
 						//						logger.debug(message);
 						if (enforce) throw new IllegalArgumentException(message);
@@ -180,7 +191,7 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanBuilder
 		String message, typeName;
 		typeName = clazz.getSimpleName();
 
-		for (Field f : FieldUtils.getAnnotatedFields(clazz, Initialized.class))
+		for (Field f : FieldUtils.getAnnotatedFields(clazz, InitializedField.class))
 		{
 			if (Modifier.isStatic(f.getModifiers()))
 			{
@@ -205,7 +216,7 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanBuilder
 		String message, typeName;
 		typeName = clazz.getSimpleName();
 
-		for (Field f : FieldUtils.getAnnotatedFields(clazz, Initialized.class))
+		for (Field f : FieldUtils.getAnnotatedFields(clazz, InitializedField.class))
 		{
 			if (!Modifier.isStatic(f.getModifiers()))
 			{

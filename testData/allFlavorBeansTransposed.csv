@@ -1,0 +1,17 @@
+﻿intPrim,21474836,0,-21474836
+shortPrim,32767,0,-32768
+longPrim,92233720368547775,0,-92233720368547775
+bytePrim,127,0,-128
+doublePrim,1.1E+307,4.8E-323,-1.1E+307
+floatPrim,3.4E+38,1.39E-45,-3.4E+38
+boolPrim,t,FalSe,-1
+charPrim,a,b,c
+intBox,21474836,0,-21474836
+shortBox,32767,0,-32768
+longBox,92233720368547775,0,-92233720368547775
+byteBox,127,0,-128
+doubleBox,1.1E+307,4.8E-323,-1.1E+307
+floatBox,3.4E+38,1.39E-45,-3.4E+38
+boolBox,t,FalSe,-1
+charBox,b,v,d
+strng,abc,bvd,the east coast family

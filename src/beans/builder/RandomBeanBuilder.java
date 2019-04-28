@@ -7,7 +7,7 @@ import java.util.Random;
 
 import fields.FieldUtils;
 
-public class RandomBeanBuilder extends AnnotatedBeanBuilder 
+public class RandomBeanBuilder extends AnnotatedBeanReader 
 {
 	private static Random r = new Random();
 
@@ -33,7 +33,7 @@ public class RandomBeanBuilder extends AnnotatedBeanBuilder
 	 */
 	public static <T> T randomFactory(Class<T> clazz)
 	{
-		List<Field> ff = FieldUtils.getAnnotatedFields(clazz, FieldColumn.class);
+		List<Field> ff = FieldUtils.getAnnotatedFields(clazz, ParsedField.class);
 		T o = null;
 		try 
 		{

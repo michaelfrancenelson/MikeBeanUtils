@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import beans.builder.AnnotatedBeanBuilder.FieldColumn;
+import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.builder.GetterGetterGetter.StringValGetter;
 import fields.FieldUtils;
 
@@ -60,7 +60,7 @@ public class AnnotatedBeanReporter<T>
 
 		switch(type)
 		{
-		case("int"):     { return  f.getInt(t) == naInt; }
+		case("int"):     { return f.getInt(t) == naInt; }
 		case("double"):  { return f.getDouble(t) == naDouble; }
 		/* It doesn't really make sense to check this for the primitive boolean type... */
 		//		case("boolean"): { return f.getBoolean(t) == naBoolean;; }
@@ -69,7 +69,7 @@ public class AnnotatedBeanReporter<T>
 		case("char"):    { return f.getChar(t) == naChar; }
 
 		case("Integer"): { return (Integer) f.get(t) == naInt; }
-		case("Double"):  { return (Double) f.get(t) == naDouble; }
+		case("Double"):  { return (Double)  f.get(t) == naDouble; }
 		case("Boolean"): { return (Boolean) f.get(t) == null; }
 		default:         { return false; }
 		}
@@ -98,7 +98,7 @@ public class AnnotatedBeanReporter<T>
 	public static <T> List<String> staticStringValReport(Class<T> clazz, String dblFmt)
 	{
 		List<StringValGetter<T>> getters;
-		List<Field> fields = FieldUtils.getAnnotatedFields(clazz, FieldColumn.class);
+		List<Field> fields = FieldUtils.getAnnotatedFields(clazz, ParsedField.class);
 
 		List<Field> staticFields = new ArrayList<>();
 		for (Field f : fields)
@@ -241,7 +241,7 @@ public class AnnotatedBeanReporter<T>
 	{
 		AnnotatedBeanReporter<T> rep = new AnnotatedBeanReporter<>();
 		rep.clazz = clazz;
-		List<Field> fields = FieldUtils.getAnnotatedFields(rep.clazz, FieldColumn.class);
+		List<Field> fields = FieldUtils.getAnnotatedFields(rep.clazz, ParsedField.class);
 		rep.dblFmt = dblFmt;
 		rep.sep = sep;
 		rep.getters = GetterGetterGetter.stringValGetterGetter(

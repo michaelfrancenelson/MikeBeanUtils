@@ -1,0 +1,4 @@
+﻿intPrim,shortPrim,longPrim,bytePrim,doublePrim,floatPrim,boolPrim,charPrim,intBox,shortBox,longBox,byteBox,doubleBox,floatBox,boolBox,charBox,strng
+21474836,32767,92233720368547775,127,1.1E+307,3.4E+38,t,a,21474836,32767,92233720368547775,127,1.1E+307,3.4E+38,t,b,abc
+0,0,0,0,4.8E-323,1.39E-45,FalSe,b,0,0,0,0,4.8E-323,1.39E-45,FalSe,v,bvd
+-21474836,-32768,-92233720368547775,-128,-1.1E+307,-3.4E+38,-1,c,-21474836,-32768,-92233720368547775,-128,-1.1E+307,-3.4E+38,-1,d,the east coast family

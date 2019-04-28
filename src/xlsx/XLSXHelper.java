@@ -28,8 +28,6 @@ import javax.xml.stream.events.XMLEvent;
  */
 public class XLSXHelper {
 
-//	static Logger logger = Logger.getLogger(XLSXHelper.class.getName());
-	
 	public static List<List<String>> readXLSX(String filename)
 	{
 //		logger.setLevel(Level.WARNING);
@@ -48,9 +46,9 @@ public class XLSXHelper {
 		List<String> cellNumberFormats = new ArrayList<String>(); //list of cell number formats
 		Path source = Paths.get(filename); //path to the Excel file
 
-		//get filesystem of Excel file
 		FileSystem fs = null;
-		/* Giant try block - not the best practice... */
+
+		/* Giant try block - little bit of code smell... */
 		try {
 			fs = FileSystems.newFileSystem(source, null); 
 
@@ -125,11 +123,10 @@ public class XLSXHelper {
 			boolean cellFound = false;
 			boolean cellValueFound = false;
 			boolean inlineStringFound = false;
-			//        String cellStyle = null;
+
 			String cellType = null;
 			List<String> row = null;
 			
-//			int i = 1, j = 1;
 			while (reader.hasNext()) {
 				event = (XMLEvent) reader.next();
 				if (event.isStartElement()) {
@@ -196,7 +193,6 @@ public class XLSXHelper {
 //				logger.info("XLSXHelper: adding row " + i + " to results."); //TODO
 			}
 			reader.close();
-			//sheet data ======================================================================================
 			fs.close();
 		}
 		catch (XMLStreamException | FactoryConfigurationError | IOException e)

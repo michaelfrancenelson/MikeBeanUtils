@@ -26,7 +26,7 @@ public class ObjectArrayPanelDemo
 	static Color[] gradCols = ColorUtils.TOPO_COLORS;
 	static Color[] boolCols = ColorUtils.YELLOWS;
 
-	static Font font = new Font("times", 4, 40);
+	static Font font = new Font("times", 4, 60);
 	
 	static int constX, constY, nLegendSteps;
 	static boolean horz, lToH, aspRat;

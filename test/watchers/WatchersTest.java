@@ -13,7 +13,7 @@ import javax.swing.SwingConstants;
 
 import org.junit.Test;
 
-import beans.builder.AnnotatedBeanBuilder;
+import beans.builder.AnnotatedBeanReader;
 import beans.memberState.BeanStateSetterFactory;
 import beans.memberState.BeanStateSetterFactory.BeanPrimitiveFieldSetter;
 import beans.memberState.SimpleFieldWatcher;
@@ -24,7 +24,7 @@ import swing.MemberWatcherJLabel;
 public class WatchersTest {
 
 	static String fileCSV = "testData/AnnotatedTestBean.csv";	
-	static List<SimpleBean> lc = AnnotatedBeanBuilder.factory(SimpleBean.class, fileCSV);
+	static List<SimpleBean> lc = AnnotatedBeanReader.factory(SimpleBean.class, fileCSV);
 
 	static BeanPrimitiveFieldSetter<SimpleBean> s1;
 	static BeanPrimitiveFieldSetter<SimpleBean> s2; 
@@ -57,7 +57,7 @@ public class WatchersTest {
 
 		
 		font = new Font("times", 2, 45);
-		lc = AnnotatedBeanBuilder.factory(SimpleBean.class, fileCSV);
+		lc = AnnotatedBeanReader.factory(SimpleBean.class, fileCSV);
 
 		s1 = BeanStateSetterFactory.factory(SimpleBean.class, "i");
 		s2 = BeanStateSetterFactory.factory(SimpleBean.class, "d");
