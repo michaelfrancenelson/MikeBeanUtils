@@ -66,11 +66,21 @@ public class AnnotatedBeanReporter<T>
 		//		case("boolean"): { return f.getBoolean(t) == naBoolean;; }
 
 		case("String"):  { return f.get(t).toString().equals(naString); }
-		case("char"):    { return f.getChar(t) == naChar; }
+//		case("char"):    { return f.getChar(t) == naChar; }
 
 		case("Integer"): { return (Integer) f.get(t) == naInt; }
 		case("Double"):  { return (Double)  f.get(t) == naDouble; }
 		case("Boolean"): { return (Boolean) f.get(t) == null; }
+		
+		case("float"):     { return false; }
+		case("byte"):     { return false; }
+		case("short"):    { return false; }
+		case("long"):    { return false; }
+
+		case("Float"):     { return false; }
+		case("Byte"):     { return false; }
+		case("Short"):    { return false; }
+		case("Long"):    { return false; }
 		default:         { return false; }
 		}
 	}

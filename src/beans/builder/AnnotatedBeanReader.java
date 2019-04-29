@@ -131,8 +131,19 @@ public class AnnotatedBeanReader
 	 */
 	public static boolean parseBool(int i) 
 	{
-		if (i > 0)
-			return true;
+		if (i > 0) return true;
+		return false;
+	}
+
+	/**
+	 * Parse an integer to a boolean value, in the style of R
+	 * 
+	 * @param i if i is greater than zero returns true, false otherwise
+	 * @return i if i is greater than zero returns true, false otherwise
+	 */
+	public static boolean parseBool(double d) 
+	{
+		if (d > 0) return true;
 		return false;
 	}
 
@@ -277,7 +288,7 @@ public class AnnotatedBeanReader
 	 * @param o   bean
 	 * @param     <T> bean type
 	 */
-	protected static <T> void setVal(Field f, String val, T o) 
+	public static <T> void setVal(Field f, String val, T o) 
 	{
 
 		if (f.isAnnotationPresent(ParsedField.class)) {
@@ -304,6 +315,102 @@ public class AnnotatedBeanReader
 				case ("Float"): f.set(o, (Float) Float.parseFloat(val)); break;
 				case ("Boolean"): f.set(o, (Boolean) parseBool(val)); break;
 				case ("Character"): f.set(o, new Character(val.charAt(0))); break;
+				default:
+					throw new IllegalArgumentException(
+							"Input value for field of type " + shortName + " could not be parsed");
+				}
+				//				logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
+			} catch (
+					NumberFormatException |	IllegalAccessException e) {
+				throw new IllegalArgumentException("Could not parse the input " + val +
+						"as a " + shortName + " value.");
+			} 
+		}
+	}
+	
+	/**
+	 * Set the value of the field to the (appropriately casted) value.
+	 * 
+	 * @param f   annotated field
+	 * @param val value to set
+	 * @param o   bean
+	 * @param     <T> bean type
+	 */
+	public static <T> void setVal(Field f, int val, T o) 
+	{
+
+		if (f.isAnnotationPresent(ParsedField.class)) {
+			String shortName = f.getType().getSimpleName();
+			try {
+				switch (shortName) {
+
+				case ("int"): f.setInt(o, val); break;
+				case ("short"):	f.setShort(o, (short) val); break;
+				case ("long"): f.setLong(o, (long) val); break;
+				case ("byte"): f.setByte(o, (byte) val); break;
+				case ("double"): f.setDouble(o, (double) val); break;
+				case ("float"): f.setFloat(o, (float) val); break;
+				case ("boolean"): f.setBoolean(o, parseBool(val)); break;
+				case ("char"): f.setChar(o, (char) val);	break;
+
+				case ("String"): f.set(o, String.format("%d", val)); break;
+
+				case ("Integer"): f.set(o, (Integer) val); break;
+				case ("Short"): f.set(o, (Short) (short) val); break;
+				case ("Long"): f.set(o, (Long) (long) val); break;
+				case ("Byte"): f.set(o, (Byte) (byte) val); break;
+				case ("Double"): f.set(o, (Double) (double) val); break;
+				case ("Float"): f.set(o, (Float) (float) val); break;
+				case ("Boolean"): f.set(o, (Boolean) parseBool(val)); break;
+				case ("Character"): f.set(o, new Character((char) val)); break;
+				default:
+					throw new IllegalArgumentException(
+							"Input value for field of type " + shortName + " could not be parsed");
+				}
+				//				logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
+			} catch (
+					NumberFormatException |	IllegalAccessException e) {
+				throw new IllegalArgumentException("Could not parse the input " + val +
+						"as a " + shortName + " value.");
+			} 
+		}
+	}
+	
+	/**
+	 * Set the value of the field to the (appropriately casted) value.
+	 * 
+	 * @param f   annotated field
+	 * @param val value to set
+	 * @param o   bean
+	 * @param     <T> bean type
+	 */
+	public static <T> void setVal(Field f, double val, T o) 
+	{
+
+		if (f.isAnnotationPresent(ParsedField.class)) {
+			String shortName = f.getType().getSimpleName();
+			try {
+				switch (shortName) {
+
+				case ("int"): f.setInt(o, (int)val); break;
+				case ("short"):	f.setShort(o, (short) val); break;
+				case ("long"): f.setLong(o, (long) val); break;
+				case ("byte"): f.setByte(o, (byte) val); break;
+				case ("double"): f.setDouble(o, (double) val); break;
+				case ("float"): f.setFloat(o, (float) val); break;
+				case ("boolean"): f.setBoolean(o, parseBool(val)); break;
+				case ("char"): f.setChar(o, (char) val);	break;
+
+				case ("String"): f.set(o, val); break;
+
+				case ("Integer"): f.set(o, (Integer) (int) val); break;
+				case ("Short"): f.set(o, (Short) (short) val); break;
+				case ("Long"): f.set(o, (Long) (long) val); break;
+				case ("Byte"): f.set(o, (Byte) (byte) val); break;
+				case ("Double"): f.set(o, (Double) (double) val); break;
+				case ("Float"): f.set(o, (Float) (float) val); break;
+				case ("Boolean"): f.set(o, (Boolean) parseBool(val)); break;
+				case ("Character"): f.set(o, new Character((char) val)); break;
 				default:
 					throw new IllegalArgumentException(
 							"Input value for field of type " + shortName + " could not be parsed");

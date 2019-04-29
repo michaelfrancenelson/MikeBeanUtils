@@ -9,49 +9,79 @@ import org.junit.Test;
 
 import beans.builder.AnnotatedBeanInitializer;
 import beans.builder.AnnotatedBeanReader;
+import beans.builder.NetCDFObjBuilder;
 import beans.sampleBeans.AllFlavorBean;
 import beans.sampleBeans.AllFlavorStaticBean;
 
-public class AnnotatedBeanReaderTest {
+public class AnnotatedBeanReaderTest
+{
 
-	@Test 
-	public void allFlavorBeanTest()
+	@Test
+	public void allFlavorNCDFTest()
 	{
-		String[] filenames = new String[] {
-				"testData/allFlavorBeans.xlsx",
-				"testData/allFlavorBeansTransposed.xlsx",
-				"testData/allFlavorBeansTransposed.csv",
-				"testData/allFlavorBeans.csv"
-		};
+		List<List<AllFlavorBean>> beans;
 
-		List<List<AllFlavorBean>> allBeans = new ArrayList<>();
+		String filename = "testData/AllFlavorBean.nc";
 
-		for (String st : filenames) 
+		beans = NetCDFObjBuilder.factory2D(AllFlavorBean.class, filename);
+
+		for (List<AllFlavorBean> l1 : beans)
 		{
-			AnnotatedBeanReader.factory(
-					AllFlavorStaticBean.class, st, false, 1);
-			System.out.println("AnnotatedBeanReaderTest: " + st);
-
-			assertTrue(AnnotatedBeanInitializer.checkStaticInitialized(
-					AllFlavorStaticBean.class)); 
-			allBeans.add(
-					AnnotatedBeanReader.factory(
-							AllFlavorBean.class, st, false, -1)
-					);
-		}
-
-		for (int index = 0; index < allBeans.get(0).size(); index++)
-		{
-			AllFlavorBean bb = allBeans.get(0).get(index);
-			for (int i = 0; i < allBeans.size(); i++)
+			for (AllFlavorBean b : l1)
 			{
-				assertTrue(AnnotatedBeanInitializer.checkInstanceInitialized(
-						AllFlavorBean.class,  allBeans.get(i).get(index)));
-				assertTrue(AnnotatedBeanReader.equals(
-						AllFlavorBean.class, bb, allBeans.get(i).get(index)));
+				boolean tf = AnnotatedBeanInitializer.enforceInstanceInitialized(
+						AllFlavorBean.class, b);
+//				if (!tf) 
+//				{ 
+//					int a = 2; 
+//				 tf = AnnotatedBeanInitializer.enforceInstanceInitialized(
+//							AllFlavorBean.class, b);
+//				}
+				assertTrue(tf);  
 			}
 		}
+
+
 	}
+
+	////	@Test 
+	//	public void allFlavorBeanTest()
+	//	{
+	//		String[] filenames = new String[] {
+	//				"testData/allFlavorBeans.xlsx",
+	//				"testData/allFlavorBeansTransposed.xlsx",
+	//				"testData/allFlavorBeansTransposed.csv",
+	//				"testData/allFlavorBeans.csv"
+	//		};
+	//
+	//		List<List<AllFlavorBean>> allBeans = new ArrayList<>();
+	//
+	//		for (String st : filenames) 
+	//		{
+	//			AnnotatedBeanReader.factory(
+	//					AllFlavorStaticBean.class, st, false, 1);
+	//			System.out.println("AnnotatedBeanReaderTest: " + st);
+	//
+	//			assertTrue(AnnotatedBeanInitializer.checkStaticInitialized(
+	//					AllFlavorStaticBean.class)); 
+	//			allBeans.add(
+	//					AnnotatedBeanReader.factory(
+	//							AllFlavorBean.class, st, false, -1)
+	//					);
+	//		}
+	//
+	//		for (int index = 0; index < allBeans.get(0).size(); index++)
+	//		{
+	//			AllFlavorBean bb = allBeans.get(0).get(index);
+	//			for (int i = 0; i < allBeans.size(); i++)
+	//			{
+	//				assertTrue(AnnotatedBeanInitializer.checkInstanceInitialized(
+	//						AllFlavorBean.class,  allBeans.get(i).get(index)));
+	//				assertTrue(AnnotatedBeanReader.equals(
+	//						AllFlavorBean.class, bb, allBeans.get(i).get(index)));
+	//			}
+	//		}
+	//	}
 
 	//
 	////	@Test

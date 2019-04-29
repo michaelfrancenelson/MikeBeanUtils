@@ -50,4 +50,71 @@ public class ArrayUtils
 		public double getMax() { return this.max; }
 	}
 
+
+	public static int[][] transpose(int[][] dat)
+	{
+		int[][] out = new int[dat[0].length][dat.length];
+		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
+		return out;
+	}
+	
+	public static byte[][] transpose(byte[][] dat)
+	{
+		byte[][] out = new byte[dat[0].length][dat.length];
+		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
+		return out;
+	}
+
+	public static short[][] transpose(short[][] dat)
+	{
+		short[][] out = new short[dat[0].length][dat.length];
+		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
+		return out;
+	}
+	
+	public static long[][] transpose(long[][] dat)
+	{
+		long[][] out = new long[dat[0].length][dat.length];
+		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
+		return out;
+	}
+	
+	public static char[][] transpose(char[][] dat)
+	{
+		char[][] out = new char[dat[0].length][dat.length];
+		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
+		return out;
+	}
+
+	public static String[][] transpose(String[][] dat)
+	{
+		String[][] out = new String[dat[0].length][dat.length];
+		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
+		return out;
+	}
+	
+	
+	
+
+	
+	public static double[][] transpose(double[][] dat)
+	{
+		double[][] out = new double[dat[0].length][dat.length];
+		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
+		return out;
+	}
+	public static float[][] transpose(float[][] dat)
+	{
+		float[][] out = new float[dat[0].length][dat.length];
+		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
+		return out;
+	}
+	
+	public static boolean[][] transpose(boolean[][] dat)
+	{
+		boolean[][] out = new boolean[dat[0].length][dat.length];
+		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
+		return out;
+	}
+	
 }
