@@ -22,9 +22,7 @@ import javax.swing.JPanel;
 
 import beans.memberState.FieldWatcher;
 import fields.FieldUtils;
-import image.arrayImager.ObjectArrayImager;
-import swing.MemberSetterTextField;
-import swing.MemberWatcherJLabel;
+import image.arrayImager.BeanImager;
 
 /**
  * 
@@ -32,7 +30,7 @@ import swing.MemberWatcherJLabel;
  *
  * @param <T>
  */
-public class ObjectArrayImagePanel<T> extends JPanel 
+public class ObjectImagePanel<T> extends JPanel 
 {
 	/**
 	 * 
@@ -43,8 +41,8 @@ public class ObjectArrayImagePanel<T> extends JPanel
 	private List<ObjectTextLabel>  valueLabels = new ArrayList<>();
 	private List<ObjectPointLabel> points = new ArrayList<>();
 
-	private ObjectArrayImager<T> imager;
-	ObjectArrayImagePanel<T> legendPanel;
+	private BeanImager<T> imager;
+	ObjectImagePanel<T> legendPanel;
 	FieldWatcher<T> watcher;
 	Image image = null;
 
@@ -84,7 +82,7 @@ public class ObjectArrayImagePanel<T> extends JPanel
 		}
 	}
 
-	public ObjectArrayImagePanel<T> getLegendPanel()
+	public ObjectImagePanel<T> getLegendPanel()
 	{
 		int w = 0, h = 0;
 		if (fixedWidth) w = imgDisplayWidth;
@@ -188,7 +186,7 @@ public class ObjectArrayImagePanel<T> extends JPanel
 	}
 
 	void init(
-			ObjectArrayImager<T> imgr, 
+			BeanImager<T> imgr, 
 			int width, int height, 
 			boolean keepAspectRatio, 
 			boolean legend)
@@ -208,7 +206,7 @@ public class ObjectArrayImagePanel<T> extends JPanel
 			imgDisplayHeight = height;
 		}
 
-		if (imgr == null)	this.fixedImg = true;
+		if (imgr == null) this.fixedImg = true;
 		else
 		{
 			this.imager = imgr;
@@ -244,8 +242,8 @@ public class ObjectArrayImagePanel<T> extends JPanel
 		int imgI, imgJ;
 		double imgRelativeI, imgRelativeJ;
 
-		imgRelativeI = ((double) objArrayI ) / ((double) imager.getData().length);
-		imgRelativeJ = ((double) objArrayJ ) / ((double) imager.getData()[0].length);
+		imgRelativeI = ((double) objArrayI ) / ((double) imager.getDataWidth());
+		imgRelativeJ = ((double) objArrayJ ) / ((double) imager.getDataHeight());
 
 		imgI = (int) (((double) imgDisplayWidth) * imgRelativeI);
 		imgJ = (int) (((double) imgDisplayHeight) * imgRelativeJ);
@@ -335,6 +333,12 @@ public class ObjectArrayImagePanel<T> extends JPanel
 		addLabel(coords[0], coords[1], label, font, Color.black, true, -1);
 	}
 
+	public void addValueLabel(int dataX, int dataY, Font font)
+	{
+		String label = queryDataArray(dataX, dataY);
+		addLabel(dataX, dataY, label, font, Color.black, true, -1);
+	}
+
 	/**
 	 * 
 	 */
@@ -360,7 +364,7 @@ public class ObjectArrayImagePanel<T> extends JPanel
 	 * @param color color for text or point 
 	 * @param keep  keep the decoration in the record of points so it will be redrawn later?
 	 */
-	public void addLabel(int i, int j, String label, Font font, Color color, boolean keep, int pointSize, ObjectArrayImagePanel<?> p)
+	public void addLabel(int i, int j, String label, Font font, Color color, boolean keep, int pointSize, ObjectImagePanel<?> p)
 	{
 		addLabel(i, j, label, font, color, keep, pointSize); 
 	}
@@ -375,7 +379,7 @@ public class ObjectArrayImagePanel<T> extends JPanel
 	public double getPtRelSize() { return ptRelSize; }
 	public void setPtRelSize(double ptRelSize) { this.ptRelSize = ptRelSize; }
 
-	public ObjectArrayImager<T> getImager() { return imager; }
+	public BeanImager<T> getImager() { return imager; }
 
 
 	/**
@@ -494,8 +498,8 @@ public class ObjectArrayImagePanel<T> extends JPanel
 		double relX, relY, offset;
 		if (center) offset = 0.5;
 		else offset = 0.0;
-		relX = ((double) objArrayI + offset) / ((double) imager.getData().length); 
-		relY = ((double) objArrayJ + offset) / ((double) imager.getData()[0].length);
+		relX = ((double) objArrayI + offset) / ((double) imager.getDataWidth()); 
+		relY = ((double) objArrayJ + offset) / ((double) imager.getDataHeight());
 
 		return new int[] {
 				imageCornerX + (int) (relX * ((double) imageWidth)), 

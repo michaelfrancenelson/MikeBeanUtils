@@ -4,11 +4,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import beans.builder.GetterGetterGetter;
 import beans.builder.GetterGetterGetter.BooleanGetter;
 import beans.builder.GetterGetterGetter.ByteGetter;
+import beans.builder.GetterGetterGetter.CharGetter;
 import beans.builder.GetterGetterGetter.DoubleGetter;
 import beans.builder.GetterGetterGetter.IntGetter;
 import beans.builder.GetterGetterGetter.ParsingBooleanGetter;
@@ -35,7 +37,7 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	private StringValGetter<T> stringGetter;
 	private BooleanGetter<T> boolGetter;
 	private ParsingBooleanGetter<T> parsingBoolGetter;
-
+	private CharGetter<T> charGetter;
 	private SimpleFieldWatcher() {}
 
 	/**
@@ -106,6 +108,7 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	private void buildGetters()
 	{
 		stringGetter = GetterGetterGetter.stringValGetterGetter(getClazz(), field, dblFmt);
+		charGetter = GetterGetterGetter.charGetterGetter(getClazz(), field);
 		intGetter    = GetterGetterGetter.intGetterGetter(getClazz(), field);
 		dblGetter    = GetterGetterGetter.doubleGetterGetter(getClazz(), field);
 		boolGetter   = GetterGetterGetter.booleanGetterGetter(getClazz(), field);
@@ -114,6 +117,7 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 
 	@Override public String  getStringVal(T t) { return stringGetter.get(t); }
 	@Override public double  getDoubleVal(T t) { return dblGetter.get(t); }
+	@Override public char    getCharVal(T t) { return charGetter.get(t); }
 	@Override public int     getIntVal(T t)    { return intGetter.get(t); }
 	@Override public byte    getByteVal(T t) { return byteGetter.get(t); }
 	@Override public boolean getBoolVal(T t) { return boolGetter.get(t); }
@@ -134,6 +138,39 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 		return new DblArrayMinMax(out, min, max);
 	}
 
+	@Override public DblArrayMinMax  getDoubleVal(List<List<T>> t) 
+	{
+		int width = t.size(); int height = t.get(0).size();
+		double[][] out = new double[width][height];
+		double min = Double.MAX_VALUE;; double max = Double.MIN_VALUE;
+		double val = 0.0;
+		for (int i = 0; i < width; i++) for (int j = 0; j < height; j++)
+		{		
+			val = dblGetter.get(t.get(i).get(j));
+			if (val < min) min = val;
+			else if (val > max) max = val;
+			out[i][j] = val;
+		}
+		return new DblArrayMinMax(out, min, max);
+	}
+	
+
+	@Override public IntArrayMinMax     getIntVal(List<List<T>> t)
+	{
+		int min = Integer.MAX_VALUE; int max = Integer.MIN_VALUE;
+		int width = t.size(); int height = t.get(0).size();
+		int val = 0;
+		int[][] out = new int[width][height];
+			for (int i = 0; i < width; i++) for (int j = 0; j < height; j++)
+		{
+			val = intGetter.get(t.get(i).get(j));
+			if (val < min) min = val;
+			else if (val > max) max = val;
+			out[i][j] = val;
+		}
+		return new IntArrayMinMax(out, min, max);
+	}
+	
 	@Override public IntArrayMinMax     getIntVal(T[][] t)    
 	{
 		int min = Integer.MAX_VALUE; int max = Integer.MIN_VALUE;
@@ -164,6 +201,40 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 		return new ByteArrayMinMax(out, min, max);
 	}
 
+	@Override public ByteArrayMinMax  getByteVal(List<List<T>> t)    
+	{
+		byte min = Byte.MAX_VALUE; byte max = Byte.MIN_VALUE;
+		int width = t.size(); int height = t.get(0).size();
+		byte val = 0;
+		byte[][] out = new byte[width][height];
+		for (int i = 0; i < width; i++) for (int j = 0; j < height; j++)
+		{
+			val = byteGetter.get(t.get(i).get(j));
+			if (val < min) min = val;
+			else if (val > max) max = val;
+			out[i][j] = val;
+		}
+		return new ByteArrayMinMax(out, min, max);
+	}
+
+	@Override public boolean[][] getBoolVal(List<List<T>> t) 
+	{
+		int width = t.size(); int height = t.get(0).size();
+		boolean[][] out = new boolean[width][height];
+			for (int i = 0; i < width; i++) for (int j = 0; j < height; j++)
+			out[i][j] = boolGetter.get(t.get(i).get(j)); 
+		return out;
+	}
+
+	@Override public boolean[][] getParsedBoolVal(List<List<T>> t) 
+	{
+		int width = t.size(); int height = t.get(0).size();
+		boolean[][] out = new boolean[width][height];
+			for (int i = 0; i < width; i++) for (int j = 0; j < height; j++)
+			out[i][j] = parsingBoolGetter.get(t.get(i).get(j)); 
+		return out;
+	}
+
 	@Override public boolean[][] getBoolVal(T[][] t) 
 	{
 		boolean[][] out = new boolean[t.length][t[0].length];
@@ -171,7 +242,7 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 			out[i][j] = boolGetter.get(t[i][j]); 
 		return out;
 	}
-
+	
 	@Override public boolean[][] getParsedBoolVal(T[][] t) 
 	{ 
 		boolean[][] out = new boolean[t.length][t[0].length];

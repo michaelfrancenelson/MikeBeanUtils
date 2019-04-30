@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 
 import beans.memberState.FieldWatcher;
-import image.arrayImager.ObjectArrayImager;
+import image.arrayImager.BeanImager;
 import image.colorInterpolator.ColorInterpolator;
 import utils.Sequences;
 
@@ -222,7 +222,7 @@ public class GradientLegendImager<T>
 //	@Override public T getCurrentSelectedObj() { return null; }
 
 	public int[] getArrayCoords(double relativeI, double relativeJ) {
-		return ObjectArrayImager.getObjArrayCoords(relativeI, relativeJ, legDatDim1, legDatDim2);
+		return BeanImager.getObjArrayCoords(relativeI, relativeJ, legDatDim1, legDatDim2);
 	}
 
 	public int getLegDatDim1() { return legDatDim1; }

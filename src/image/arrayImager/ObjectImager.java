@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import beans.memberState.FieldWatcher;
@@ -18,16 +19,63 @@ import utils.ArrayUtils.DblArrayMinMax;
 import utils.ArrayUtils.IntArrayMinMax;
 import utils.Sequences;
 
-public class ArrayImager<T> implements ObjectArrayImager<T>
+public class ObjectImager<T> implements BeanImager<T>
 {
+	interface ImagerData<T>
+	{
+		public T getData(int x, int y);
+		public IntArrayMinMax intMinMax();
+		public DblArrayMinMax dblMinMax();
+		public ByteArrayMinMax byteMinMax();
+		public boolean[][] boolVal();
+		public boolean[][] parsedBoolVal();
+	}
+	
+	class ArrayData implements ImagerData<T>
+	{
+		public ArrayData(T[][] dat) { this.data = dat; }
+		T[][] data;
+		@Override public T getData(int x, int y) { return data[x][y]; }
+		@Override public IntArrayMinMax intMinMax() { return currentWatcher.getIntVal(data); }
+		@Override public DblArrayMinMax dblMinMax() { return currentWatcher.getDoubleVal(data); }
+		@Override public ByteArrayMinMax byteMinMax() { return currentWatcher.getByteVal(data); }
+		@Override public boolean[][] boolVal() { return currentWatcher.getBoolVal(data); }
+		@Override public boolean[][] parsedBoolVal() { return currentWatcher.getParsedBoolVal(data); }
+	}
+
+	class ListData implements ImagerData<T>
+	{
+		public ListData(List<List<T>> dat) { this.data = dat; }
+		List<List<T>> data;
+		@Override public T getData(int x, int y) { return data.get(x).get(y); }
+		@Override public IntArrayMinMax intMinMax() { return currentWatcher.getIntVal(data); }
+		@Override public DblArrayMinMax dblMinMax() { return currentWatcher.getDoubleVal(data); }
+		@Override public ByteArrayMinMax byteMinMax() { return currentWatcher.getByteVal(data); }
+		@Override public boolean[][] boolVal() { return currentWatcher.getBoolVal(data); }
+		@Override public boolean[][] parsedBoolVal() { return currentWatcher.getParsedBoolVal(data); }
+	}
+	
 	int rgbType = BufferedImage.TYPE_3BYTE_BGR;
 	ColorInterpolator ci, booleanCI;
 
+	int dataWidth, dataHeight;
+	
 	Map<String, FieldWatcher<T>> watchers;
 	FieldWatcher<T> currentWatcher;
 	Map<String, Boolean> parsedBooleanFieldNames;
 
-	T[][] objArray;
+	private ImagerData<T> objectData;
+	
+	public void setData(T[][] dat)
+	{
+		this.objectData = new ArrayData(dat);
+	}
+
+	public void setData(List<List<T>> dat)
+	{
+		this.objectData = new ListData(dat);
+	}
+	
 	int[] currentSelectionArrayCoords;
 	Class<T> clazz;
 
@@ -47,33 +95,6 @@ public class ArrayImager<T> implements ObjectArrayImager<T>
 	boolean transposeImg, showBoolNA, flipAxisX, flipAxisY, horizLeg, legLoToHi;
 	int nLegendSteps;
 
-	public static <T> ObjectArrayImager<T> factory(
-			Class<T> clazz, T[][] objArray,	String fieldName, 
-			Color[] gradientColors, Color[] booleanColors,
-			double naDouble, int naInt, Color naColor,
-			String dblFmt, Iterable<String> parsedBooleanFields,
-			boolean includeNABoolean,
-			boolean transpose, boolean flipX, boolean flipY,
-			int nLegendSteps, boolean legLowToHi, boolean horizLegend)
-	{
-		ArrayImager<T> out = new ArrayImager<>();
-		out.clazz = clazz; out.objArray = objArray;
-		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, dblFmt);
-		out.ci = SimpleColorInterpolator.factory(
-				gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt);
-		out.booleanCI = SimpleBooleanColorInterpolator.factory(booleanColors, naColor);
-		out.showBoolNA = includeNABoolean;
-		out.transposeImg = transpose; out.flipAxisX = flipX; out.flipAxisY = flipY;
-		out.nLegendSteps = nLegendSteps; out.legLoToHi = legLowToHi; out.horizLeg = horizLegend;
-		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, dblFmt);
-		Map<String, Boolean> mp = new HashMap<>();
-		if (!(parsedBooleanFields == null)) for (String s : parsedBooleanFields) mp.put(s, true);
-		out.parsedBooleanFieldNames = mp;
-		out.setField(fieldName);
-		out.buildImage();
-		return out;
-	}
-
 	void buildImage()
 	{
 		ColorInterpolator interp;
@@ -81,12 +102,14 @@ public class ArrayImager<T> implements ObjectArrayImager<T>
 			interp = booleanCI;
 		else interp = ci;
 
-		switch (currentWatcher.getField().getType().getSimpleName())
+		String type = currentWatcher.getField().getType().getSimpleName();
+		switch (type)
 		{
 		case("int"):
 		{
 			legDatDbl = null; legDatByte = null;
-			IntArrayMinMax dat = currentWatcher.getIntVal(objArray);
+			IntArrayMinMax dat = objectData.intMinMax();
+//			currentWatcher.getIntVal(arrayData);
 			int legMin = dat.getMin(), legMax = dat.getMax();
 			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
 
@@ -103,7 +126,8 @@ public class ArrayImager<T> implements ObjectArrayImager<T>
 		case("double"):
 		{
 			legDatInt = null; legDatByte = null;
-			DblArrayMinMax dat = currentWatcher.getDoubleVal(objArray);
+			DblArrayMinMax dat = objectData.dblMinMax(); 
+//					currentWatcher.getDoubleVal(arrayData);
 			double legMin = dat.getMin(), legMax = dat.getMax();
 			ci.updateMinMax(legMin, legMax);
 			if (legLoToHi && legMin > legMax) { double t = legMin; legMax = legMin; legMin = t; }
@@ -119,7 +143,8 @@ public class ArrayImager<T> implements ObjectArrayImager<T>
 		case("byte"):
 		{
 			legDatInt = null; legDatDbl = null; 
-			ByteArrayMinMax dat = currentWatcher.getByteVal(objArray);
+			ByteArrayMinMax dat = objectData.byteMinMax();
+//			currentWatcher.getByteVal(arrayData);
 			byte legMin = dat.getMin(), legMax = dat.getMax();
 			ci.updateMinMax(legMin, legMax);
 			if (legLoToHi && legMin > legMax) { byte t = legMin; legMax = legMin; legMin = t; }
@@ -135,7 +160,8 @@ public class ArrayImager<T> implements ObjectArrayImager<T>
 		}
 		case("boolean"):
 		{
-			boolean[][] dat = currentWatcher.getBoolVal(objArray);
+			boolean[][] dat = objectData.boolVal();
+//			currentWatcher.getBoolVal(arrayData);
 
 			img = PrimitiveImageFactory.buildImage(dat, interp, flipAxisX, flipAxisY, transposeImg);
 
@@ -163,7 +189,6 @@ public class ArrayImager<T> implements ObjectArrayImager<T>
 	} 
 	@Override public void setField(Field field) { setField(field.getName()); }
 	@Override public FieldWatcher<T> getWatcher() { return currentWatcher; }
-	@Override public T[][] getData() { return objArray; }
 	@Override public ColorInterpolator getInterpolator() { return ci; }
 	@Override public ColorInterpolator getBooleanInterpolator() { return booleanCI; }
 	@Override public void setCurrentSelectedArrayCoords(int i, int j) { currentSelectionArrayCoords = new int[] {i, j}; }
@@ -179,13 +204,14 @@ public class ArrayImager<T> implements ObjectArrayImager<T>
 	@Override
 	public T getObjAt(int i, int j) 
 	{
-		if ((i > 0 && j > 0) &&  (i < objArray.length && j < objArray[0].length))
+		if ((i >= 0 && j >= 0) &&  (i < dataWidth && j < dataHeight))
 		{
 			setCurrentSelectedArrayCoords(i, j);
-			return objArray[i][j];
+			return objectData.getData(i, j);
+//					arrayData[i][j];
 		}
 		else throw new IllegalArgumentException("Input coordinates + (" + i + ", " + j + 
-				") are incompatible with the object array size (" + objArray.length + ", " + objArray[0].length+ ".");
+				") are incompatible with the object array size (" + dataWidth + ", " + dataHeight+ ".");
 	}
 
 	/**
@@ -203,7 +229,9 @@ public class ArrayImager<T> implements ObjectArrayImager<T>
 
 	@Override
 	public T getCurrentSelectedObj() 
-	{ return objArray[currentSelectionArrayCoords[0]][currentSelectionArrayCoords[1]]; }
+	{ return objectData.getData(currentSelectionArrayCoords[0], currentSelectionArrayCoords[1]); 
+//			arrayData[currentSelectionArrayCoords[0]][currentSelectionArrayCoords[1]]; 
+	}
 
 	@Override
 	public void setCurrentSelection(double relativeI, double relativeJ) 
@@ -215,14 +243,14 @@ public class ArrayImager<T> implements ObjectArrayImager<T>
 		if (transposeImg) { double t = relativeI; relativeJ = relativeI; relativeI = t; }
 		if (flipAxisX) relativeI = 1.0 - relativeI;
 		if (flipAxisY) relativeJ = 1.0 - relativeJ;
-		return ObjectArrayImager.getObjArrayCoords(
-				relativeI, relativeJ, objArray.length, objArray[0].length);
+		return BeanImager.getObjArrayCoords(
+				relativeI, relativeJ, dataWidth, dataHeight);
 	}
 
 	@Override
 	public String queryLegendAt(double relativeI, double relativeJ) 
 	{
-		int[] xy = ObjectArrayImager.getObjArrayCoords(relativeI, relativeJ, legDatWidth, legDatHeight);
+		int[] xy = BeanImager.getObjArrayCoords(relativeI, relativeJ, legDatWidth, legDatHeight);
 
 		if (legDatInt != null)
 			return "" + legDatInt.getDat()[xy[0]][xy[1]];
@@ -238,4 +266,7 @@ public class ArrayImager<T> implements ObjectArrayImager<T>
 		}
 		return "value not found";
 	}
+
+	@Override public int getDataWidth() { return this.dataWidth; }
+	@Override public int getDataHeight() { return this.dataHeight; }
 }

@@ -26,14 +26,14 @@ public class GetterGetterGetter
 
 	@FunctionalInterface public interface StringGetter<T> { String get(T obj); }
 
-	@FunctionalInterface public interface BoxedIntGetter<T> { Integer get(T obj); }
-	@FunctionalInterface public interface BoxedShortGetter<T> { Short get(T obj); }
-	@FunctionalInterface public interface BoxedLongGetter<T> { Long get(T obj); }
-	@FunctionalInterface public interface BoxedByteGetter <T> { Byte get(T obj); }
-	@FunctionalInterface public interface BoxedDoubleGetter<T> { Double get(T obj); }
-	@FunctionalInterface public interface BoxedFloatGetter<T> { Float get(T obj); }
-	@FunctionalInterface public interface BoxedChararacterGetter<T> { Character get(T obj); }
-	@FunctionalInterface public interface BoxedBooleanGetter<T> { Boolean get(T obj); }
+	//	@FunctionalInterface public interface BoxedIntGetter<T> { Integer get(T obj); }
+	//	@FunctionalInterface public interface BoxedShortGetter<T> { Short get(T obj); }
+	//	@FunctionalInterface public interface BoxedLongGetter<T> { Long get(T obj); }
+	//	@FunctionalInterface public interface BoxedByteGetter <T> { Byte get(T obj); }
+	//	@FunctionalInterface public interface BoxedDoubleGetter<T> { Double get(T obj); }
+	//	@FunctionalInterface public interface BoxedFloatGetter<T> { Float get(T obj); }
+	//	@FunctionalInterface public interface BoxedChararacterGetter<T> { Character get(T obj); }
+	//	@FunctionalInterface public interface BoxedBooleanGetter<T> { Boolean get(T obj); }
 
 	@FunctionalInterface interface ObjGetter <T> { Object get(T obj); }
 
@@ -81,7 +81,7 @@ public class GetterGetterGetter
 		String type = f.getType().getSimpleName();
 		StringValGetter<T> out = null;
 
-		switch(type)
+		switch(type.toLowerCase())
 		{
 		case("int"): 
 		{
@@ -126,71 +126,31 @@ public class GetterGetterGetter
 			out = (T tt) -> {return Boolean.toString(d.get(tt)); };
 			break; 
 		}
-		case("char"): {out = (T tt) ->
+		//		case("char"): {out = (T tt) ->
+		//		{
+		//			CharGetter<T> d = charGetterGetter(t, f);
+		//			out = (T tt) -> { return String.valueOf(d.get(tt)); };
+		////			try { return String.valueOf(f.getChar(tt)); }
+		////			catch (IllegalArgumentException | IllegalAccessException e) 
+		////			{ e.printStackTrace(); } throw new IllegalArgumentException();};
+		////			break;
+		//		}
+
+		case("char"): 
 		{
-			try { return String.valueOf(f.getChar(tt)); }
-			catch (IllegalArgumentException | IllegalAccessException e) 
-			{ e.printStackTrace(); } throw new IllegalArgumentException();};
-			break;
+			CharGetter<T> d = charGetterGetter(t, f);
+			out = (T tt) -> { return String.valueOf(d.get(tt)); };
 		}
 
+		case("Character"): 
+		{
+			CharGetter<T> d = charGetterGetter(t, f);
+			out = (T tt) -> { return String.valueOf(d.get(tt)); };
+		}
 		case("String"):  
 		{
 			StringGetter<T> d = stringGetterGetter(t, f);
 			out = (T tt) -> {return d.get(tt); };
-			break; 
-		}
-
-
-		case("Integer"):
-		{
-			BoxedIntGetter<T> d = boxedIntGetterGetter(t, f);
-			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
-			break; 
-		} 
-		case("Short"):
-		{
-			BoxedShortGetter<T> d = boxedShortGetterGetter(t, f);
-			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
-			break; 
-		} 
-		case("Long"):
-		{
-			BoxedLongGetter<T> d = boxedLongGetterGetter(t, f);
-			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
-			break; 
-		} 
-		case("Byte"):
-		{
-			BoxedByteGetter<T> d = boxedByteGetterGetter(t, f);
-			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
-			break; 
-		} 
-
-		case("Double"): 
-		{
-			BoxedDoubleGetter<T> d = boxedDoubleGetterGetter(t, f);
-			out = (T tt) -> { return String.format(dblFmt, d.get(tt)); };	
-			break; 
-		}
-		case("Float"): 
-		{
-			BoxedFloatGetter<T> d = boxedFloatGetterGetter(t, f);
-			out = (T tt) -> { return String.format(dblFmt, d.get(tt)); };	
-			break; 
-		}
-
-		case("Boolean"): 
-		{
-			BoxedBooleanGetter<T> d = boxedBooleanGetterGetter(t, f);
-			out = (T tt) -> {return Boolean.toString(d.get(tt)); };
-			break; 
-		}
-
-		case("Character"):
-		{
-			BoxedChararacterGetter<T> d = boxedCharGetterGetter(t, f);
-			out = (T tt) -> { return String.valueOf(d.get(tt)); };
 			break; 
 		}
 
@@ -215,12 +175,26 @@ public class GetterGetterGetter
 	public static <T> IntGetter<T> 
 	intGetterGetter(Class<T> t, Field f)
 	{
-		IntGetter<T> out = (T tt) -> 
+		String type = f.getType().getSimpleName();
+		IntGetter<T> out;
+
+		switch(type)
 		{
-			try { return f.getInt(tt);}
+		default:
+			out = (T tt) -> 
+			{
+				try { return f.getInt(tt);}
+				catch (IllegalArgumentException | IllegalAccessException e) 
+				{ e.printStackTrace(); throw new IllegalArgumentException();}
+			};
+		case("Integer"):
+			out = (T tt) -> 
+		{
+			try { return (Integer) f.get(tt);}
 			catch (IllegalArgumentException | IllegalAccessException e) 
 			{ e.printStackTrace(); throw new IllegalArgumentException();}
 		};
+		}
 		return out;
 	}
 
@@ -234,12 +208,23 @@ public class GetterGetterGetter
 	public static <T> ShortGetter<T> 
 	shortGetterGetter(Class<T> t, Field f)
 	{
-		ShortGetter<T> out = (T tt) ->
+		String type = f.getType().getSimpleName();
+		ShortGetter<T> out;
+		switch(type)
 		{
-			try { return f.getShort(tt);}
-			catch (IllegalArgumentException | IllegalAccessException e) 
-			{ e.printStackTrace(); throw new IllegalArgumentException();}
-		};
+		default:
+			out = (T tt) ->
+			{
+				try { return f.getShort(tt);}
+				catch (IllegalArgumentException | IllegalAccessException e) 
+				{ e.printStackTrace(); throw new IllegalArgumentException();}
+			};
+		case("Short"):
+		{
+			ObjGetter<T> g = objectGetterGetter(t, f);
+			out = (T tt) -> { return (Short) g.get(tt); };
+		}
+		}
 		return out;
 	}
 
@@ -253,12 +238,24 @@ public class GetterGetterGetter
 	public static <T> LongGetter<T> 
 	longGetterGetter(Class<T> t, Field f)
 	{
-		LongGetter<T> out = (T tt) -> 
+
+		String type = f.getType().getSimpleName();
+		LongGetter<T> out;
+		switch(type)
 		{
-			try { return f.getLong(tt);}
-			catch (IllegalArgumentException | IllegalAccessException e) 
-			{ e.printStackTrace(); throw new IllegalArgumentException();}
-		};
+		default:
+			out = (T tt) -> 
+			{
+				try { return f.getLong(tt);}
+				catch (IllegalArgumentException | IllegalAccessException e) 
+				{ e.printStackTrace(); throw new IllegalArgumentException();}
+			};
+		case("Long"):
+		{
+			ObjGetter<T> g = objectGetterGetter(t, f);
+			out = (T tt) -> { return (Long) g.get(tt); };
+		}
+		}
 		return out;
 	}
 
@@ -272,32 +269,23 @@ public class GetterGetterGetter
 	public static <T> ByteGetter<T> 
 	byteGetterGetter(Class<T> t, Field f)
 	{
-		ByteGetter<T> out = (T tt) -> 
+
+		String type = f.getType().getSimpleName();
+		ByteGetter<T> out;
+		switch(type)
 		{
-			switch(f.getType().getSimpleName())
-			{
-			case("byte"):
-			{
+		default:
+			out = (T tt) -> {
 				try { return f.getByte(tt);}
 				catch (IllegalArgumentException | IllegalAccessException e) 
 				{ e.printStackTrace(); throw new IllegalArgumentException();}
-			}
-			case("int"):
-			{
-				try { return (byte) f.getInt(tt);}
-				catch (IllegalArgumentException | IllegalAccessException e) 
-				{ e.printStackTrace(); throw new IllegalArgumentException();}
-			}
-			case("double"):
-			{
-				try { return (byte) f.getDouble(tt);}
-				catch (IllegalArgumentException | IllegalAccessException e) 
-				{ e.printStackTrace(); throw new IllegalArgumentException();
-				}
-			}
-			}
-			throw new IllegalArgumentException("Input could not be parsed as a byte value.");
-		};
+			};
+		case("Byte"):
+		{
+			ObjGetter<T> g = objectGetterGetter(t, f);
+			out = (T tt) -> { return (Byte) g.get(tt); };
+		}
+		}
 		return out;
 	}
 
@@ -311,12 +299,23 @@ public class GetterGetterGetter
 	public static <T> DoubleGetter<T> 
 	doubleGetterGetter(Class<T> t, Field f)
 	{
-		DoubleGetter<T> out = (T tt) ->
+		String type = f.getType().getSimpleName();
+		DoubleGetter<T> out; 
+		switch(type)
 		{
-			try { return f.getDouble(tt);}
-			catch (IllegalArgumentException | IllegalAccessException e) 
-			{ e.printStackTrace(); throw new IllegalArgumentException();}
-		};
+		default:
+			out = (T tt) ->
+			{
+				try { return f.getDouble(tt);}
+				catch (IllegalArgumentException | IllegalAccessException e) 
+				{ e.printStackTrace(); throw new IllegalArgumentException();}
+			};
+		case("Double"):
+		{
+			ObjGetter<T> g = objectGetterGetter(t, f);
+			out = (T tt) -> { return (Double) g.get(tt); };
+		}
+		}
 		return out;
 	}
 
@@ -330,12 +329,25 @@ public class GetterGetterGetter
 	public static <T> FloatGetter<T> 
 	floatGetterGetter(Class<T> t, Field f)
 	{
-		FloatGetter<T> out = (T tt) ->
+		String type = f.getType().getSimpleName();
+		FloatGetter<T> out; 
+		switch(type)
 		{
-			try { return f.getFloat(tt);}
+		default:
+			out = (T tt) ->
+			{
+				try { return f.getFloat(tt);}
+				catch (IllegalArgumentException | IllegalAccessException e) 
+				{ e.printStackTrace(); throw new IllegalArgumentException();}
+			};
+		case("Float"):
+			out = (T tt) -> 
+		{
+			try { return (Float) f.get(tt);}
 			catch (IllegalArgumentException | IllegalAccessException e) 
 			{ e.printStackTrace(); throw new IllegalArgumentException();}
 		};
+		}
 		return out;
 	}
 
@@ -349,12 +361,23 @@ public class GetterGetterGetter
 	public static <T> BooleanGetter<T> 
 	booleanGetterGetter(Class<T> t, Field f)
 	{
-		BooleanGetter<T> out = (T tt) ->
+		String type = f.getType().getSimpleName();
+		BooleanGetter<T> out;
+		switch(type)
 		{
-			try { return f.getBoolean(tt);}
-			catch (IllegalArgumentException | IllegalAccessException e) 
-			{ e.printStackTrace(); throw new IllegalArgumentException();}
-		};
+		default:
+			out = (T tt) -> {
+				try { return f.getBoolean(tt);}
+				catch (IllegalArgumentException | IllegalAccessException e) 
+				{ e.printStackTrace(); throw new IllegalArgumentException();}
+			};
+		case("Boolean"):
+		{
+			ObjGetter<T> g = objectGetterGetter(t, f);
+			out = (T tt) -> { return (Boolean) g.get(tt); };
+		}
+		}
+
 		return out;
 	}
 
@@ -368,12 +391,23 @@ public class GetterGetterGetter
 	public static <T> CharGetter<T> 
 	charGetterGetter(Class<T> t, Field f)
 	{
-		CharGetter<T> out = (T tt) ->
+		String type = f.getType().getSimpleName();
+		CharGetter<T> out; 
+		switch(type)
 		{
-			try { return f.getChar(tt);}
-			catch (IllegalArgumentException | IllegalAccessException e) 
-			{ e.printStackTrace(); throw new IllegalArgumentException();}
-		};
+		default:
+			out = (T tt) ->
+			{
+				try { return f.getChar(tt);}
+				catch (IllegalArgumentException | IllegalAccessException e) 
+				{ e.printStackTrace(); throw new IllegalArgumentException();}
+			};
+		case("Character"):
+		{
+			ObjGetter<T> g = objectGetterGetter(t, f);
+			out = (T tt) -> { return (Character) g.get(tt); };
+		}
+		}
 		return out;
 	}
 
@@ -439,117 +473,4 @@ public class GetterGetterGetter
 		return out;
 	}
 
-	
-	/** Build a getter for a boxed int field
-	 * 
-	 * @param t annotated bean object
-	 * @param f annotated field
-	 * @param <T> type of bean
-	 * @return a getter
-	 */
-	public static <T> BoxedIntGetter<T> 
-	boxedIntGetterGetter(Class<T> t, Field f)
-	{
-		ObjGetter<T> g = objectGetterGetter(t, f);
-		return  (T tt) -> { return (Integer) g.get(tt); };
-	}
-	
-	/** Build a getter for a boxed short field
-	 * 
-	 * @param t annotated bean object
-	 * @param f annotated field
-	 * @param <T> type of bean
-	 * @return a getter
-	 */
-	public static <T> BoxedShortGetter<T> 
-	boxedShortGetterGetter(Class<T> t, Field f)
-	{
-		ObjGetter<T> g = objectGetterGetter(t, f);
-		return  (T tt) -> { return (Short) g.get(tt); };
-	}
-	
-	/** Build a getter for a boxed long field
-	 * 
-	 * @param t annotated bean object
-	 * @param f annotated field
-	 * @param <T> type of bean
-	 * @return a getter
-	 */
-	public static <T> BoxedLongGetter<T> 
-	boxedLongGetterGetter(Class<T> t, Field f)
-	{
-		ObjGetter<T> g = objectGetterGetter(t, f);
-		return  (T tt) -> { return (Long) g.get(tt); };
-	}
-	
-	/** Build a getter for a boxed byte field
-	 * 
-	 * @param t annotated bean object
-	 * @param f annotated field
-	 * @param <T> type of bean
-	 * @return a getter
-	 */
-	public static <T> BoxedByteGetter<T> 
-	boxedByteGetterGetter(Class<T> t, Field f)
-	{
-		ObjGetter<T> g = objectGetterGetter(t, f);
-		return  (T tt) -> { return (Byte) g.get(tt); };
-	}
-
-	/** build a getter for a boxed double field
-	 * 
-	 * @param t annotated bean object
-	 * @param f annotated field
-	 * @param <T> type of bean
-	 * @return a getter
-	 */
-	public static <T> BoxedDoubleGetter<T> 
-	boxedDoubleGetterGetter(Class<T> t, Field f)
-	{
-		ObjGetter<T> g = objectGetterGetter(t, f);
-		return (T tt) -> { return (Double) g.get(tt); };
-	}
-	
-	/** build a getter for a boxed float field
-	 * 
-	 * @param t annotated bean object
-	 * @param f annotated field
-	 * @param <T> type of bean
-	 * @return a getter
-	 */
-	public static <T> BoxedFloatGetter<T> 
-	boxedFloatGetterGetter(Class<T> t, Field f)
-	{
-		ObjGetter<T> g = objectGetterGetter(t, f);
-		return (T tt) -> { return (Float) g.get(tt); };
-	}
-
-	/** Build a getter for a boxed boolean field
-	 * 
-	 * @param t annotated bean object
-	 * @param f annotated field
-	 * @param <T> type of bean
-	 * @return a getter
-	 */
-	public static <T> BoxedBooleanGetter<T> 
-	boxedBooleanGetterGetter(Class<T> t, Field f)
-	{
-		ObjGetter<T> g = objectGetterGetter(t, f);
-		return (T tt) -> { return (Boolean) g.get(tt); };
-	}
-	
-	/** Build a getter for a boxed boolean field
-	 * 
-	 * @param t annotated bean object
-	 * @param f annotated field
-	 * @param <T> type of bean
-	 * @return a getter
-	 */
-	public static <T> BoxedChararacterGetter<T> 
-	boxedCharGetterGetter(Class<T> t, Field f)
-	{
-		ObjGetter<T> g = objectGetterGetter(t, f);
-		return (T tt) -> { return (Character) g.get(tt); };
-	}
-	
 }

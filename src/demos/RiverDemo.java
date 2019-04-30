@@ -13,10 +13,10 @@ import javax.swing.JFrame;
 
 import beans.sampleBeans.TerrainBean;
 import image.ObjectArrayImageComboBox;
-import image.arrayImager.ObjectArrayImager;
+import image.arrayImager.BeanImager;
 import image.arrayImager.SimpleArrayImager;
 import swing.SwingUtils;
-import swing.stretchAndClick.ObjectArrayImagePanel;
+import swing.stretchAndClick.ObjectImagePanel;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
 import utils.ColorUtils;
 
@@ -43,7 +43,7 @@ public class RiverDemo
 		TerrainBean[][] cells1 = TerrainBean.factory(nRow, nCol, 1.5, 13);
 		TerrainBean.randomRivers(cells1, 0.32, 0.528, 0.5, 0.5, 1);
 //		TerrainBean.randomRivers(cells1, 0.52, 0.628, 0.5, 0.5, 2);
-		ObjectArrayImagePanel<TerrainBean> pan1;
+		ObjectImagePanel<TerrainBean> pan1;
 		
 		
 		double ptSize = 1.0 / ((double) Math.max(nRow, nCol));
@@ -79,7 +79,7 @@ public class RiverDemo
 		TerrainBean[][] cells1 = TerrainBean.factory(150, 230, 1.5, 13);
 		TerrainBean.randomRivers(cells1, 0.32, 0.528, 0.5, 0.5, 2);
 		TerrainBean.randomRivers(cells1, 0.52, 0.628, 0.5, 0.5, 2);
-		ObjectArrayImagePanel<TerrainBean> pan1, pan2, pan3, pan4;
+		ObjectImagePanel<TerrainBean> pan1, pan2, pan3, pan4;
 		
 		
 		double ptSize = 0.15;
@@ -183,8 +183,8 @@ public class RiverDemo
 				nRivers);
 		File imgFile = new File("sampleOutput/" + filename);
 		JFrame f1 = SwingUtils.frameFactory(nRows, nCols);
-		ObjectArrayImagePanel<TerrainBean> p1;
-		ObjectArrayImager<TerrainBean> imager1 = SimpleArrayImager.factory(
+		ObjectImagePanel<TerrainBean> p1;
+		BeanImager<TerrainBean> imager1 = SimpleArrayImager.factory(
 				TerrainBean.class, cells, 
 				"stream", 
 				ColorUtils.HEAT_COLORS, bCol,

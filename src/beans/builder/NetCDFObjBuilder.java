@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -30,46 +31,67 @@ public class NetCDFObjBuilder
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Build a collection of beans from a NetCDF file. 
+	 * Will attempt to read data corresponding to all the fields with the @ParsedField
+	 *   annotation.
+	 * @param clazz Bean class type
+	 * @param filename data file
+	 * @return
+	 */
 	public static <T> List<List<T>> factory2D(
-			//			public static <T> T[][] factory2D(
 			Class<T> clazz,
 			String filename
-
 			)
 	{
-		List<List<T>> out = null;
-		//		T[][] out = null;
-		int width, height;
-
 		List<Field> ff = FieldUtils.getAnnotatedFields(clazz, ParsedField.class);
-		List<String> fNames;
+		return factory2D(clazz, filename, ff);
+	}
+
+	/**
+	 * Build a collection of beans from a NetCDF file. 
+	 * Will attempt to read data corresponding to all the specified fields
+	 * 
+	 * @param clazz Bean class type
+	 * @param filename data file
+	 * @param ff the input file will be searched for variables corresponding to these
+	 * @return
+	 */
+	public static <T> List<List<T>> factory2D(
+			Class<T> clazz,
+			String filename,
+			List<Field> ff)
+	{
+		NetcdfFile ncfile = null; 
+		List<List<T>> out = null;
+		int width, height;
+		List<String> varNamesLower = new ArrayList<>();
 		List<String> varNames = new ArrayList<>();
-		fNames = Arrays.asList(FieldUtils.getInstanceFieldNames(clazz));
 
-		for (int i = 0; i < fNames.size(); i++) fNames.set(i, fNames.get(i).toLowerCase());
+		/* record the field names in all lowercase so that matches between fields
+		 * and NCDF variables are case-insensitive. */
+		List<String> parsedFieldNames = Arrays.asList(FieldUtils.getInstanceFieldNames(ff));
+		List<String> parsedFieldNamesLC = Arrays.asList(FieldUtils.getInstanceFieldNames(ff));
+		for (int i = 0; i < parsedFieldNames.size(); i++) 
+			parsedFieldNamesLC.set(i, parsedFieldNamesLC.get(i).toLowerCase());
 
-		NetcdfFile ncfile = null;
-		try {ncfile = NetcdfFile.open(filename);
-		} catch (IOException e) { e.printStackTrace(); }
+		try {ncfile = NetcdfFile.open(filename); }
+		catch (IOException e) { e.printStackTrace(); }
 
 		Map<String, Java2DArrayPackage> javaArrayMap = new HashMap<>();
 
 		List<Variable> vars = ncfile.getVariables();
 		boolean transpose = false;
-		//		for (Variable v : vars)
-		//			System.out.println("NetCDFObjBuilder.factory2D() read variable " + v.getFullName());
 		for (Variable v : vars)
 		{
 			Java2DArrayPackage pack;
 			String vType = v.getDataType().toString();
 			String ncVarName = v.getFullName();
-			String lowCName = v.getFullName().toLowerCase();
+			String lowCName = ncVarName.toLowerCase();
 
-			System.out.println("NetCDFObjBuilder.factory2D() read "
-					+ "variable " + v.getFullName() + " type " + vType);
-			if (fNames.contains(lowCName))
+			if (parsedFieldNamesLC.contains(lowCName))
 			{
+				varNamesLower.add(lowCName);
 				varNames.add(ncVarName);
 				switch(vType)
 				{
@@ -105,17 +127,32 @@ public class NetCDFObjBuilder
 		{
 			if (!javaArrayMap.containsKey(st.toLowerCase()))
 				throw new IllegalArgumentException("Trouble parsing netCDF variable: " + st);
-
-
-			//			System.out.println("NetCDFObjBulder.factory2D() map has entry for var " + st + " " + javaArrayMap.containsKey(st));
 		}
 		if (javaArrayMap.size() == 0)
 			throw new IllegalArgumentException("No variables found in input file " + filename);
-		Java2DArrayPackage pack = javaArrayMap.get(javaArrayMap.keySet().iterator().next());
-		width = pack.width; height = pack.height;
 
-		//		out = (T[][]) new Object[width][height];
-		//		out = (T[][]) new Object[width][height];
+		/* Get the width and height of the data arrays and verify that they are all the same. */
+		Iterator<String> it = javaArrayMap.keySet().iterator();
+		String name = it.next();
+		width = javaArrayMap.get(name).width; height = javaArrayMap.get(name).height;
+		while(it.hasNext())
+		{
+			name = it.next();
+			Java2DArrayPackage pack = javaArrayMap.get(name);
+			if (width != pack.width)
+				throw new IllegalArgumentException("NetCDF 2D data arrays are not all the same size");
+			if (height != pack.height)
+				throw new IllegalArgumentException("NetCDF 2D data arrays are not all the same size");
+		}
+
+		/* Check that all the required fields were found in the NCDF file. */
+		for (String st : parsedFieldNames)
+		{
+			if (!javaArrayMap.containsKey(st.toLowerCase()))
+				throw new IllegalArgumentException("Bean field " + st + " does not have a matching "
+						+ "variable int he netCDF input file " + filename);
+		}
+
 		out = new ArrayList<List<T>>(width);
 		for (int x = 0; x < width; x++)
 		{
@@ -130,7 +167,16 @@ public class NetCDFObjBuilder
 		return out;
 	}
 
-
+	/**
+	 * Build a single bean instance 
+	 * 
+	 * @param packs data arrays from a netCDF file
+	 * @param x array coordinate
+	 * @param y array coordinate
+	 * @param clazz bean class type
+	 * @param ff list of fields to set in the bean
+	 * @return A new instance of T with data from the netCDF file.
+	 */
 	static <T> T buildObject(
 			Map<String, Java2DArrayPackage> packs,
 			int x, int y, Class<T> clazz, List<Field> ff)
@@ -148,7 +194,6 @@ public class NetCDFObjBuilder
 			for (int i = 0; i < ff.size(); i++) {
 				Field f = ff.get(i);
 				String name = f.getName();
-				System.out.println("NetCDFObjBuilder.buildObject() field name: " + name);
 				pack = packs.get(name.toLowerCase());
 				switch(pack.type)
 				{
@@ -167,64 +212,14 @@ public class NetCDFObjBuilder
 					AnnotatedBeanReader.setVal(f, ((char[][]) pack.array)[x][y], t);
 					break;
 				}
+				default: throw new IllegalArgumentException("Trouble parsing data of type "
+						+ pack.type + " for field " + name);
 				}
 			}
 		}
-
 		return t;
 	}
 
-
-	//	
-	//	/* Giant try block is probably not an ideal coding style. */
-	//	try {
-	//
-	//		boolean transpose = true;
-	//
-	//		/* Grab the variables from the file and verify that they are all the same size: */
-	//		/* the NetCDF data is transposed from the orientation that we want. */
-	//		double[][]  elevation      = NetCDFUtils.get2DDoubleArray(ncfile, "elevation", transpose);
-	//		double[][]  slope          = NetCDFUtils.get2DDoubleArray(ncfile, "slope", transpose);
-	//		double[][]  aspect         = NetCDFUtils.get2DDoubleArray(ncfile, "aspect", transpose);
-	//		double[][]  dist_to_road   = NetCDFUtils.get2DDoubleArray(ncfile, "dist_to_road", transpose);
-	//		double[][]  dist_to_stream = NetCDFUtils.get2DDoubleArray(ncfile, "dist_to_stream", transpose);
-	//		int[][]     in_border      = NetCDFUtils.get2DIntArray(ncfile, "in_border", transpose);
-	//		int[][]     has_road       = NetCDFUtils.get2DIntArray(ncfile, "has_road", transpose);
-	//		int[][]     has_stream     = NetCDFUtils.get2DIntArray(ncfile, "has_stream", transpose);
-	//
-	//		height = elevation[0].length;
-	//		width = elevation.length; 
-	//		
-	//		cellWidth_meters = ncfile.findGlobalAttribute("cellWidth").getNumericValue().doubleValue();
-	//		cellGrid = new ManagedCell[width][height];
-	//		
-	//		for (int x = 0; x < width; x++) for (int y = 0; y < height; y++)
-	//		{
-	//			if (in_border[x][y] != 1) cellGrid[x][y] = null;
-	//			else
-	//			{
-	//				ManagedCell c = new ManagedCell();
-	//				c.initialize(
-	//						elevation[x][y], 
-	//						slope[x][y], 
-	//						aspect[x][y],
-	//						Bool.parseBool(has_stream[x][y]), 
-	//						dist_to_stream[x][y], 
-	//						Bool.parseBool(has_road[x][y]),
-	//						dist_to_road[x][y],
-	//						-99999);
-	//				c.setCoords(x, y);
-	//				managedCells.add(c);
-	//				cellGrid[x][y] = c;
-	//				
-	//				if (Bool.parseBool(in_border[x][y]) && Double.isNaN(elevation[x][y]))
-	//					throw new IllegalArgumentException("Error in input NetCDF file. "
-	//							+ " Cell at (" + x + ", " + y + ") has no elevation data.");
-	//			}
-	//		}
-	//	} catch (IOException e) { e.printStackTrace(); }
-	//	
-	//	
 	/** Get a 2D array of bytes from a netCDF variable.
 	 * 
 	 * @param ncfile
@@ -263,7 +258,7 @@ public class NetCDFObjBuilder
 		return out;
 	}
 
-	/** Get a 2D array of ints from a netCDF variable.
+	/** Get a 2D array of shorts from a netCDF variable.
 	 * 
 	 * @param ncfile
 	 * @param variable
@@ -282,7 +277,7 @@ public class NetCDFObjBuilder
 		return out;
 	}
 
-	/** Get a 2D array of ints from a netCDF variable.
+	/** Get a 2D array of longs from a netCDF variable.
 	 * 
 	 * @param ncfile
 	 * @param variable
@@ -339,7 +334,7 @@ public class NetCDFObjBuilder
 		}
 	}
 
-	/** Get a 2D array of floats from a netCDF variable.
+	/** Get a 2D array of chars from a netCDF variable.
 	 * 
 	 * @param ncfile
 	 * @param variable
@@ -357,6 +352,4 @@ public class NetCDFObjBuilder
 			throw new IllegalArgumentException("Problem finding variable " + variable + " in the netcdf file.");
 		}
 	}
-
-
 }

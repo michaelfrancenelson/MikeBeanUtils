@@ -318,7 +318,7 @@ public class PrimitiveImageFactory
 			img = new BufferedImage(data.length, data[0].length, ObjectImageFactory.RGB_TYPE);
 			for (int i = startX; i != endX; i += incrementX) {
 				for (int j = startY; j != endY; j += incrementY) {
-					img.setRGB(i, j, ci.getColor(data[i][j]));
+					img.setRGB(i, j, ci.getBoxedColor(data[i][j]));
 				}
 			}
 		}
@@ -327,7 +327,7 @@ public class PrimitiveImageFactory
 			img = new BufferedImage(data[0].length, data.length, ObjectImageFactory.RGB_TYPE);
 			for (int i = startX; i != endX; i += incrementX) {
 				for (int j = startY; j != endY; j += incrementY) {
-					img.setRGB(j, i, ci.getColor(data[i][j]));
+					img.setRGB(j, i, ci.getBoxedColor(data[i][j]));
 				}
 			}
 		}
@@ -355,7 +355,7 @@ public class PrimitiveImageFactory
 	{
 		BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
 		for (int i = 0; i < data.length; i++) for (int j = 0; j < data[0].length; j++)
-			out.setRGB(i, j, ci.getColor(data[i][j]));
+			out.setRGB(i, j, ci.getBoxedColor(data[i][j]));
 		return out;
 	}
 	

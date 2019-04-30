@@ -9,28 +9,32 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.border.Border;
 
+import beans.builder.NetCDFObjBuilder;
+import beans.sampleBeans.AllFlavorBean;
 import beans.sampleBeans.TerrainBean;
-import image.arrayImager.ArrayImager;
-import image.arrayImager.ObjectArrayImager;
+import image.arrayImager.BeanImager;
+import image.arrayImager.ImagerFactory;
 import image.colorInterpolator.ColorInterpolator;
 import image.imageFactories.PrimitiveImageFactory.SimpleImagePanel;
 import swing.SwingUtils;
-import swing.stretchAndClick.ObjectArrayImagePanel;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
+import swing.stretchAndClick.ObjectImagePanel;
 import utils.ColorUtils;
 
-public class ArrayImageDemo 
+public class BeanImageDemo 
 {
-	static Font font = new Font("times", 2, 45);
+	static Font font = new Font("times", 2, 20);
 	static Color[] bCol = new Color[] {Color.gray, Color.green};
 	static SimpleImagePanel iPan;
-	static ObjectArrayImagePanel<TerrainBean> objPan;
+	static ObjectImagePanel<?> objPan;
 	static ColorInterpolator c;
 
 	static TerrainBean[][] cells;
 	static int nRows;
 	static int nCols;
 
+	static String dblFmt = "%.1f";
+	
 	static Color[] gradCols = ColorUtils.TOPO_COLORS;
 	static Color[] boolCols = ColorUtils.YELLOWS;
 	
@@ -38,11 +42,12 @@ public class ArrayImageDemo
 	static JFrame f;
 	static int cellSize = 400;
 	static List<SimpleImagePanel> panels;
-	static List<ObjectArrayImagePanel<TerrainBean>> tPanels;
+	static List<ObjectImagePanel<?>> tPanels;
 	static double ptSize;
-	static ObjectArrayImager<TerrainBean> imagerAge, imagerElev;
+	static BeanImager<TerrainBean> imagerAge, imagerElev;
 	static boolean[] test = new boolean[] {true, false};
-
+	static List<List<AllFlavorBean>> beans;
+	
 	public static void setup(int width, int height, double elevGradient, int ageMod)
 	{
 		nRows = height; nCols = width;
@@ -54,10 +59,26 @@ public class ArrayImageDemo
 
 	public static void main(String[] args) 
 	{
-
 		boolean save = false;
-		SimpleImagePanelDemo(10, 13, 50, true, save);
+//		netcdfDemo(600, 475, true, save);
+//		SimpleImagePanelDemo(31, 31, 50, true, save);
 		objectArrayImageMultiPanelDemo(50, 60, true, save);
+	}
+	
+	static void netcdfDemo(int width, int height, boolean show, boolean save)
+	{
+		String fname = "testData/AllFlavorBean.nc";
+		beans = NetCDFObjBuilder.factory2D(AllFlavorBean.class, fname);
+
+		BeanImager<AllFlavorBean> imager1 =  
+				imager(beans, 100, true, true, "intPrim", AllFlavorBean.class);
+		objPan = ObjectArrayPanelFactory.buildPanel(
+				imager1, "intBox", true, 0, 0, ptSize);
+
+		f = SwingUtils.frameFactory(width, height,
+				"All Flavor Bean Object List Image Demo");
+		f.add(objPan);
+		f.setVisible(show);
 	}
 
 
@@ -76,8 +97,8 @@ public class ArrayImageDemo
 			{
 				TerrainBean.perturbElevations(cells, i * 10);
 				TerrainBean.perturbAges(cells, (int) (j * 2.75));
-				imagerAge = img(100, true, true, "age");
-				imagerElev = img(100, true, true, "elevation");
+				imagerAge = imager(cells, 100, true, true, "age", TerrainBean.class);
+				imagerElev = imager(cells, 100, true, true, "elevation", TerrainBean.class);
 
 				objPan = ObjectArrayPanelFactory.buildPanel(
 						imagerElev, "elevation", true, 0, 0, ptSize);
@@ -90,11 +111,11 @@ public class ArrayImageDemo
 			}
 		}
 
-		for (ObjectArrayImagePanel<TerrainBean> p : tPanels) p.setBorder(border); 
+		for (ObjectImagePanel<?> p : tPanels) p.setBorder(border); 
 
 		f = SwingUtils.frameFactory(3 * cellSize, 4 * cellSize,
 				"Terrain Bean Object Array Image Demo", 4, 3);
-		for (ObjectArrayImagePanel<TerrainBean> p : tPanels) 
+		for (ObjectImagePanel<?> p : tPanels) 
 		{
 			f.add(p);
 		}
@@ -104,63 +125,59 @@ public class ArrayImageDemo
 
 	}
 
-	static ObjectArrayImager<TerrainBean> img(int nLegendSteps, 
-			boolean lToH, boolean horz, String field)
+	static <T> BeanImager<T> imager(List<List<T>> beans, int nLegendSteps, 
+			boolean lToH, boolean horz, String field, Class<T> clazz)
 	{
-
-		return ArrayImager.factory(
-				TerrainBean.class, cells, field,
+		return ImagerFactory.factory(
+				clazz, beans, field,
 				gradCols, boolCols,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-				null,  null,
+				dblFmt,  null,
 				true,
 				false, false, false,
 				nLegendSteps, lToH, horz
 				);
-				
-//				ArrayImager.factory(
-//				TerrainBean.class, cells, field,
-//				gradCols, boolCols,
-//				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-//				null,  null,
-//				true,
-//				false, false, false,
-//				nLegendSteps, lToH, horz
-//
-//				);
 	}
 
-
+	static <T> BeanImager<T> imager(T[][] beans, int nLegendSteps, 
+			boolean lToH, boolean horz, String field, Class<T> clazz)
+	{
+		return ImagerFactory.factory(
+				clazz, beans, field,
+				gradCols, boolCols,
+				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
+				dblFmt,  null,
+				true,
+				false, false, false,
+				nLegendSteps, lToH, horz
+				);
+	}
+	
 	public static void SimpleImagePanelDemo(int width, int height,
 			double mult, boolean show, boolean save)
 	{
 		setup(width, height, 1.57, 	1000);
 		for (int i = 0; i < width ; i++) for (int j = 0; j < height; j++) cells[i][j].age = i + j;
 		
-		imagerAge = img(100, true, true, "age");
+		imagerAge = imager(cells, 100, true, true, "age", TerrainBean.class);
 		objPan = ObjectArrayPanelFactory.buildPanel(
 				imagerAge, "elevation", true, 0, 0, ptSize);
 		tPanels.add(objPan);
 
 		for (int i = 0; i < width ; i++) for (int j = 0; j < height; j++)
-			objPan.addLabel(i, j, "" + (i + j), font, Color.black, true, 1);
+//			objPan.addLabel(i, j, "" + (i + j), font, Color.black, true, 1);
+		objPan.addValueLabel(i, j, font);
+//		, Color.black, true, 1);
 
-		
-		
-		
-		
-		for (ObjectArrayImagePanel<TerrainBean> p : tPanels) p.setBorder(border); 
+		for (ObjectImagePanel<?> p : tPanels) p.setBorder(border); 
 
 		f = SwingUtils.frameFactory((int) (mult * width), (int) (mult * height),
-				"Terrain Bean Object Array Image Demo", 1, 1);
-		for (ObjectArrayImagePanel<TerrainBean> p : tPanels) 
-		{
-			f.add(p);
-		}
+				"Terrain Bean Simple Image Demo", 1, 1);
+		for (ObjectImagePanel<?> p : tPanels)	f.add(p);
 		f.setVisible(show);
 
-		if (show && save) SwingUtils.saveFrameImage(f, "sampleOutput/array_image_multi_panel_demo.png");
-
+		if (show && save) SwingUtils.saveFrameImage(f, 
+				"sampleOutput/array_image_multi_panel_demo.png");
 	}
 
 

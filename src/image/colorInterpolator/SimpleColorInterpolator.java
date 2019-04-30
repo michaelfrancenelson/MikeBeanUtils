@@ -199,6 +199,7 @@ public class SimpleColorInterpolator implements ColorInterpolator
 	@Override
 	public int getBoxedColor(Boolean... val)
 	{
+		if (val == null) naColor.getRGB(); 
 		if (val[0] == null) return  naColor.getRGB();
 		if (val[0]) return colors[0].getRGB();
 		return colors[colors.length - 1].getRGB();

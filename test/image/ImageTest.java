@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import beans.builder.RandomBeanBuilder;
 import beans.sampleBeans.SimpleBean;
-import image.arrayImager.ObjectArrayImager;
+import image.arrayImager.BeanImager;
 import image.arrayImager.SimpleArrayImagerWithLegend;
 import swing.SwingUtils;
 import utils.ColorUtils;
@@ -46,7 +46,7 @@ public class ImageTest {
 
 		List<String> parsedB = Arrays.asList(new String[] { "i2", "d2" });
 
-		ObjectArrayImager<SimpleBean> oai;
+		BeanImager<SimpleBean> oai;
 		
 		
 		

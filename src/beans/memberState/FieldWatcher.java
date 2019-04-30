@@ -1,6 +1,7 @@
 package beans.memberState;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import utils.ArrayUtils.ByteArrayMinMax;
 import utils.ArrayUtils.DblArrayMinMax;
@@ -23,7 +24,30 @@ public interface FieldWatcher<T>
 	 *         If the field is numeric or boolean, the value is parsed to a String.
 	 */
 	public String  getStringVal(T t);
+
+	/**
+	 * 
+	 * @param t bean instance
+	 * @return a byte representation of the field.  
+	 *         If the field is not 'byte', may throw an exception.
+	 */
+	public byte            getByteVal(T t);
+	/**
+	 * 
+	 * @param t array of bean instances
+	 * @return a byte array representation of the field.  
+	 *         If the field is not 'byte', may throw an exception.
+	 */
+	public ByteArrayMinMax getByteVal(T[][] t);
+	/**
+	 * 
+	 * @param t collection of bean instances
+	 * @return a byte array representation of the field.  
+	 *         If the field is not 'byte', may throw an exception.
+	 */
+	public ByteArrayMinMax getByteVal(List<List<T>> t);
 	
+
 	/**
 	 * 
 	 * @param t bean instance
@@ -33,17 +57,20 @@ public interface FieldWatcher<T>
 	public int     getIntVal(T t);
 	
 	
-	public byte            getByteVal(T t);
-	public ByteArrayMinMax getByteVal(T[][] t);
-	
-	
 	/**
 	 * 
-	 * @param t bean instance
-	 * @return a byte representation of the field.  
-	 *         If the field is not 'int', may throw an exception.
+	 * @param t array of bean instances
+	 * @return an int array of the field.  
+	 *         If the field is not of type int, may throw an exception.
 	 */
 	public IntArrayMinMax getIntVal(T[][] t);
+	/**
+	 * 
+	 * @param t collection of bean instances
+	 * @return an int array of the field.  
+	 *         If the field is not of type int, may throw an exception.
+	 */
+	public IntArrayMinMax getIntVal(List<List<T>> t);
 	
 	
 	/**
@@ -53,7 +80,18 @@ public interface FieldWatcher<T>
 	 *         If the field is not 'double' may throw an exception
 	 */
 	public double  getDoubleVal(T t);
+	/**
+	 * 
+	 * @param t 2D array of bean instances
+	 * @return
+	 */
 	public DblArrayMinMax getDoubleVal(T[][] t);
+	/**
+	 * 
+	 * @param t collection of bean instances
+	 * @return
+	 */
+	public DblArrayMinMax getDoubleVal(List<List<T>> t);
 	
 	/**
 	 * 
@@ -62,13 +100,18 @@ public interface FieldWatcher<T>
 	 *         If the field is not 'boolean' may throw an exception
 	 */
 	public boolean getBoolVal(T t);
-
 	/**
 	 * 
 	 * @param t 2D array of beans
 	 * @return
 	 */
 	public boolean[][] getBoolVal(T[][] t);
+	/**
+	 * 
+	 * @param t a collection of beans
+	 * @return
+	 */
+	public boolean[][] getBoolVal(List<List<T>> t);
 	
 	/**
 	 * 
@@ -84,6 +127,12 @@ public interface FieldWatcher<T>
 	 *           If the field is not 'boolean' an attempt is made to parse it as boolean.
 	 */
 	public boolean[][] getParsedBoolVal(T[][] t);
+	/**
+	 * 
+	 * @param t a collection of beans
+	 * @return
+	 */
+	public boolean[][] getParsedBoolVal(List<List<T>> t);
 
 	/**
 	 * 
@@ -116,4 +165,6 @@ public interface FieldWatcher<T>
 	public Field getField();
 
 	String getDblFmt();
+
+	char getCharVal(T t);
 }

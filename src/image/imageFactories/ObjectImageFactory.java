@@ -4,7 +4,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import beans.memberState.FieldWatcher;
-import image.arrayImager.ObjectArrayImager;
+import image.arrayImager.BeanImager;
 import image.colorInterpolator.ColorInterpolator;
 
 
@@ -26,7 +26,7 @@ public class ObjectImageFactory
 	 * @return
 	 */
 	public static <T> Image buildArrayImage(
-			T[][] data, ObjectArrayImager<T> imager, String field,
+			T[][] data, BeanImager<T> imager, String field,
 			boolean flipAxisX, boolean flipAxisY,
 			boolean transpose, boolean boolNA)
 	{

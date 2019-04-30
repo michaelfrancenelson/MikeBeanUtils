@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 import beans.memberState.FieldWatcher;
 import image.colorInterpolator.ColorInterpolator;
 
-public interface ObjectArrayImager<T> 
+public interface BeanImager<T> 
 {
 
 	/**
@@ -82,7 +82,7 @@ public interface ObjectArrayImager<T>
 	 * 
 	 * @return
 	 */
-	public T[][] getData();
+//	public T[][] getData();
 
 	/**
 	 * 
@@ -97,6 +97,10 @@ public interface ObjectArrayImager<T>
 	public T getCurrentSelectedObj();
 
 
+	
+	public int getDataWidth();
+	public int getDataHeight();
+	
 	public void setCurrentSelectedArrayCoords(int i, int j);
 	public void setCurrentSelection(double relativeI, double relativeJ);
 	public int[] getArrayCoords(double relativeI, double relativeJ);

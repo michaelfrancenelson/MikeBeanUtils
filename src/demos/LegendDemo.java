@@ -10,10 +10,10 @@ import javax.swing.JLabel;
 
 import beans.sampleBeans.TerrainBean;
 import image.LegendPanel;
-import image.arrayImager.ObjectArrayImager;
+import image.arrayImager.BeanImager;
 import image.arrayImager.SimpleArrayImager;
 import swing.SwingUtils;
-import swing.stretchAndClick.ObjectArrayImagePanel;
+import swing.stretchAndClick.ObjectImagePanel;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
 import utils.ColorUtils;
 
@@ -38,7 +38,7 @@ public class LegendDemo
 		TerrainBean[][] cells1 = TerrainBean.factory(nRow, nCol, 1.5, 13);
 		TerrainBean.randomRivers(cells1, 0.32, 0.528, 0.5, 0.5, 1);
 		//		TerrainBean.randomRivers(cells1, 0.52, 0.628, 0.5, 0.5, 2);
-		ObjectArrayImagePanel<TerrainBean> pan1, pan2;
+		ObjectImagePanel<TerrainBean> pan1, pan2;
 		LegendPanel<TerrainBean> leg1, leg2;
 		int nLegendSteps, legendDirection;
 
@@ -49,7 +49,7 @@ public class LegendDemo
 		f1 = SwingUtils.frameFactory(1100, 1100, "", 1, 1);
 		f2 = SwingUtils.frameFactory(1100, 1100);
 
-		ObjectArrayImager<TerrainBean> mainImager;
+		BeanImager<TerrainBean> mainImager;
 
 		mainImager = SimpleArrayImager.factory(
 				TerrainBean.class, cells1, 

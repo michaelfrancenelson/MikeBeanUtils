@@ -8,21 +8,21 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import beans.sampleBeans.TerrainBean;
-import image.arrayImager.ArrayImager;
-import image.arrayImager.ObjectArrayImager;
+import image.arrayImager.ObjectImager;
+import image.arrayImager.BeanImager;
 import swing.SwingUtils;
-import swing.stretchAndClick.ObjectArrayImagePanel;
+import swing.stretchAndClick.ObjectImagePanel;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
 import utils.ColorUtils;
 
 public class ObjectArrayPanelDemo
 {
 
-	static List<ObjectArrayImagePanel<?>> panelList;
+	static List<ObjectImagePanel<?>> panelList;
 	static TerrainBean[][] cells;
 	static JFrame f1, f2;
-	static ObjectArrayImagePanel<TerrainBean> objPan, objPan2;
-	static ObjectArrayImager<TerrainBean> imagerAge, imagerElev;
+	static ObjectImagePanel<TerrainBean> objPan, objPan2;
+	static BeanImager<TerrainBean> imagerAge, imagerElev;
 	static Color[] gradCols = ColorUtils.TOPO_COLORS;
 	static Color[] boolCols = ColorUtils.YELLOWS;
 
@@ -56,7 +56,7 @@ public class ObjectArrayPanelDemo
 	{
 
 		List<String> names = new ArrayList<>();
-		List<ObjectArrayImagePanel<TerrainBean>> panels = new ArrayList<>();
+		List<ObjectImagePanel<TerrainBean>> panels = new ArrayList<>();
 		List<JFrame> frames = new ArrayList<>();
 		names.add("ObjectArrayPanelDemo_imager_specified_builder");
 		names.add("ObjectArrayPanelDemo_fully_specified_builder");
