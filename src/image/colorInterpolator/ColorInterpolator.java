@@ -44,6 +44,8 @@ public interface ColorInterpolator
 	 * @return resulting color
 	 */
 	public int getColor(int... val);
+	public int getColor(short... val);
+	public int getColor(long... val);
 
 	/**
 	 * 
@@ -52,6 +54,7 @@ public interface ColorInterpolator
 	 * @return resulting color
 	 */
 	public int getColor(double... val);
+	public int getColor(float... val);
 
 	/**
 	 * 

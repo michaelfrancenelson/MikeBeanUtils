@@ -24,11 +24,14 @@ import utils.ColorUtils;
 public class BeanImageDemo 
 {
 	static Font font = new Font("times", 2, 20);
-	static Color[] bCol = new Color[] {Color.gray, Color.green};
+	static Color[] boolCol = new Color[] {Color.gray, Color.green};
 	static SimpleImagePanel iPan;
 	static ObjectImagePanel<?> objPan;
 	static ColorInterpolator c;
 
+	static String inputNCDF = "testData/AllFlavorBean.nc";
+
+	
 	static TerrainBean[][] cells;
 	static int nRows;
 	static int nCols;
@@ -60,20 +63,18 @@ public class BeanImageDemo
 	public static void main(String[] args) 
 	{
 		boolean save = false;
-//		netcdfDemo(600, 475, true, save);
+		netcdfDemo(600, 475, true, save);
 //		SimpleImagePanelDemo(31, 31, 50, true, save);
-		objectArrayImageMultiPanelDemo(50, 60, true, save);
+//		objectArrayImageMultiPanelDemo(50, 60, true, save);
 	}
 	
 	static void netcdfDemo(int width, int height, boolean show, boolean save)
 	{
-		String fname = "testData/AllFlavorBean.nc";
-		beans = NetCDFObjBuilder.factory2D(AllFlavorBean.class, fname);
+		beans = NetCDFObjBuilder.factory2D(AllFlavorBean.class, inputNCDF);
 
-		BeanImager<AllFlavorBean> imager1 =  
-				imager(beans, 100, true, true, "intPrim", AllFlavorBean.class);
+		BeanImager<AllFlavorBean> imager1 = ImagerFactory.quickFactory(beans, 100, true, true, "intPrim", AllFlavorBean.class, gradCols, boolCols);
 		objPan = ObjectArrayPanelFactory.buildPanel(
-				imager1, "intBox", true, 0, 0, ptSize);
+				imager1, "boolPrim", true, 0, 0, ptSize);
 
 		f = SwingUtils.frameFactory(width, height,
 				"All Flavor Bean Object List Image Demo");
@@ -97,8 +98,8 @@ public class BeanImageDemo
 			{
 				TerrainBean.perturbElevations(cells, i * 10);
 				TerrainBean.perturbAges(cells, (int) (j * 2.75));
-				imagerAge = imager(cells, 100, true, true, "age", TerrainBean.class);
-				imagerElev = imager(cells, 100, true, true, "elevation", TerrainBean.class);
+				imagerAge = ImagerFactory.quickFactory(cells, 100, true, true, "age", TerrainBean.class, gradCols, boolCols);
+				imagerElev = ImagerFactory.quickFactory(cells, 100, true, true, "elevation", TerrainBean.class, gradCols, boolCols);
 
 				objPan = ObjectArrayPanelFactory.buildPanel(
 						imagerElev, "elevation", true, 0, 0, ptSize);
@@ -125,33 +126,6 @@ public class BeanImageDemo
 
 	}
 
-	static <T> BeanImager<T> imager(List<List<T>> beans, int nLegendSteps, 
-			boolean lToH, boolean horz, String field, Class<T> clazz)
-	{
-		return ImagerFactory.factory(
-				clazz, beans, field,
-				gradCols, boolCols,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-				dblFmt,  null,
-				true,
-				false, false, false,
-				nLegendSteps, lToH, horz
-				);
-	}
-
-	static <T> BeanImager<T> imager(T[][] beans, int nLegendSteps, 
-			boolean lToH, boolean horz, String field, Class<T> clazz)
-	{
-		return ImagerFactory.factory(
-				clazz, beans, field,
-				gradCols, boolCols,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-				dblFmt,  null,
-				true,
-				false, false, false,
-				nLegendSteps, lToH, horz
-				);
-	}
 	
 	public static void SimpleImagePanelDemo(int width, int height,
 			double mult, boolean show, boolean save)
@@ -159,7 +133,10 @@ public class BeanImageDemo
 		setup(width, height, 1.57, 	1000);
 		for (int i = 0; i < width ; i++) for (int j = 0; j < height; j++) cells[i][j].age = i + j;
 		
-		imagerAge = imager(cells, 100, true, true, "age", TerrainBean.class);
+		imagerAge = ImagerFactory.quickFactory(
+				cells, 100, true, true, "age", TerrainBean.class,
+				gradCols, boolCols);
+		
 		objPan = ObjectArrayPanelFactory.buildPanel(
 				imagerAge, "elevation", true, 0, 0, ptSize);
 		tPanels.add(objPan);

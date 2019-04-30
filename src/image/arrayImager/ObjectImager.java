@@ -4,15 +4,11 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import beans.memberState.FieldWatcher;
-import beans.memberState.SimpleFieldWatcher;
 import image.colorInterpolator.ColorInterpolator;
-import image.colorInterpolator.SimpleBooleanColorInterpolator;
-import image.colorInterpolator.SimpleColorInterpolator;
 import image.imageFactories.PrimitiveImageFactory;
 import utils.ArrayUtils.ByteArrayMinMax;
 import utils.ArrayUtils.DblArrayMinMax;
@@ -58,8 +54,25 @@ public class ObjectImager<T> implements BeanImager<T>
 	int rgbType = BufferedImage.TYPE_3BYTE_BGR;
 	ColorInterpolator ci, booleanCI;
 
+	String dblFmt;
+
+	boolean transposeImg, showBoolNA, flipAxisX, flipAxisY, horizLeg, legLoToHi;
+	int nLegendSteps;
 	int dataWidth, dataHeight;
-	
+	int legDatWidth, legDatHeight;
+	int[] currentSelectionArrayCoords;
+
+	Class<T> clazz;
+
+	IntArrayMinMax legDatInt;
+	DblArrayMinMax legDatDbl;
+	ByteArrayMinMax legDatByte;
+	Boolean[][] legDatBool = null;
+
+	double datMin, datMax;
+
+	Image img, legendImg;
+
 	Map<String, FieldWatcher<T>> watchers;
 	FieldWatcher<T> currentWatcher;
 	Map<String, Boolean> parsedBooleanFieldNames;
@@ -75,41 +88,32 @@ public class ObjectImager<T> implements BeanImager<T>
 	{
 		this.objectData = new ListData(dat);
 	}
+
+	void clearLegendData()
+	{
+		legDatInt = null;
+		legDatDbl = null;
+		legDatByte = null;
+		legDatBool = null;
+	}
 	
-	int[] currentSelectionArrayCoords;
-	Class<T> clazz;
-
-	IntArrayMinMax legDatInt;
-	DblArrayMinMax legDatDbl;
-	ByteArrayMinMax legDatByte;
-
-	int legDatWidth, legDatHeight;
-
-	Image img, legendImg;
-
-	Boolean[][] legDatBool = null;
-	double datMin, datMax;
-	
-	String dblFmt;
-
-	boolean transposeImg, showBoolNA, flipAxisX, flipAxisY, horizLeg, legLoToHi;
-	int nLegendSteps;
 
 	void buildImage()
 	{
 		ColorInterpolator interp;
-		if (parsedBooleanFieldNames.containsKey(currentWatcher.getFieldName()))
+		if ((parsedBooleanFieldNames != null) && 
+				(parsedBooleanFieldNames.containsKey(currentWatcher.getFieldName())))
 			interp = booleanCI;
 		else interp = ci;
 
 		String type = currentWatcher.getField().getType().getSimpleName();
-		switch (type)
+//		System.out.println("ObjectImager.buildImage() type = " + type);
+		clearLegendData();
+		switch (type.toLowerCase())
 		{
 		case("int"):
 		{
-			legDatDbl = null; legDatByte = null;
 			IntArrayMinMax dat = objectData.intMinMax();
-//			currentWatcher.getIntVal(arrayData);
 			int legMin = dat.getMin(), legMax = dat.getMax();
 			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
 
@@ -125,9 +129,7 @@ public class ObjectImager<T> implements BeanImager<T>
 		}
 		case("double"):
 		{
-			legDatInt = null; legDatByte = null;
 			DblArrayMinMax dat = objectData.dblMinMax(); 
-//					currentWatcher.getDoubleVal(arrayData);
 			double legMin = dat.getMin(), legMax = dat.getMax();
 			ci.updateMinMax(legMin, legMax);
 			if (legLoToHi && legMin > legMax) { double t = legMin; legMax = legMin; legMin = t; }
@@ -142,9 +144,7 @@ public class ObjectImager<T> implements BeanImager<T>
 		}
 		case("byte"):
 		{
-			legDatInt = null; legDatDbl = null; 
 			ByteArrayMinMax dat = objectData.byteMinMax();
-//			currentWatcher.getByteVal(arrayData);
 			byte legMin = dat.getMin(), legMax = dat.getMax();
 			ci.updateMinMax(legMin, legMax);
 			if (legLoToHi && legMin > legMax) { byte t = legMin; legMax = legMin; legMin = t; }
@@ -158,19 +158,128 @@ public class ObjectImager<T> implements BeanImager<T>
 
 			break;
 		}
+		case("char"):
+		{
+			IntArrayMinMax dat = objectData.intMinMax();
+			int legMin = dat.getMin(), legMax = dat.getMax();
+			ci.updateMinMax(legMin, legMax);
+			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
+			
+			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legDatInt = new IntArrayMinMax( 
+					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
+					legMin, legMax);
+			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			
+			break;
+		}
 		case("boolean"):
 		{
 			boolean[][] dat = objectData.boolVal();
-//			currentWatcher.getBoolVal(arrayData);
-
 			img = PrimitiveImageFactory.buildImage(dat, interp, flipAxisX, flipAxisY, transposeImg);
-
 			legDatBool = Sequences.booleanGradient2D(showBoolNA, horizLeg);
 			legDatWidth = legDatBool.length; legDatHeight = legDatBool[0].length;
 			legendImg = PrimitiveImageFactory.buildImage(legDatBool, interp, flipAxisX, flipAxisY, transposeImg);
 			break;
 		}
+		case("short"):
+		{
+			IntArrayMinMax dat = objectData.intMinMax();
+			int legMin = dat.getMin(), legMax = dat.getMax();
+			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
+
+			ci.updateMinMax(legMin, legMax);
+			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+
+			legDatInt = new IntArrayMinMax( 
+					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
+					legMin, legMax);
+			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			break;
 		}
+		case("long"):
+		{
+			IntArrayMinMax dat = objectData.intMinMax();
+			int legMin = dat.getMin(), legMax = dat.getMax();
+			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
+			
+			ci.updateMinMax(legMin, legMax);
+			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			
+			legDatInt = new IntArrayMinMax( 
+					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
+					legMin, legMax);
+			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			break;
+		}
+		case("float"):
+		{
+			DblArrayMinMax dat = objectData.dblMinMax(); 
+			double legMin = dat.getMin(), legMax = dat.getMax();
+			ci.updateMinMax(legMin, legMax);
+			if (legLoToHi && legMin > legMax) { double t = legMin; legMax = legMin; legMin = t; }
+
+			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legDatDbl = new DblArrayMinMax( 
+					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
+					legMin, legMax);
+			legDatWidth = legDatDbl.getDat().length; legDatHeight = legDatDbl.getDat()[0].length;
+			legendImg = PrimitiveImageFactory.buildImage(legDatDbl.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			break;
+		}
+		case("integer"):
+		{
+			IntArrayMinMax dat = objectData.intMinMax();
+			int legMin = dat.getMin(), legMax = dat.getMax();
+			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
+
+			ci.updateMinMax(legMin, legMax);
+			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+
+			legDatInt = new IntArrayMinMax( 
+					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
+					legMin, legMax);
+			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			break;
+		}
+		case("character"):
+		{
+			IntArrayMinMax dat = objectData.intMinMax();
+			int legMin = dat.getMin(), legMax = dat.getMax();
+			ci.updateMinMax(legMin, legMax);
+			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
+			
+			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legDatInt = new IntArrayMinMax( 
+					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
+					legMin, legMax);
+			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			
+			break;
+		}
+		case("string"):
+		{
+			IntArrayMinMax dat = objectData.intMinMax();
+			int legMin = dat.getMin(), legMax = dat.getMax();
+			ci.updateMinMax(legMin, legMax);
+			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
+			
+			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legDatInt = new IntArrayMinMax( 
+					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
+					legMin, legMax);
+			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			
+			break;
+		}
+		}
+		
 	}
 
 	@Override public Image getImage() { return img; }
@@ -208,7 +317,6 @@ public class ObjectImager<T> implements BeanImager<T>
 		{
 			setCurrentSelectedArrayCoords(i, j);
 			return objectData.getData(i, j);
-//					arrayData[i][j];
 		}
 		else throw new IllegalArgumentException("Input coordinates + (" + i + ", " + j + 
 				") are incompatible with the object array size (" + dataWidth + ", " + dataHeight+ ".");
@@ -230,7 +338,6 @@ public class ObjectImager<T> implements BeanImager<T>
 	@Override
 	public T getCurrentSelectedObj() 
 	{ return objectData.getData(currentSelectionArrayCoords[0], currentSelectionArrayCoords[1]); 
-//			arrayData[currentSelectionArrayCoords[0]][currentSelectionArrayCoords[1]]; 
 	}
 
 	@Override

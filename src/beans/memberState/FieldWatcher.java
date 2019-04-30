@@ -167,4 +167,6 @@ public interface FieldWatcher<T>
 	String getDblFmt();
 
 	char getCharVal(T t);
+//	long getLongVal(T t);
+//	short getShortVal(T t);
 }

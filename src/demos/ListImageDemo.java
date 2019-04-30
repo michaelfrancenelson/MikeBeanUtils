@@ -60,9 +60,16 @@ public class ListImageDemo
 				imager1, "boolPrim", true, 0, 0, ptSize);
 
 		f = SwingUtils.frameFactory(width, height,
-				"All Flavor Bean Object List Image Demo");
+				"All Flavor Bean Object List Image Demo", 1, 2);
+		
+		
+		JFrame controlFrame = SwingUtils.frameFactory(300, 300, "control panel", 1, 1);
+		controlFrame.add(objPan.getControlComboBox(font));
+		
 		f.add(objPan);
+		f.add(objPan.getLegendPanel());
 		f.setVisible(show);
+		controlFrame.setVisible(show);
 	}
 	
 	static BeanImager<AllFlavorBean> img(int nLegendSteps, 

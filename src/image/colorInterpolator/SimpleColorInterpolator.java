@@ -206,5 +206,8 @@ public class SimpleColorInterpolator implements ColorInterpolator
 	}
 
 	@Override public String getDoubleFmt() { return dblFmt; }
+	@Override public int getColor(short... val) { return getColor((int) val[0]); }
+	@Override public int getColor(long... val)  { return getColor((int) val[0]); }
+	@Override public int getColor(float... val)  { return getColor((double) val[0]); }
 	
 }

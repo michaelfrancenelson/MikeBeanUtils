@@ -116,7 +116,7 @@ public class AnnotatedBeanReporter<T>
 			if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) staticFields.add(f);  
 		}
 
-		getters = GetterGetterGetter.stringValGetterGetter(clazz, fields, dblFmt);
+		getters = GetterGetterGetter.toStringGetterGetter(clazz, fields, dblFmt);
 
 		List<String> l = new ArrayList<>(getters.size());
 
@@ -254,7 +254,7 @@ public class AnnotatedBeanReporter<T>
 		List<Field> fields = FieldUtils.getAnnotatedFields(rep.clazz, ParsedField.class);
 		rep.dblFmt = dblFmt;
 		rep.sep = sep;
-		rep.getters = GetterGetterGetter.stringValGetterGetter(
+		rep.getters = GetterGetterGetter.toStringGetterGetter(
 				rep.clazz, fields, rep.dblFmt);
 		rep.headers = GetterGetterGetter.columnHeaderGetter(fields);
 		rep.additionalColumnNames = additionalColumns;

@@ -68,6 +68,10 @@ public class SimpleBooleanColorInterpolator implements ColorInterpolator
 		return falseRGB; 
 	}
 
+	@Override public int getColor(short... val) { return getColor((int) val[0]); }
+	@Override public int getColor(long... val)  { return getColor((int) val[0]); }
+	@Override public int getColor(float... val)  { return getColor((double) val[0]); }
+	
 	/**
 	 * 
 	 * @param colors

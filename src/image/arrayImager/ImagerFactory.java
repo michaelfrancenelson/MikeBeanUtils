@@ -11,8 +11,45 @@ import image.colorInterpolator.SimpleColorInterpolator;
 
 public class ImagerFactory 
 {
+	public static <T> BeanImager<T> quickFactory(
+			List<List<T>> beans, int nLegendSteps, 
+			boolean lToH, boolean horz, 
+			String field, Class<T> clazz, 
+			Color[] gradColors, Color[] boolColors)
+	{
+		String dblFmt = "%.2f";
+		return ImagerFactory.factory(
+				clazz, beans, field,
+				gradColors, boolColors,
+				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
+				dblFmt,  null,
+				true,
+				false, false, false,
+				nLegendSteps, lToH, horz
+				);
+	}
+
+	public static <T> BeanImager<T> quickFactory(
+			T[][] beans, int nLegendSteps, 
+			boolean lToH, boolean horz, 
+			String field, Class<T> clazz, 
+			Color[] gradColors, Color[] boolColors)
+	{
+		String dblFmt = "%.2f";
+		return ImagerFactory.factory(
+				clazz, beans, field,
+				gradColors, boolColors,
+				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
+				dblFmt,  null,
+				true,
+				false, false, false,
+				nLegendSteps, lToH, horz
+				);
+	}
+	
 	public static <T> BeanImager<T> factory(
-			Class<T> clazz, List<List<T>> lists,	String fieldName, 
+			Class<T> clazz, List<List<T>> lists,	
+			String fieldName, 
 			Color[] gradientColors, Color[] booleanColors,
 			double naDouble, int naInt, Color naColor,
 			String dblFmt, Iterable<String> parsedBooleanFields,

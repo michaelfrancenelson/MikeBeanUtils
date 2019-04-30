@@ -8,11 +8,10 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import beans.sampleBeans.TerrainBean;
-import image.arrayImager.ObjectImager;
 import image.arrayImager.BeanImager;
 import swing.SwingUtils;
-import swing.stretchAndClick.ObjectImagePanel;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
+import swing.stretchAndClick.ObjectImagePanel;
 import utils.ColorUtils;
 
 public class ObjectArrayPanelDemo
@@ -64,22 +63,6 @@ public class ObjectArrayPanelDemo
 		names.add("ObjectArrayPanelDemo_factory_builder_legend");
 		setup(width, height, 0.5, Integer.MAX_VALUE);
 		
-//		imagerAge = ArrayImager.factory(
-//				TerrainBean.class, cells, "age",
-//				gradCols, boolCols,
-//				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-//				"%.2f",  null,
-//				true,
-//				false, false, false,
-//				nLegendSteps, lToH, horz
-//				);
-//
-//		panels.add(ObjectArrayPanelFactory.buildPanel(
-//				imagerAge, "elevation",
-//				aspRat, constX, constY, annPtSize
-//				));
-
-
 		panels.add(ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, cells, "elevation",
 				gradCols, boolCols,

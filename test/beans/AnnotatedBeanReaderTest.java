@@ -35,42 +35,42 @@ public class AnnotatedBeanReaderTest
 		}
 	}
 
-		@Test 
-		public void allFlavorBeanTest()
+	@Test 
+	public void allFlavorBeanTest()
+	{
+		String[] filenames = new String[] {
+				"testData/allFlavorBeans.xlsx",
+				"testData/allFlavorBeansTransposed.xlsx",
+				"testData/allFlavorBeansTransposed.csv",
+				"testData/allFlavorBeans.csv"
+		};
+
+		List<List<AllFlavorBean>> allBeans = new ArrayList<>();
+
+		for (String st : filenames) 
 		{
-			String[] filenames = new String[] {
-					"testData/allFlavorBeans.xlsx",
-					"testData/allFlavorBeansTransposed.xlsx",
-					"testData/allFlavorBeansTransposed.csv",
-					"testData/allFlavorBeans.csv"
-			};
-	
-			List<List<AllFlavorBean>> allBeans = new ArrayList<>();
-	
-			for (String st : filenames) 
+			AnnotatedBeanReader.factory(
+					AllFlavorStaticBean.class, st, false, 1);
+			//				System.out.println("AnnotatedBeanReaderTest: " + st);
+
+			assertTrue(AnnotatedBeanInitializer.checkStaticInitialized(
+					AllFlavorStaticBean.class)); 
+			allBeans.add(
+					AnnotatedBeanReader.factory(
+							AllFlavorBean.class, st, false, -1)
+					);
+		}
+
+		for (int index = 0; index < allBeans.get(0).size(); index++)
+		{
+			AllFlavorBean bb = allBeans.get(0).get(index);
+			for (int i = 0; i < allBeans.size(); i++)
 			{
-				AnnotatedBeanReader.factory(
-						AllFlavorStaticBean.class, st, false, 1);
-//				System.out.println("AnnotatedBeanReaderTest: " + st);
-	
-				assertTrue(AnnotatedBeanInitializer.checkStaticInitialized(
-						AllFlavorStaticBean.class)); 
-				allBeans.add(
-						AnnotatedBeanReader.factory(
-								AllFlavorBean.class, st, false, -1)
-						);
-			}
-	
-			for (int index = 0; index < allBeans.get(0).size(); index++)
-			{
-				AllFlavorBean bb = allBeans.get(0).get(index);
-				for (int i = 0; i < allBeans.size(); i++)
-				{
-					assertTrue(AnnotatedBeanInitializer.checkInstanceInitialized(
-							AllFlavorBean.class,  allBeans.get(i).get(index)));
-					assertTrue(AnnotatedBeanReader.equals(
-							AllFlavorBean.class, bb, allBeans.get(i).get(index)));
-				}
+				assertTrue(AnnotatedBeanInitializer.checkInstanceInitialized(
+						AllFlavorBean.class,  allBeans.get(i).get(index)));
+				assertTrue(AnnotatedBeanReader.equals(
+						AllFlavorBean.class, bb, allBeans.get(i).get(index)));
 			}
 		}
+	}
 }

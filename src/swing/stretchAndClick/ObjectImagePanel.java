@@ -206,12 +206,15 @@ public class ObjectImagePanel<T> extends JPanel
 			imgDisplayHeight = height;
 		}
 
-		if (imgr == null) this.fixedImg = true;
+		if (this.image != null)	this.fixedImg = true;
+		else if (imgr == null)
+			throw new IllegalArgumentException("Either an Image or a BeanImager must be passed to init()");
 		else
 		{
 			this.imager = imgr;
 			this.isLegend = legend;
 			this.watcher = imager.getWatcher();
+//			System.out.println("ObjectArrayImagePanel.init() field = " + imgr.getCurrentFieldName() );
 			if (isLegend) image = imager.getLegendImage();
 			else image = imager.getImage();
 
@@ -229,6 +232,11 @@ public class ObjectImagePanel<T> extends JPanel
 				@Override public void mouseReleased(MouseEvent arg0) {}
 			});
 		}
+
+		if (this.image == null)
+			throw new IllegalArgumentException("Not able to create image from field " 
+					+ imgr.getCurrentFieldName() + " of type " +
+					imgr.getCurrentField().getType());
 
 		this.fixedAspectRatio = keepAspectRatio;
 		this.imageAspectRatio = ((double) image.getWidth(null)) / ((double) image.getHeight(null));

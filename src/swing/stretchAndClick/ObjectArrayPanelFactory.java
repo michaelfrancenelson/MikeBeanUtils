@@ -216,5 +216,4 @@ public class ObjectArrayPanelFactory
 		imager.setField(fieldName);
 		return out;
 	}
-	
 }

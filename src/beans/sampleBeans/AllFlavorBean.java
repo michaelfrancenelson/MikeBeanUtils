@@ -1,11 +1,16 @@
 package beans.sampleBeans;
 
+import java.util.Random;
+
 import beans.builder.AnnotatedBeanReader.InitializedField;
 import beans.builder.AnnotatedBeanReader.ParsedField;
 
 public class AllFlavorBean
 {
 
+	Random r;
+	int notParsed;
+	
 	@ParsedField @InitializedField private int     intPrim;
 	@ParsedField @InitializedField private short   shortPrim;
 	@ParsedField @InitializedField private long    longPrim;

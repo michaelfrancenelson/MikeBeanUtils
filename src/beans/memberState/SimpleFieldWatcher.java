@@ -52,6 +52,8 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 
 		Field[] fields = clazz.getDeclaredFields();
 
+//		List<Field> fields = FieldUtils.getAnnotatedFields(clazz, ParsedField.class);
+		
 		for (Field f : fields)
 		{
 			f.setAccessible(true);
@@ -107,9 +109,10 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	 */
 	private void buildGetters()
 	{
-		stringGetter = GetterGetterGetter.stringValGetterGetter(getClazz(), field, dblFmt);
+		stringGetter = GetterGetterGetter.toStringGetterGetter(getClazz(), field, dblFmt);
 		charGetter = GetterGetterGetter.charGetterGetter(getClazz(), field);
 		intGetter    = GetterGetterGetter.intGetterGetter(getClazz(), field);
+		byteGetter    = GetterGetterGetter.byteGetterGetter(getClazz(), field);
 		dblGetter    = GetterGetterGetter.doubleGetterGetter(getClazz(), field);
 		boolGetter   = GetterGetterGetter.booleanGetterGetter(getClazz(), field);
 		parsingBoolGetter   = GetterGetterGetter.parsingBooleanGetterGetter(getClazz(), field);

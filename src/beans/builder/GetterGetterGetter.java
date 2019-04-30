@@ -14,27 +14,12 @@ public class GetterGetterGetter
 	@FunctionalInterface public interface StringValGetter<T> { String get(T t);};
 
 	@FunctionalInterface public interface IntGetter <T> { int get(T obj); }
-	@FunctionalInterface public interface ShortGetter <T> { short get(T obj); }
-	@FunctionalInterface public interface LongGetter <T> { long get(T obj); }
 	@FunctionalInterface public interface ByteGetter <T> { byte get(T obj); }
 	@FunctionalInterface public interface DoubleGetter<T> { double get(T obj); }
-	@FunctionalInterface public interface FloatGetter<T> { float get(T obj); }
 	@FunctionalInterface public interface CharGetter<T> { char get(T obj); }
 	@FunctionalInterface public interface BooleanGetter<T> { boolean get(T obj); }
-
 	@FunctionalInterface public interface ParsingBooleanGetter<T> { boolean get(T obj); }
-
 	@FunctionalInterface public interface StringGetter<T> { String get(T obj); }
-
-	//	@FunctionalInterface public interface BoxedIntGetter<T> { Integer get(T obj); }
-	//	@FunctionalInterface public interface BoxedShortGetter<T> { Short get(T obj); }
-	//	@FunctionalInterface public interface BoxedLongGetter<T> { Long get(T obj); }
-	//	@FunctionalInterface public interface BoxedByteGetter <T> { Byte get(T obj); }
-	//	@FunctionalInterface public interface BoxedDoubleGetter<T> { Double get(T obj); }
-	//	@FunctionalInterface public interface BoxedFloatGetter<T> { Float get(T obj); }
-	//	@FunctionalInterface public interface BoxedChararacterGetter<T> { Character get(T obj); }
-	//	@FunctionalInterface public interface BoxedBooleanGetter<T> { Boolean get(T obj); }
-
 	@FunctionalInterface interface ObjGetter <T> { Object get(T obj); }
 
 	/** Retrieve the names of the fields for annotated bean IO
@@ -49,7 +34,6 @@ public class GetterGetterGetter
 		return out;
 	}
 
-
 	/** Get a list of getters for string representations
 	 *  of all the bean's fields. 
 	 * 
@@ -59,10 +43,10 @@ public class GetterGetterGetter
 	 * @return a getter
 	 */
 	public static <T> List<StringValGetter<T>>
-	stringValGetterGetter(Class<T> t, List<Field> ff, String dblFmt)
+	toStringGetterGetter(Class<T> t, List<Field> ff, String dblFmt)
 	{
 		List<StringValGetter<T>> out = new ArrayList<>();
-		for (Field f : ff) out.add(stringValGetterGetter(t, f, dblFmt));
+		for (Field f : ff) out.add(toStringGetterGetter(t, f, dblFmt));
 		return out;
 	}
 
@@ -76,7 +60,7 @@ public class GetterGetterGetter
 	 * @return a getter
 	 */
 	public static <T> StringValGetter<T>
-	stringValGetterGetter(Class<T> t, Field f, String dblFmt)
+	toStringGetterGetter(Class<T> t, Field f, String dblFmt)
 	{
 		String type = f.getType().getSimpleName();
 		StringValGetter<T> out = null;
@@ -90,51 +74,48 @@ public class GetterGetterGetter
 			break; 
 		} 
 
-		case("short"): 
-		{
-			ShortGetter<T> d = shortGetterGetter(t, f);
-			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
-			break; 
-		} 
-		case("long"): 
-		{
-			LongGetter<T> d = longGetterGetter(t, f);
-			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
-			break; 
-		} 
-		case("byte"): 
-		{
-			ByteGetter<T> d = byteGetterGetter(t, f);
-			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
-			break; 
-		} 
 		case("double"):  
 		{
 			DoubleGetter<T> d = doubleGetterGetter(t, f);
 			out = (T tt) -> { return String.format(dblFmt, d.get(tt)); }; 
 			break; 
 		} 
+
+		case("byte"): 
+		{
+			ByteGetter<T> d = byteGetterGetter(t, f);
+			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
+			break; 
+		} 
+
+
+		case("short"): 
+		{
+			IntGetter<T> d = intGetterGetter(t, f);
+			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
+			break; 
+		} 
+
+		case("long"): 
+		{
+			IntGetter<T> d = intGetterGetter(t, f);
+			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
+			break; 
+		}
+
 		case("float"):  
 		{
-			FloatGetter<T> d = floatGetterGetter(t, f);
+			DoubleGetter<T> d = doubleGetterGetter(t, f);
 			out = (T tt) -> { return String.format(dblFmt, d.get(tt)); }; 
 			break; 
 		}
+
 		case("boolean"): 
 		{
 			BooleanGetter<T> d = booleanGetterGetter(t, f);
 			out = (T tt) -> {return Boolean.toString(d.get(tt)); };
 			break; 
 		}
-		//		case("char"): {out = (T tt) ->
-		//		{
-		//			CharGetter<T> d = charGetterGetter(t, f);
-		//			out = (T tt) -> { return String.valueOf(d.get(tt)); };
-		////			try { return String.valueOf(f.getChar(tt)); }
-		////			catch (IllegalArgumentException | IllegalAccessException e) 
-		////			{ e.printStackTrace(); } throw new IllegalArgumentException();};
-		////			break;
-		//		}
 
 		case("char"): 
 		{
@@ -147,6 +128,7 @@ public class GetterGetterGetter
 			CharGetter<T> d = charGetterGetter(t, f);
 			out = (T tt) -> { return String.valueOf(d.get(tt)); };
 		}
+
 		case("String"):  
 		{
 			StringGetter<T> d = stringGetterGetter(t, f);
@@ -164,8 +146,7 @@ public class GetterGetterGetter
 		return out;
 	}
 
-
-	/** build a getter for a primitive int field
+	/** build a getter for int field
 	 * 
 	 * @param t annotated bean object
 	 * @param f annotated field	 
@@ -176,86 +157,48 @@ public class GetterGetterGetter
 	intGetterGetter(Class<T> t, Field f)
 	{
 		String type = f.getType().getSimpleName();
-		IntGetter<T> out;
+		IntGetter<T> out = null;
 
 		switch(type)
 		{
-		default:
-			out = (T tt) -> 
-			{
-				try { return f.getInt(tt);}
-				catch (IllegalArgumentException | IllegalAccessException e) 
-				{ e.printStackTrace(); throw new IllegalArgumentException();}
-			};
-		case("Integer"):
+		case("int"):
 			out = (T tt) -> 
 		{
-			try { return (Integer) f.get(tt);}
+			try { return f.getInt(tt);}
 			catch (IllegalArgumentException | IllegalAccessException e) 
 			{ e.printStackTrace(); throw new IllegalArgumentException();}
-		};
-		}
-		return out;
-	}
+		}; break;
 
-	/** build a getter for a primitive char field
-	 * 
-	 * @param t annotated bean object
-	 * @param f annotated field
-	 * @param <T> type of bean
-	 * @return a getter
-	 */
-	public static <T> ShortGetter<T> 
-	shortGetterGetter(Class<T> t, Field f)
-	{
-		String type = f.getType().getSimpleName();
-		ShortGetter<T> out;
-		switch(type)
-		{
-		default:
-			out = (T tt) ->
-			{
-				try { return f.getShort(tt);}
+		case("Integer"):
+			out = (T tt ) -> {
+				try { return (Integer) f.get(tt);}
 				catch (IllegalArgumentException | IllegalAccessException e) 
 				{ e.printStackTrace(); throw new IllegalArgumentException();}
-			};
-		case("Short"):
+			}; break;
+		case("long"): out = (T tt) -> { return (int) (long) getFieldObj(t, f, tt); }; break;
+		case("Long"): out = (T tt) -> { return (int) (long) getFieldObj(t, f, tt); }; break;
+		case("short"): out = (T tt) -> { return (short) getFieldObj(t, f, tt); }; break;
+		case("Short"): out = (T tt) -> { return  (short) getFieldObj(t, f, tt); }; break;
+		case("byte"): out = (T tt) -> { return (byte) getFieldObj(t, f, tt); }; break;
+		case("Byte"): out = (T tt) -> { return (byte) getFieldObj(t, f, tt); }; break;
+		case("char"): out = (T tt) -> { return (int) (char) getFieldObj(t, f, tt); }; break;
+		case("Character"): out = (T tt) -> { return (int) (char) getFieldObj(t, f, tt); }; break;
+		case("double"): out = (T tt) -> { return (int) (double) getFieldObj(t, f, tt); }; break;
+		case("Double"): out = (T tt) -> { return (int) (double) getFieldObj(t, f, tt); }; break;
+		case("float"): out = (T tt) -> { return (int) (double) (float) getFieldObj(t, f, tt); }; break;
+		case("Float"): out = (T tt) -> { return (int) (double) (float) getFieldObj(t, f, tt); }; break;
+		case("boolean"): out = (T tt) -> { return (char) intFromBool((boolean) getFieldObj(t, f, tt)); }; break;
+		case("Boolean"): out = (T tt) -> { return (char) intFromBool((boolean) getFieldObj(t, f, tt)); }; break;
+
+		case("String"):
 		{
 			ObjGetter<T> g = objectGetterGetter(t, f);
-			out = (T tt) -> { return (Short) g.get(tt); };
+			out = (T tt) -> {return ((String) g.get(tt)).charAt(0); };
+		} break;
+		default: 
 		}
-		}
-		return out;
-	}
 
-	/** build a getter for a primitive long field
-	 * 
-	 * @param t annotated bean object
-	 * @param f annotated field	 
-	 * @param <T> type of bean
-	 * @return a getter
-	 */
-	public static <T> LongGetter<T> 
-	longGetterGetter(Class<T> t, Field f)
-	{
-
-		String type = f.getType().getSimpleName();
-		LongGetter<T> out;
-		switch(type)
-		{
-		default:
-			out = (T tt) -> 
-			{
-				try { return f.getLong(tt);}
-				catch (IllegalArgumentException | IllegalAccessException e) 
-				{ e.printStackTrace(); throw new IllegalArgumentException();}
-			};
-		case("Long"):
-		{
-			ObjGetter<T> g = objectGetterGetter(t, f);
-			out = (T tt) -> { return (Long) g.get(tt); };
-		}
-		}
+//		if (out == null) throw new IllegalArgumentException("Unable to create an int getter for field " + f.getName());
 		return out;
 	}
 
@@ -271,19 +214,21 @@ public class GetterGetterGetter
 	{
 
 		String type = f.getType().getSimpleName();
-		ByteGetter<T> out;
+		ByteGetter<T> out = null;
 		switch(type)
 		{
-		default:
+		case("byte"):
 			out = (T tt) -> {
 				try { return f.getByte(tt);}
 				catch (IllegalArgumentException | IllegalAccessException e) 
 				{ e.printStackTrace(); throw new IllegalArgumentException();}
 			};
+			break;
 		case("Byte"):
 		{
 			ObjGetter<T> g = objectGetterGetter(t, f);
 			out = (T tt) -> { return (Byte) g.get(tt); };
+			break;
 		}
 		}
 		return out;
@@ -300,54 +245,45 @@ public class GetterGetterGetter
 	doubleGetterGetter(Class<T> t, Field f)
 	{
 		String type = f.getType().getSimpleName();
-		DoubleGetter<T> out; 
+		DoubleGetter<T> out = null; 
+		//		System.out.println("GetterGetterGetter.getDoubleGetter() field name = " + f.getName());
+		//		System.out.println("GetterGetterGetter.getDoubleGetter() field type = " + type);
+
 		switch(type)
 		{
-		default:
+		case("double"):
 			out = (T tt) ->
-			{
-				try { return f.getDouble(tt);}
-				catch (IllegalArgumentException | IllegalAccessException e) 
-				{ e.printStackTrace(); throw new IllegalArgumentException();}
-			};
+		{
+			try { return f.getDouble(tt);}
+			catch (IllegalArgumentException | IllegalAccessException e) 
+			{ e.printStackTrace(); throw new IllegalArgumentException();}
+		};
+		break;
 		case("Double"):
 		{
 			ObjGetter<T> g = objectGetterGetter(t, f);
 			out = (T tt) -> { return (Double) g.get(tt); };
+			break;
 		}
-		}
-		return out;
-	}
-
-	/** build a getter for a primitive float field
-	 * 
-	 * @param t annotated bean object
-	 * @param f annotated field
-	 * @param <T> type of bean
-	 * @return a getter
-	 */
-	public static <T> FloatGetter<T> 
-	floatGetterGetter(Class<T> t, Field f)
-	{
-		String type = f.getType().getSimpleName();
-		FloatGetter<T> out; 
-		switch(type)
+		case("int"): out = (T tt) -> { return (double) getFieldObj(t, f, tt); }; break;
+		case("Integer"): out = (T tt) -> { return (double) getFieldObj(t, f, tt); }; break;
+		case("byte"): out = (T tt) -> { return (int) (byte) getFieldObj(t, f, tt); }; break;
+		case("Byte"): out = (T tt) -> { return (int) (byte) getFieldObj(t, f, tt); }; break;
+		case("long"): out = (T tt) -> { return (int) (long) getFieldObj(t, f, tt); }; break;
+		case("Long"): out = (T tt) -> { return (int) (long) getFieldObj(t, f, tt); }; break;
+		case("short"): out = (T tt) -> { return (double) getFieldObj(t, f, tt); }; break;
+		case("Short"): out = (T tt) -> { return (double) getFieldObj(t, f, tt); }; break;
+		case("float"): out = (T tt) -> { return (double) (float) getFieldObj(t, f, tt); }; break;
+		case("Float"):	out = (T tt) -> { return (double) (float) getFieldObj(t, f, tt); }; break;
+		case("char"): out = (T tt) -> { return (int) (char) getFieldObj(t, f, tt); }; break;
+		case("Character"):	out = (T tt) -> { return (int) (char) getFieldObj(t, f, tt); }; break;
+		case("String"):
 		{
-		default:
-			out = (T tt) ->
-			{
-				try { return f.getFloat(tt);}
-				catch (IllegalArgumentException | IllegalAccessException e) 
-				{ e.printStackTrace(); throw new IllegalArgumentException();}
-			};
-		case("Float"):
-			out = (T tt) -> 
-		{
-			try { return (Float) f.get(tt);}
-			catch (IllegalArgumentException | IllegalAccessException e) 
-			{ e.printStackTrace(); throw new IllegalArgumentException();}
-		};
+			ObjGetter<T> g = objectGetterGetter(t, f);
+			out = (T tt) -> {return ((String) g.get(tt)).charAt(0); };
+		} break;
 		}
+		//		if (out == null) throw new IllegalArgumentException("Unable to create a double getter for field " + f.getName());
 		return out;
 	}
 
@@ -362,21 +298,42 @@ public class GetterGetterGetter
 	booleanGetterGetter(Class<T> t, Field f)
 	{
 		String type = f.getType().getSimpleName();
-		BooleanGetter<T> out;
+		BooleanGetter<T> out = null;
 		switch(type)
 		{
-		default:
+		case("boolean"):
 			out = (T tt) -> {
 				try { return f.getBoolean(tt);}
 				catch (IllegalArgumentException | IllegalAccessException e) 
 				{ e.printStackTrace(); throw new IllegalArgumentException();}
-			};
+			}; break;
 		case("Boolean"):
 		{
 			ObjGetter<T> g = objectGetterGetter(t, f);
 			out = (T tt) -> { return (Boolean) g.get(tt); };
+			break;
 		}
-		}
+		case("int"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) getFieldObj(t, f, tt)); }; break;
+		case("Integer"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) getFieldObj(t, f, tt)); }; break;
+		case("long"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) (long) getFieldObj(t, f, tt)); }; break;
+		case("Long"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) (long) getFieldObj(t, f, tt)); }; break;
+		case("short"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) (short) getFieldObj(t, f, tt)); }; break;
+		case("Short"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) (short) getFieldObj(t, f, tt)); }; break;
+		case("byte"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) (byte) getFieldObj(t, f, tt)); }; break;
+		case("Byte"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) (byte) getFieldObj(t, f, tt)); }; break;
+		case("char"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) getFieldObj(t, f, tt)); }; break;
+		case("double"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((double) getFieldObj(t, f, tt)); }; break;
+		case("Double"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((double) getFieldObj(t, f, tt)); }; break;
+		case("float"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((double) (float) getFieldObj(t, f, tt)); }; break;
+		case("Float"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((double) (float) getFieldObj(t, f, tt)); }; break;
+		case("Character"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) getFieldObj(t, f, tt)); }; break;
+		case("String"):
+		{
+			ObjGetter<T> g = objectGetterGetter(t, f);
+			out = (T tt) -> {return AnnotatedBeanReader.parseBool(((String) g.get(tt)).charAt(0)); };
+		} break;
+		}	
+//		if (out == null) throw new IllegalArgumentException("Unable to create a boolean getter for field " + f.getName());
 
 		return out;
 	}
@@ -392,25 +349,54 @@ public class GetterGetterGetter
 	charGetterGetter(Class<T> t, Field f)
 	{
 		String type = f.getType().getSimpleName();
-		CharGetter<T> out; 
+		CharGetter<T> out = null; 
 		switch(type)
 		{
-		default:
+		case("char"):
 			out = (T tt) ->
-			{
-				try { return f.getChar(tt);}
-				catch (IllegalArgumentException | IllegalAccessException e) 
-				{ e.printStackTrace(); throw new IllegalArgumentException();}
-			};
+		{
+			try { return f.getChar(tt);}
+			catch (IllegalArgumentException | IllegalAccessException e) 
+			{ e.printStackTrace(); throw new IllegalArgumentException();}
+		}; break;
 		case("Character"):
 		{
 			ObjGetter<T> g = objectGetterGetter(t, f);
 			out = (T tt) -> { return (Character) g.get(tt); };
+			break;
 		}
+
+		case("long"): out = (T tt) -> { return (char) getFieldObj(t, f, tt); }; break;
+		case("Long"): out = (T tt) -> { return (char) getFieldObj(t, f, tt); }; break;
+		case("short"): out = (T tt) -> { return (char) (int) (short) getFieldObj(t, f, tt); }; break;
+		case("Short"): out = (T tt) -> { return (char) (int) (short) getFieldObj(t, f, tt); }; break;
+		case("int"): out = (T tt) -> { return (char) (int) getFieldObj(t, f, tt); }; break;
+		case("Integer"): out = (T tt) -> { return (char) (int) getFieldObj(t, f, tt); }; break;
+		case("byte"): out = (T tt) -> { return (char) (byte) getFieldObj(t, f, tt); }; break;
+		case("Byte"): out = (T tt) -> { return (char) (byte) getFieldObj(t, f, tt); }; break;
+		case("double"): out = (T tt) -> { return (char) (double) getFieldObj(t, f, tt); }; break;
+		case("Double"): out = (T tt) -> { return (char) (double) getFieldObj(t, f, tt); }; break;
+		case("float"): out = (T tt) -> { return (char) (float) getFieldObj(t, f, tt); }; break;
+		case("Float"): out = (T tt) -> { return (char) (float) getFieldObj(t, f, tt); }; break;
+		case("boolean"): out = (T tt) -> { return (char) intFromBool((boolean) getFieldObj(t, f, tt)); }; break;
+		case("Boolean"): out = (T tt) -> { return (char) intFromBool((boolean) getFieldObj(t, f, tt)); }; break;
+		case("String"): out = (T tt) -> { return (char) ((String) getFieldObj(t, f, tt)).charAt(0); }; break;
+		default: 
 		}
+//		if (out == null) throw new IllegalArgumentException("Unable to create a character getter for field " +
+//				f.getName() + " of type " + type);
+		
 		return out;
 	}
 
+	static <T> Object getFieldObj(Class<T> t, Field f, T tt) 
+	{
+		ObjGetter<T> g = objectGetterGetter(t, f); 
+		return g.get(tt);
+	}
+
+	static double dblFromBool(boolean b) { if (b) return 1.0; else return 0.0; }
+	static int intFromBool(boolean b) { if (b) return 1; else return 0; }
 
 	/** build a getter for a primitive boolean field
 	 * 
@@ -422,7 +408,8 @@ public class GetterGetterGetter
 	public static <T> ParsingBooleanGetter<T> 
 	parsingBooleanGetterGetter(Class<T> t, Field f)
 	{
-		ParsingBooleanGetter<T> out = (T tt) ->
+		ParsingBooleanGetter<T> out = null;
+		out = (T tt) ->
 		{
 			try 
 			{ 
@@ -472,5 +459,202 @@ public class GetterGetterGetter
 		};
 		return out;
 	}
-
 }
+
+
+
+//
+//out = (T tt) -> 
+//{
+//	try { return (Float) f.get(tt);}
+//	catch (IllegalArgumentException | IllegalAccessException e) 
+//	{ e.printStackTrace(); throw new IllegalArgumentException();}
+//};
+//}
+
+//out = (T tt) -> 
+//{
+//
+//try { return ((Float) f.get(tt)).doubleValue();}
+//catch (IllegalArgumentException | IllegalAccessException e) 
+//{ e.printStackTrace(); throw new IllegalArgumentException();}
+//};
+//break;
+//case("int"): out = (T tt) -> { return (double) getOffType(t, f, tt); }; break;
+
+////			out = (T tt) -> { return getBoxDouble(t, f, tt); }; break; 
+//out = (T tt) -> { 
+//
+//	Object o = getOffType(t, f, tt);
+//	System.out.println("GetterGetterGetter.getDoubleGetter() field type = " + o.getClass());
+//
+//	return (double) getOffType(t, f, tt); }; 
+//	//			{
+//	//				try { return (int) f.getInt(tt);}
+//	//				catch (IllegalArgumentException | IllegalAccessException e) 
+//	//				{ e.printStackTrace(); throw new IllegalArgumentException();}
+//	//			}; 
+//	//			break;
+//	break;
+//case("Integer"): out = (T tt) -> { return (double) getOffType(t, f, tt); }; break;
+//case("Integer"): out = (T tt) -> { return getBoxInt(t, f, tt); }; break;
+//		out = (T tt) -> 
+//		{
+//			try { return (Integer) f.get(tt);}
+//			catch (IllegalArgumentException | IllegalAccessException e) 
+//			{ e.printStackTrace(); throw new IllegalArgumentException();}
+//		}; 
+//			break;
+//case("long"): out = (T tt) -> { return (double) getOffType(t, f, tt); }; break;
+
+//out = (T tt) -> 
+//{
+//try { return (int)  f.getLong(tt);}
+//catch (IllegalArgumentException | IllegalAccessException e) 
+//{ e.printStackTrace(); throw new IllegalArgumentException();}
+//};break;
+//case("Long"): out = (T tt) -> { return (double) getOffType(t, f, tt); }; break;
+//{
+//out = (T tt) -> { return (int) getBoxLong(t, f, tt); };
+////			ObjGetter<T> g = objectGetterGetter(t, f);
+////			out = (T tt) -> { return (int) (long) g.get(tt); };
+//} break;
+//case("short"): out = (T tt) -> { return (double) getOffType(t, f, tt); }; break;
+//out = (T tt) ->
+//{
+//try { return (int) f.getShort(tt);}
+//catch (IllegalArgumentException | IllegalAccessException e) 
+//{ e.printStackTrace(); throw new IllegalArgumentException();}
+//}; break;
+//case("Short"): out = (T tt) -> { return (double) getOffType(t, f, tt); }; break;
+//{
+//ObjGetter<T> g = objectGetterGetter(t, f);
+//out = (T tt) -> 
+//{ 
+//	//				System.out.println("GetterGetterGetter.getIntGetter() field type = " + g.get(tt).getClass());
+//	return ((Short) g.get(tt)).intValue();
+//};
+//break;
+//}
+
+//			//			out = (T tt) -> { return (int) getBoxLong(t, f, tt); };
+//	out = (T tt) -> 
+//{
+//
+//	try { return (int)  f.getLong(tt);}
+//	catch (IllegalArgumentException | IllegalAccessException e) 
+//	{ e.printStackTrace(); throw new IllegalArgumentException();}
+//};
+//break;
+//case("Long"): out = (T tt) -> { return (int) getBoxLong(t, f, tt); }; break;
+////			ObjGetter<T> g = objectGetterGetter(t, f);
+////			out = (T tt) -> { return (int) (long) g.get(tt); };
+////		} break;
+//case("short"):
+//	out = (T tt) ->
+//{
+//	try { return (int) f.getShort(tt);}
+//	catch (IllegalArgumentException | IllegalAccessException e) 
+//	{ e.printStackTrace(); throw new IllegalArgumentException();}
+//}; break;
+//case("Short"):
+//{
+//	ObjGetter<T> g = objectGetterGetter(t, f);
+//	out = (T tt) -> 
+//	{ 
+//		//				System.out.println("GetterGetterGetter.getIntGetter() field type = " + g.get(tt).getClass());
+//		return ((Short) g.get(tt)).intValue();
+//	};
+//	break;
+//}
+//case("char"):
+//	out = (T tt) -> 
+//{
+//	try { return f.getChar(tt);}
+//	catch (IllegalArgumentException | IllegalAccessException e) 
+//	{ e.printStackTrace(); throw new IllegalArgumentException();}
+//}; break;
+//case("Character"):
+//{
+//	ObjGetter<T> g = objectGetterGetter(t, f);
+//	out = (T tt) -> { return (char) g.get(tt); };
+//} break;
+//out = (T tt) -> 
+//		{
+//			try { return AnnotatedBeanReader.parseBool(f.getInt(tt));}
+//			catch (IllegalArgumentException | IllegalAccessException e) 
+//			{ e.printStackTrace(); throw new IllegalArgumentException();}
+//		}; 
+//	break;
+
+
+
+//case("Short"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) getOffType(t, f, tt)); }; break;
+////	out = (T tt) -> 
+////{
+////	try { return AnnotatedBeanReader.parseBool((Integer) f.get(tt));}
+////	catch (IllegalArgumentException | IllegalAccessException e) 
+////	{ e.printStackTrace(); throw new IllegalArgumentException();}
+////};
+////break;
+////case("long"):
+////	out = (T tt) -> 
+////{
+////	try { return AnnotatedBeanReader.parseBool((int) f.getLong(tt));}
+////	catch (IllegalArgumentException | IllegalAccessException e) 
+////	{ e.printStackTrace(); throw new IllegalArgumentException();}
+////};
+////break;
+////case("Long"):
+////{
+////	ObjGetter<T> g = objectGetterGetter(t, f);
+////	out = (T tt) -> { return AnnotatedBeanReader.parseBool((int) (long) g.get(tt)); };
+////} 
+////break;
+//case("short"):
+//	out = (T tt) ->
+//{
+//	try { return AnnotatedBeanReader.parseBool((int) f.getShort(tt));}
+//	catch (IllegalArgumentException | IllegalAccessException e) 
+//	{ e.printStackTrace(); throw new IllegalArgumentException();}
+//};
+//break;
+//case("Short"):
+//{
+//	ObjGetter<T> g = objectGetterGetter(t, f);
+//	out = (T tt) -> 
+//	{ 
+//		//				System.out.println("GetterGetterGetter.getIntGetter() field type = " + g.get(tt).getClass());
+//		return AnnotatedBeanReader.parseBool(((Short) g.get(tt)).intValue());
+//	};
+//}
+//break;
+
+//case("int"):
+//	out = (T tt) ->
+//{
+//	try { return f.getChar(tt);}
+//	catch (IllegalArgumentException | IllegalAccessException e) 
+//	{ e.printStackTrace(); throw new IllegalArgumentException();}
+//}; break;
+//case("Integer"):
+//{
+//	out = (T tt) -> { return (Character) getOffType(t, f, tt); };
+//	//			ObjGetter<T> g = objectGetterGetter(t, f);
+//	//			out = (T tt) -> { return (Character) g.get(tt); };
+//	break;
+//}
+
+
+//case("char"):
+//	out = (T tt) -> 
+//{
+//	try { return AnnotatedBeanReader.parseBool(f.getChar(tt));}
+//	catch (IllegalArgumentException | IllegalAccessException e) 
+//	{ e.printStackTrace(); throw new IllegalArgumentException();}
+//}; break;
+//case("Character"):
+//{
+//	ObjGetter<T> g = objectGetterGetter(t, f);
+//	out = (T tt) -> { return AnnotatedBeanReader.parseBool((char) g.get(tt)); };
+//} break;

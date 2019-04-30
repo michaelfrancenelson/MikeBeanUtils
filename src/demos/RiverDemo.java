@@ -14,10 +14,10 @@ import javax.swing.JFrame;
 import beans.sampleBeans.TerrainBean;
 import image.ObjectArrayImageComboBox;
 import image.arrayImager.BeanImager;
-import image.arrayImager.SimpleArrayImager;
+import image.arrayImager.ImagerFactory;
 import swing.SwingUtils;
-import swing.stretchAndClick.ObjectImagePanel;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
+import swing.stretchAndClick.ObjectImagePanel;
 import utils.ColorUtils;
 
 public class RiverDemo
@@ -53,9 +53,10 @@ public class RiverDemo
 		pan1 = ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, cells1, "age", 
 				ColorUtils.HEAT_COLORS, bCol,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null, null,
-				true, 0, 0, ptSize);
-		pan1.setField("elevation");
+				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
+				"%.2d", null, true, false, false, false,
+				100, true, true, true, 0, 0, ptSize);
+//		pan1.setField("elevation");
 		f1.add(pan1);
 		f1.setVisible(true);
 		
@@ -89,23 +90,27 @@ public class RiverDemo
 		pan1 = ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, cells1, "stream", 
 				ColorUtils.HEAT_COLORS, bCol,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null, null,
-				false, 0, 0, ptSize);
+				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
+				"%.2d", null, true, false, false, false,
+				100, true, true, true, 0, 0, ptSize);
 		pan2 = ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, cells1, "elevation", 
 				ColorUtils.HEAT_COLORS, bCol,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null, null,
-				true, 0, 0, -ptSize);
+				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
+				"%.2d", null, true, false, false, false,
+				100, true, true, true, 0, 0, ptSize);
 		pan3 = ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, cells1, "stream", 
 				ColorUtils.HEAT_COLORS, bCol,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null, null,
-				true, 300, 0, ptSize);
+				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
+				"%.2d", null, true, false, false, false,
+				100, true, true, true, 0, 0, ptSize);
 		pan4 = ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, cells1, "elevation", 
 				ColorUtils.HEAT_COLORS, bCol,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null, null,
-				true, 0, 400, ptSize);
+				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
+				"%.2d", null, true, false, false, false,
+				100, true, true, true, 0, 0, ptSize);
 
 		f1.setLayout(new GridLayout(2, 2));
 		f1.setPreferredSize(f1.getSize());
@@ -184,13 +189,13 @@ public class RiverDemo
 		File imgFile = new File("sampleOutput/" + filename);
 		JFrame f1 = SwingUtils.frameFactory(nRows, nCols);
 		ObjectImagePanel<TerrainBean> p1;
-		BeanImager<TerrainBean> imager1 = SimpleArrayImager.factory(
-				TerrainBean.class, cells, 
-				"stream", 
-				ColorUtils.HEAT_COLORS, bCol,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null, null);
+		BeanImager<TerrainBean> imager1 = ImagerFactory.quickFactory(
+				cells, 100,
+				true, false,
+				"stream", TerrainBean.class, 
+				ColorUtils.HEAT_COLORS, bCol);
 
-		p1 = ObjectArrayPanelFactory.buildPanel(imager1, true, false, 0, 0, 0.1);
+		p1 = ObjectArrayPanelFactory.buildPanel(imager1, "stream", true, 0, 0, 0.1);
 		f1.setLayout(new GridLayout(1, 1));
 		f1.add(p1);
 		f1.setVisible(true);
