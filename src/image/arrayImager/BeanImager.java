@@ -2,12 +2,13 @@ package image.arrayImager;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 import beans.memberState.FieldWatcher;
 import image.colorInterpolator.ColorInterpolator;
 
-public interface BeanImager<T> 
+public interface BeanImager<T, A extends Annotation> 
 {
 
 	/**
@@ -15,6 +16,7 @@ public interface BeanImager<T>
 	 * @return the class of objects from which the images are generated
 	 */
 	public Class<T> getObjClass();
+	public Class<A> getAnnClass();
 
 	/** Return the current image, generated from the currently active field. */
 	public Image getImage();

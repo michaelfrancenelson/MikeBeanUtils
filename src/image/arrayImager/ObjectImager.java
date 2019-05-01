@@ -3,11 +3,13 @@ package image.arrayImager;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
 import beans.memberState.FieldWatcher;
+import beans.memberState.SimpleFieldWatcher;
 import image.colorInterpolator.ColorInterpolator;
 import image.imageFactories.PrimitiveImageFactory;
 import utils.ArrayUtils.ByteArrayMinMax;
@@ -15,7 +17,7 @@ import utils.ArrayUtils.DblArrayMinMax;
 import utils.ArrayUtils.IntArrayMinMax;
 import utils.Sequences;
 
-public class ObjectImager<T> implements BeanImager<T>
+public class ObjectImager<T, A extends Annotation> implements BeanImager<T, A>
 {
 	interface ImagerData<T>
 	{
@@ -25,6 +27,8 @@ public class ObjectImager<T> implements BeanImager<T>
 		public ByteArrayMinMax byteMinMax();
 		public boolean[][] boolVal();
 		public boolean[][] parsedBoolVal();
+		public int getWidth();
+		public int getHeight();
 	}
 	
 	class ArrayData implements ImagerData<T>
@@ -37,6 +41,8 @@ public class ObjectImager<T> implements BeanImager<T>
 		@Override public ByteArrayMinMax byteMinMax() { return currentWatcher.getByteVal(data); }
 		@Override public boolean[][] boolVal() { return currentWatcher.getBoolVal(data); }
 		@Override public boolean[][] parsedBoolVal() { return currentWatcher.getParsedBoolVal(data); }
+		@Override public int getWidth() { return data.length; }
+		@Override public int getHeight() { return data[0].length; }
 	}
 
 	class ListData implements ImagerData<T>
@@ -49,6 +55,8 @@ public class ObjectImager<T> implements BeanImager<T>
 		@Override public ByteArrayMinMax byteMinMax() { return currentWatcher.getByteVal(data); }
 		@Override public boolean[][] boolVal() { return currentWatcher.getBoolVal(data); }
 		@Override public boolean[][] parsedBoolVal() { return currentWatcher.getParsedBoolVal(data); }
+		@Override public int getWidth() { return data.size(); }
+		@Override public int getHeight() { return data.get(0).size(); }
 	}
 	
 	int rgbType = BufferedImage.TYPE_3BYTE_BGR;
@@ -63,6 +71,7 @@ public class ObjectImager<T> implements BeanImager<T>
 	int[] currentSelectionArrayCoords;
 
 	Class<T> clazz;
+	Class<A> annClass;
 
 	IntArrayMinMax legDatInt;
 	DblArrayMinMax legDatDbl;
@@ -76,19 +85,26 @@ public class ObjectImager<T> implements BeanImager<T>
 	Map<String, FieldWatcher<T>> watchers;
 	FieldWatcher<T> currentWatcher;
 	Map<String, Boolean> parsedBooleanFieldNames;
-
 	private ImagerData<T> objectData;
 	
-	public void setData(T[][] dat)
+	protected void buildWatchers()
 	{
-		this.objectData = new ArrayData(dat);
+		watchers = SimpleFieldWatcher.getWatcherMap(
+				clazz, annClass, dblFmt, true, true);
 	}
-
-	public void setData(List<List<T>> dat)
+	
+	protected void initialize(
+			Class<T> clazz, Class<A> annClass,
+			String dblFmt)
 	{
-		this.objectData = new ListData(dat);
+		this.dataHeight = objectData.getHeight();
+		this.dataWidth = objectData.getWidth();
+		this.clazz = clazz;
+		this.annClass = annClass;
+		this.dblFmt = dblFmt;
+		buildWatchers();
 	}
-
+	
 	void clearLegendData()
 	{
 		legDatInt = null;
@@ -296,14 +312,7 @@ public class ObjectImager<T> implements BeanImager<T>
 		this.currentWatcher = watchers.get(fieldName); 
 		refresh();
 	} 
-	@Override public void setField(Field field) { setField(field.getName()); }
-	@Override public FieldWatcher<T> getWatcher() { return currentWatcher; }
-	@Override public ColorInterpolator getInterpolator() { return ci; }
-	@Override public ColorInterpolator getBooleanInterpolator() { return booleanCI; }
-	@Override public void setCurrentSelectedArrayCoords(int i, int j) { currentSelectionArrayCoords = new int[] {i, j}; }
-	@Override public int[] getCurrentSelectedArrayCoords() { return currentSelectionArrayCoords; }
-	@Override public Class<T> getObjClass() { return clazz; }
-
+	
 	@Override public void refresh() { buildImage(); }
 
 	/** 
@@ -374,6 +383,30 @@ public class ObjectImager<T> implements BeanImager<T>
 		return "value not found";
 	}
 
+	public void setData(ImagerData<T> dat)
+	{
+		if (dat instanceof ObjectImager.ArrayData)
+			this.objectData = (ArrayData) dat;
+		else if (dat instanceof ObjectImager.ListData)
+			this.objectData = (ListData) dat;
+		else throw new IllegalArgumentException("Input data type not yet implemented");
+	}
+	
+	public void setData(T[][] dat) { this.objectData = new ArrayData(dat);	}
+	public void setData(List<List<T>> dat) { this.objectData = new ListData(dat); }
+	@Override public void setField(Field field) { setField(field.getName()); }
+	@Override public FieldWatcher<T> getWatcher() { return currentWatcher; }
+	
+	@Override public ColorInterpolator getInterpolator() { return ci; }
+	@Override public ColorInterpolator getBooleanInterpolator() { return booleanCI; }
+	
+	@Override public void setCurrentSelectedArrayCoords(int i, int j) { currentSelectionArrayCoords = new int[] {i, j}; }
+	@Override public int[] getCurrentSelectedArrayCoords() { return currentSelectionArrayCoords; }
+
+	@Override public Class<T> getObjClass() { return clazz; }
+	@Override public Class<A> getAnnClass() { return annClass; }
+
 	@Override public int getDataWidth() { return this.dataWidth; }
 	@Override public int getDataHeight() { return this.dataHeight; }
+
 }

@@ -3,13 +3,13 @@ package beans.builder;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
+import beans.sampleBeans.AllFlavorBean;
 import fields.FieldUtils;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -44,7 +44,8 @@ public class NetCDFObjBuilder
 			String filename
 			)
 	{
-		List<Field> ff = FieldUtils.getAnnotatedFields(clazz, ParsedField.class);
+		List<Field> ff = FieldUtils.getFields(
+				clazz, ParsedField.class, true, true);
 		return factory2D(clazz, filename, ff);
 	}
 
@@ -70,8 +71,10 @@ public class NetCDFObjBuilder
 
 		/* record the field names in all lowercase so that matches between fields
 		 * and NCDF variables are case-insensitive. */
-		List<String> parsedFieldNames = Arrays.asList(FieldUtils.getInstanceFieldNames(ff));
-		List<String> parsedFieldNamesLC = Arrays.asList(FieldUtils.getInstanceFieldNames(ff));
+		List<String> parsedFieldNames = FieldUtils.getFieldNames(
+				ff, AllFlavorBean.class, null, false);
+		List<String> parsedFieldNamesLC = FieldUtils.getFieldNames(
+				ff, AllFlavorBean.class, null, true);
 		for (int i = 0; i < parsedFieldNames.size(); i++) 
 			parsedFieldNamesLC.set(i, parsedFieldNamesLC.get(i).toLowerCase());
 

@@ -14,15 +14,14 @@ import javax.swing.JLabel;
 import org.junit.Test;
 
 import beans.builder.RandomBeanBuilder;
-import beans.sampleBeans.SimpleBean;
+import beans.sampleBeans.AllFlavorBean;
 import image.arrayImager.BeanImager;
-import image.arrayImager.SimpleArrayImagerWithLegend;
 import swing.SwingUtils;
 import utils.ColorUtils;
 
 public class ImageTest {
 
-	static SimpleBean[][] beans;
+	static AllFlavorBean[][] beans;
 
 
 	public static void main(String[] args) {
@@ -38,28 +37,28 @@ public class ImageTest {
 		
 		String dblFmt = "%.2f";
 		
-		beans = new SimpleBean[nRows][nCols];
+		beans = new AllFlavorBean[nRows][nCols];
 		for (int i = 0; i < nRows; i++) for (int j = 0; j < nCols; j++)
 		{
-			beans[i][j] = RandomBeanBuilder.randomFactory(SimpleBean.class);
+			beans[i][j] = RandomBeanBuilder.randomFactory(AllFlavorBean.class);
 		}
 
 		List<String> parsedB = Arrays.asList(new String[] { "i2", "d2" });
 
-		BeanImager<SimpleBean> oai;
+		BeanImager<AllFlavorBean> oai;
 		
 		
 		
 		
 //		oai = SimpleArrayImager.factory(
-//				SimpleBean.class, beans,
+//				AllFlavorBean.class, beans,
 //				"i", ColorUtils.HEAT_COLORS, ColorUtils.TOPO_COLORS,
 //				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 //				dblFmt, parsedB
 //				);
 
 		oai = SimpleArrayImagerWithLegend.factory(
-				SimpleBean.class, beans,
+				AllFlavorBean.class, beans,
 				"i", ColorUtils.HEAT_COLORS, ColorUtils.TOPO_COLORS,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				dblFmt, parsedB,
@@ -72,7 +71,7 @@ public class ImageTest {
 		JLabel labD = new JLabel();
 		lab.setIcon(new ImageIcon(oai.getImage()));
 		oai.setField("d2");
-		labD.setIcon(new ImageIcon(((SimpleArrayImagerWithLegend<SimpleBean>) oai).getLegend().getImage()));
+		labD.setIcon(new ImageIcon(((SimpleArrayImagerWithLegend<AllFlavorBean>) oai).getLegend().getImage()));
 		f.add(lab);
 		f.add(labD);
 		f.setVisible(true);

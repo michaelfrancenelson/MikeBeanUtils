@@ -1,5 +1,6 @@
 package beans.memberState;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
@@ -20,16 +21,17 @@ import utils.ArrayUtils.ByteArrayMinMax;
 import utils.ArrayUtils.DblArrayMinMax;
 import utils.ArrayUtils.IntArrayMinMax;
 
-public class SimpleFieldWatcher <T> implements FieldWatcher<T>
+public class SimpleFieldWatcher <T, A extends Annotation> implements FieldWatcher<T>
 {
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public static @interface WatchField{ public String name(); }
+	public static @interface DisplayName{ public String name(); }
 
 	private String dblFmt;
 	private String fieldName;
 	private Field field;
 	private Class<T> clazz;
+	private Class<A> annClass;
 
 	private ByteGetter<T> byteGetter;
 	private IntGetter<T> intGetter;
@@ -46,23 +48,42 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	 * @param dblFmt
 	 * @return
 	 */
-	public static <T> Map<String, FieldWatcher<T>> getWatcherMap(Class<T> clazz, String dblFmt)
+	public static <T, A extends Annotation> Map<String, FieldWatcher<T>> getWatcherMap(
+			Class<T> clazz, Class<A> annClazz, 
+			String dblFmt, 
+			boolean getInstance, boolean getStatic)
 	{
 		Map<String, FieldWatcher<T>> out = new HashMap<>();
-
-		Field[] fields = clazz.getDeclaredFields();
-
-//		List<Field> fields = FieldUtils.getAnnotatedFields(clazz, ParsedField.class);
+		List<Field> fields = FieldUtils.getFields(
+				clazz, annClazz, getInstance, getStatic);
 		
 		for (Field f : fields)
 		{
 			f.setAccessible(true);
-			out.put(f.getName(), factory(f.getName(), dblFmt, clazz));
+			out.put(f.getName(), factory(clazz, annClazz, f.getName(), dblFmt));
 		}
 
 		return out;
 	}
 
+	
+//	public static <T, A extends Annotation> Map<String, FieldWatcher<T>> getWatcherMap(
+//			Class<T> clazz, Class<A> annClazz, String dblFmt)
+//	{
+//		Map<String, FieldWatcher<T>> out = new HashMap<>();
+////		Field[] fields = clazz.getDeclaredFields();
+//		List<Field> fields = FieldUtils.getAnnotatedFields(clazz, annClazz);
+//		
+//		for (Field f : fields)
+//		{
+//			System.out.println("SimpleFieldWatcher.getWatcherMap() field: " + f.getName());
+//			f.setAccessible(true);
+//			out.put(f.getName(), factory(f.getName(), dblFmt, clazz));
+//		}
+//
+//		return out;
+//	}
+	
 	/**
 	 *  Note: at least one of fieldName or displayName must be provided. <br>
 	 * 	Case 1:  fieldName !=  null and displayName == null: <br>
@@ -84,11 +105,14 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	 * @param clazz Bean type to watch
 	 * @return
 	 */
-	public static <T> SimpleFieldWatcher<T> factory(
-			String fieldName, String dblFmt, Class<T> clazz) 
+	public static <T, A extends Annotation> SimpleFieldWatcher<T, A> factory(
+			Class<T> clazz, Class<A> annClass,
+			String fieldName, String dblFmt
+			) 
 	{ 
-		SimpleFieldWatcher<T> bw = new SimpleFieldWatcher<T>();
+		SimpleFieldWatcher<T, A> bw = new SimpleFieldWatcher<T, A>();
 		bw.setClazz(clazz);
+		bw.annClass = annClass;
 		bw.fieldName = fieldName; 
 		bw.initField();
 		if (dblFmt == null) dblFmt = "%.4f";
@@ -100,7 +124,7 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 
 	private void initField()
 	{
-		field = FieldUtils.getWatchedField(fieldName, null, clazz);
+		field = FieldUtils.getField(clazz, annClass, fieldName, true);
 		field.setAccessible(true);
 	}
 
@@ -254,17 +278,19 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 		return out;
 	}
 
-	public static <T> Field getWatchedField(String fieldName, Class<T> clazz)
+	public static <T> Field getDisplayField(
+			String fieldName, Class<T> clazz, boolean matchCase)
 	{
-		Field field = FieldUtils.getAnnotatedField(clazz, WatchField.class, fieldName);
+		Field field = FieldUtils.getField(clazz, DisplayName.class, fieldName, matchCase);
 		return field;
 	}
 
 	@Override public String getFieldName() { return field.getName(); }
+	
 	@Override public String getDisplayName() 
 	{ 
-		if (field.isAnnotationPresent(WatchField.class))
-			return field.getAnnotation(WatchField.class).name();
+		if (field.isAnnotationPresent(DisplayName.class))
+			return field.getAnnotation(DisplayName.class).name();
 		else return field.getName();
 	}
 

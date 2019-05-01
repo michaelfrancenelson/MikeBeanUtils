@@ -8,6 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.border.Border;
 
+import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.builder.NetCDFObjBuilder;
 import beans.sampleBeans.AllFlavorBean;
 import image.arrayImager.BeanImager;
@@ -77,7 +78,9 @@ public class ListImageDemo
 	{
 
 		return ImagerFactory.factory(
-				AllFlavorBean.class, beans, field,
+				AllFlavorBean.class,
+				ParsedField.class,
+				beans, field,
 				gradCols, boolCols,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				"%.4f",  null,

@@ -1,17 +1,19 @@
 package image.arrayImager;
 
 import java.awt.Color;
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.memberState.SimpleFieldWatcher;
 import image.colorInterpolator.SimpleBooleanColorInterpolator;
 import image.colorInterpolator.SimpleColorInterpolator;
 
 public class ImagerFactory 
 {
-	public static <T> BeanImager<T> quickFactory(
+	public static <T, A extends Annotation> BeanImager<T, A> quickFactory(
 			List<List<T>> beans, int nLegendSteps, 
 			boolean lToH, boolean horz, 
 			String field, Class<T> clazz, 
@@ -19,7 +21,8 @@ public class ImagerFactory
 	{
 		String dblFmt = "%.2f";
 		return ImagerFactory.factory(
-				clazz, beans, field,
+				clazz, ParsedField.class, 
+				beans, field,
 				gradColors, boolColors,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				dblFmt,  null,
@@ -29,15 +32,16 @@ public class ImagerFactory
 				);
 	}
 
-	public static <T> BeanImager<T> quickFactory(
+	public static <T, A extends Annotation> BeanImager<T, A> quickFactory(
 			T[][] beans, int nLegendSteps, 
 			boolean lToH, boolean horz, 
 			String field, Class<T> clazz, 
 			Color[] gradColors, Color[] boolColors)
 	{
 		String dblFmt = "%.2f";
-		return ImagerFactory.factory(
-				clazz, beans, field,
+		return (BeanImager<T, A>) ImagerFactory.factory(
+				clazz, ParsedField.class, 
+				beans, field,
 				gradColors, boolColors,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				dblFmt,  null,
@@ -47,8 +51,9 @@ public class ImagerFactory
 				);
 	}
 	
-	public static <T> BeanImager<T> factory(
-			Class<T> clazz, List<List<T>> lists,	
+	public static <T, A extends Annotation> BeanImager<T, A> factory(
+			Class<T> clazz, Class<A> annClass, 
+			List<List<T>> lists,	
 			String fieldName, 
 			Color[] gradientColors, Color[] booleanColors,
 			double naDouble, int naInt, Color naColor,
@@ -68,29 +73,39 @@ public class ImagerFactory
 		if (dblFmt == null)
 			throw new IllegalArgumentException("Double precision format string cannot be null");
 		
-		ObjectImager<T> out = new ObjectImager<T>();
+		ObjectImager<T, A> out = new ObjectImager<T, A>();
 		out.setData(lists);
-		out.dataWidth = lists.size();
-		out.dataHeight = lists.get(0).size();
-		out.clazz = clazz;
-		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, dblFmt);
+		out.initialize(clazz, annClass, dblFmt);
+		
 		out.ci = SimpleColorInterpolator.factory(
 				gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt);
-		out.booleanCI = SimpleBooleanColorInterpolator.factory(booleanColors, naColor);
+	
+		out.booleanCI = SimpleBooleanColorInterpolator.factory(
+				booleanColors, naColor);
+
 		out.showBoolNA = includeNABoolean;
-		out.transposeImg = transpose; out.flipAxisX = flipX; out.flipAxisY = flipY;
+		out.transposeImg = transpose;
+		out.flipAxisX = flipX; 
+		out.flipAxisY = flipY;
 		out.nLegendSteps = nLegendSteps; out.legLoToHi = legLowToHi; out.horizLeg = horizLegend;
-		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, dblFmt);
 		Map<String, Boolean> mp = new HashMap<>();
 		if (!(parsedBooleanFields == null)) for (String s : parsedBooleanFields) mp.put(s, true);
 		out.parsedBooleanFieldNames = mp;
 		out.setField(fieldName);
-		out.buildImage();
 		return out;
+
+//		out.watchers = SimpleFieldWatcher.getWatcherMap(
+//				clazz, annClass, dblFmt, true, true);
+		//		out.dataWidth = lists.size();
+//		out.dataHeight = lists.get(0).size();
+//		out.clazz = clazz;
+//		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, null, dblFmt, true, true);
+//		out.buildImage();
 	}
 	
-	public static <T> BeanImager<T> factory(
-			Class<T> clazz, T[][] objArray,	String fieldName, 
+	public static <T, A extends Annotation> BeanImager<T, A> factory(
+			Class<T> clazz, Class<A> annClass,
+			T[][] objArray,	String fieldName, 
 			Color[] gradientColors, Color[] booleanColors,
 			double naDouble, int naInt, Color naColor,
 			String dblFmt, Iterable<String> parsedBooleanFields,
@@ -101,25 +116,27 @@ public class ImagerFactory
 		if (dblFmt == null)
 			throw new IllegalArgumentException("Double precision format string cannot be null");
 		
-		ObjectImager<T> out = new ObjectImager<>();
-		out.clazz = clazz; 
+		ObjectImager<T, A> out = new ObjectImager<>();
 		out.setData(objArray);
-		out.dataWidth = objArray.length;
-		out.dataHeight = objArray[0].length;
-		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, dblFmt);
+		out.initialize(clazz, annClass, dblFmt);
+		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, null, dblFmt, true, true);
 		out.ci = SimpleColorInterpolator.factory(
 				gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt);
 		out.booleanCI = SimpleBooleanColorInterpolator.factory(booleanColors, naColor);
 		out.showBoolNA = includeNABoolean;
 		out.transposeImg = transpose; out.flipAxisX = flipX; out.flipAxisY = flipY;
 		out.nLegendSteps = nLegendSteps; out.legLoToHi = legLowToHi; out.horizLeg = horizLegend;
-		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, dblFmt);
 		Map<String, Boolean> mp = new HashMap<>();
 		if (!(parsedBooleanFields == null)) for (String s : parsedBooleanFields) mp.put(s, true);
 		out.parsedBooleanFieldNames = mp;
 		out.setField(fieldName);
-		out.buildImage();
 		return out;
+
+//		out.buildImage();
+		//		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, null, dblFmt, true, true);
+//		out.clazz = clazz; 
+//		out.dataWidth = objArray.length;
+//		out.dataHeight = objArray[0].length;
 	}
 	
 	

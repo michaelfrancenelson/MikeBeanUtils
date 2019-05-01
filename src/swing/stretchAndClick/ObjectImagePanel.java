@@ -100,8 +100,9 @@ public class ObjectImagePanel<T> extends JPanel
 			)
 	{
 		final Field[] f2;
-		f2 = FieldUtils.getInstanceFields(imager.getObjClass());
-		String[] dispNames = FieldUtils.getInstanceFieldNames(Arrays.asList(f2));
+		f2 = FieldUtils.getFields(imager.getObjClass());
+		String[] dispNames = FieldUtils.getFieldNames(
+				Arrays.asList(f2));
 		controlComboBox = new JComboBox<>(dispNames);
 
 		controlComboBox.addActionListener(new ActionListener() {
