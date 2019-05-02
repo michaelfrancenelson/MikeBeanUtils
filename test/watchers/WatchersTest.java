@@ -26,9 +26,13 @@ public class WatchersTest {
 		beans = NetCDFObjBuilder.factory2D(AllFlavorBean.class, filename);
 		Map<String, FieldWatcher<AllFlavorBean>> watcherMap = 
 				SimpleFieldWatcher.getWatcherMap(
-						AllFlavorBean.class, ParsedField.class, "%.2f", 
+						AllFlavorBean.class, 
+						ParsedField.class,
+						"%.2f", 
 						true, true);
 		
+		
+		watcherMap.get("boolPrim").getBoolVal(beans.get(0).get(0));
 		
 		
 		

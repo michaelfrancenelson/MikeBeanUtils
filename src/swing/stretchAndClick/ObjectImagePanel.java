@@ -7,14 +7,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.RenderedImage;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -23,6 +20,7 @@ import javax.swing.JPanel;
 import beans.memberState.FieldWatcher;
 import fields.FieldUtils;
 import image.arrayImager.BeanImager;
+import swing.ObjectArrayImageComboBox;
 
 /**
  * 
@@ -99,22 +97,30 @@ public class ObjectImagePanel<T> extends JPanel
 			Font font
 			)
 	{
-		final Field[] f2;
-		f2 = FieldUtils.getFields(imager.getObjClass());
-		String[] dispNames = FieldUtils.getFieldNames(
-				Arrays.asList(f2));
-		controlComboBox = new JComboBox<>(dispNames);
-
-		controlComboBox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				System.out.println("ObjectArrayImagePanel: setting field to " +
-						f2[controlComboBox.getSelectedIndex()].getName());
-
-				setField(f2[controlComboBox.getSelectedIndex()]);
-			}
-		});
+		final List<Field> f2;
+		f2 = FieldUtils.getFields(
+				imager.getObjClass(), imager.getAnnClass(), true, true);
+		List<String> dispNames = FieldUtils.getFieldNames(
+				f2, imager.getObjClass(), 
+				imager.getAnnClass(), true
+				);
+		
+		controlComboBox = ObjectArrayImageComboBox.comboBoxFactory(
+				this, imager.getAnnClass(), 
+				f2, dispNames, font);
+		
+//		controlComboBox = new JComboBox<String>(dispNames);
+//
+//		controlComboBox.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e)
+//			{
+//				System.out.println("ObjectArrayImagePanel: setting field to " +
+//						f2.get(controlComboBox.getSelectedIndex()).getName());
+//
+//				setField(f2.get(controlComboBox.getSelectedIndex()));
+//			}
+//		});
 
 		if (font != null) controlComboBox.setFont(font);
 		return controlComboBox;

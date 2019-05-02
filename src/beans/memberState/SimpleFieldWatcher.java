@@ -21,7 +21,8 @@ import utils.ArrayUtils.ByteArrayMinMax;
 import utils.ArrayUtils.DblArrayMinMax;
 import utils.ArrayUtils.IntArrayMinMax;
 
-public class SimpleFieldWatcher <T, A extends Annotation> implements FieldWatcher<T>
+public class SimpleFieldWatcher <T> implements FieldWatcher<T>
+//public class SimpleFieldWatcher <T, A extends Annotation> implements FieldWatcher<T>
 {
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -31,7 +32,7 @@ public class SimpleFieldWatcher <T, A extends Annotation> implements FieldWatche
 	private String fieldName;
 	private Field field;
 	private Class<T> clazz;
-	private Class<A> annClass;
+//	private Class<? extends Annotation> annClass;
 
 	private ByteGetter<T> byteGetter;
 	private IntGetter<T> intGetter;
@@ -48,8 +49,10 @@ public class SimpleFieldWatcher <T, A extends Annotation> implements FieldWatche
 	 * @param dblFmt
 	 * @return
 	 */
-	public static <T, A extends Annotation> Map<String, FieldWatcher<T>> getWatcherMap(
-			Class<T> clazz, Class<A> annClazz, 
+	public static <T> Map<String, FieldWatcher<T>> getWatcherMap(
+//			public static <T, A extends Annotation> Map<String, FieldWatcher<T>> getWatcherMap(
+			Class<T> clazz,
+			Class<? extends Annotation> annClazz, 
 			String dblFmt, 
 			boolean getInstance, boolean getStatic)
 	{
@@ -60,29 +63,14 @@ public class SimpleFieldWatcher <T, A extends Annotation> implements FieldWatche
 		for (Field f : fields)
 		{
 			f.setAccessible(true);
-			out.put(f.getName(), factory(clazz, annClazz, f.getName(), dblFmt));
+			out.put(f.getName(), factory(clazz, f.getName(), dblFmt));
 		}
 
 		return out;
 	}
 
 	
-//	public static <T, A extends Annotation> Map<String, FieldWatcher<T>> getWatcherMap(
-//			Class<T> clazz, Class<A> annClazz, String dblFmt)
-//	{
-//		Map<String, FieldWatcher<T>> out = new HashMap<>();
-////		Field[] fields = clazz.getDeclaredFields();
-//		List<Field> fields = FieldUtils.getAnnotatedFields(clazz, annClazz);
-//		
-//		for (Field f : fields)
-//		{
-//			System.out.println("SimpleFieldWatcher.getWatcherMap() field: " + f.getName());
-//			f.setAccessible(true);
-//			out.put(f.getName(), factory(f.getName(), dblFmt, clazz));
-//		}
-//
-//		return out;
-//	}
+
 	
 	/**
 	 *  Note: at least one of fieldName or displayName must be provided. <br>
@@ -105,14 +93,17 @@ public class SimpleFieldWatcher <T, A extends Annotation> implements FieldWatche
 	 * @param clazz Bean type to watch
 	 * @return
 	 */
-	public static <T, A extends Annotation> SimpleFieldWatcher<T, A> factory(
-			Class<T> clazz, Class<A> annClass,
+			public static <T> SimpleFieldWatcher<T> factory(
+//					public static <T, A extends Annotation> SimpleFieldWatcher<T, A> factory(
+			Class<T> clazz,
+//			Class<? extends Annotation> annClass,
 			String fieldName, String dblFmt
 			) 
 	{ 
-		SimpleFieldWatcher<T, A> bw = new SimpleFieldWatcher<T, A>();
+		SimpleFieldWatcher<T> bw = new SimpleFieldWatcher<T>();
+//		SimpleFieldWatcher<T, A> bw = new SimpleFieldWatcher<T, A>();
 		bw.setClazz(clazz);
-		bw.annClass = annClass;
+//		bw.annClass = annClass;
 		bw.fieldName = fieldName; 
 		bw.initField();
 		if (dblFmt == null) dblFmt = "%.4f";
@@ -124,7 +115,7 @@ public class SimpleFieldWatcher <T, A extends Annotation> implements FieldWatche
 
 	private void initField()
 	{
-		field = FieldUtils.getField(clazz, annClass, fieldName, true);
+		field = FieldUtils.getField(clazz, null, fieldName, true);
 		field.setAccessible(true);
 	}
 
@@ -300,3 +291,19 @@ public class SimpleFieldWatcher <T, A extends Annotation> implements FieldWatche
 	@Override public Field getField() { return field; }
 	@Override public String getDblFmt() { return dblFmt; }
 }
+//public static <T, A extends Annotation> Map<String, FieldWatcher<T>> getWatcherMap(
+//Class<T> clazz, Class<A> annClazz, String dblFmt)
+//{
+//Map<String, FieldWatcher<T>> out = new HashMap<>();
+////Field[] fields = clazz.getDeclaredFields();
+//List<Field> fields = FieldUtils.getAnnotatedFields(clazz, annClazz);
+//
+//for (Field f : fields)
+//{
+//System.out.println("SimpleFieldWatcher.getWatcherMap() field: " + f.getName());
+//f.setAccessible(true);
+//out.put(f.getName(), factory(f.getName(), dblFmt, clazz));
+//}
+//
+//return out;
+//}

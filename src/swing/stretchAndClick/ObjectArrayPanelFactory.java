@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class ObjectArrayPanelFactory
 	 *                        Values of 0 or less are ignored.
 	 * @return
 	 */
-	public static <T> ObjectImagePanel<T> buildPanel(
+	public static <T> ObjectImagePanel<T> fixedImagePanel(
 			String imageFile, boolean keepAspectRatio, 
 			int fixedWidth, int fixedHeight)
 	{
@@ -53,7 +54,7 @@ public class ObjectArrayPanelFactory
 
 	/** 
 	 * Build a panel to generate the image from
-	 * thie states of objects in a 2D array
+	 * the states of objects in a 2D array
 	 * 
 	 * @param clazz
 	 * @param objArray
@@ -80,7 +81,10 @@ public class ObjectArrayPanelFactory
 	 * @return
 	 */
 	public static <T> ObjectImagePanel<T> buildPanel(
-			Class<T> clazz, T[][] objArray, String fieldName,
+//			public static <T, A extends Annotation> ObjectImagePanel<T> buildPanel(
+			Class<T> clazz,
+			Class<? extends Annotation> annClass,
+			T[][] objArray, String fieldName,
 			Color[] gradientColors, Color[] booleanColors,
 			Double naDouble, Integer naInt, Color naColor, 
 			String dblFmt, List<String> parsedBooleanFields,
@@ -99,7 +103,9 @@ public class ObjectArrayPanelFactory
 		if (dblFmt == null) dblFmt = "%.2f";
 		if (parsedBooleanFields == null) parsedBooleanFields = new ArrayList<String>();
 		BeanImager<T> imager = ImagerFactory.factory(
-				clazz, objArray, fieldName, 
+				clazz, 
+				annClass,
+				objArray, fieldName, 
 				gradientColors, booleanColors,
 				naDouble, naInt, naColor, 
 				dblFmt, parsedBooleanFields,
@@ -115,7 +121,7 @@ public class ObjectArrayPanelFactory
 
 	/** 
 	 * Build a panel to generate the image from
-	 * thie states of objects in a 2D array
+	 * the states of objects in nested List
 	 * 
 	 * @param clazz
 	 * @param objList
@@ -142,7 +148,9 @@ public class ObjectArrayPanelFactory
 	 * @return
 	 */
 	public static <T> ObjectImagePanel<T> buildPanel(
-			Class<T> clazz, List<List<T>> objList, String fieldName,
+			Class<T> clazz, 
+			Class<? extends Annotation> annClass,
+			List<List<T>> objList, String fieldName,
 			Color[] gradientColors, Color[] booleanColors,
 			Double naDouble, Integer naInt, Color naColor, 
 			String dblFmt, List<String> parsedBooleanFields,
@@ -160,7 +168,9 @@ public class ObjectArrayPanelFactory
 		if (dblFmt == null) dblFmt = "%.2f";
 		if (parsedBooleanFields == null) parsedBooleanFields = new ArrayList<String>();
 		BeanImager<T> imager = ImagerFactory.factory(
-				clazz, objList, fieldName, 
+				clazz,
+				annClass,
+				objList, fieldName, 
 				gradientColors, booleanColors,
 				naDouble, naInt, naColor, 
 				dblFmt, parsedBooleanFields,

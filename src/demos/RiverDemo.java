@@ -11,10 +11,11 @@ import javax.imageio.ImageIO;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 
+import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.sampleBeans.TerrainBean;
-import image.ObjectArrayImageComboBox;
 import image.arrayImager.BeanImager;
 import image.arrayImager.ImagerFactory;
+import swing.ObjectArrayImageComboBox;
 import swing.SwingUtils;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
@@ -51,7 +52,9 @@ public class RiverDemo
 		JFrame f1 = SwingUtils.frameFactory(1100, 1100);
 		
 		pan1 = ObjectArrayPanelFactory.buildPanel(
-				TerrainBean.class, cells1, "age", 
+				TerrainBean.class, 
+				ParsedField.class,
+				cells1, "age", 
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				"%.2d", null, true, false, false, false,
@@ -88,25 +91,29 @@ public class RiverDemo
 		JFrame f1 = SwingUtils.frameFactory(800, 1500);
 
 		pan1 = ObjectArrayPanelFactory.buildPanel(
-				TerrainBean.class, cells1, "stream", 
+				TerrainBean.class, ParsedField.class,
+				cells1, "stream", 
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				"%.2d", null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
 		pan2 = ObjectArrayPanelFactory.buildPanel(
-				TerrainBean.class, cells1, "elevation", 
+				TerrainBean.class, ParsedField.class,
+				cells1, "elevation", 
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				"%.2d", null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
 		pan3 = ObjectArrayPanelFactory.buildPanel(
-				TerrainBean.class, cells1, "stream", 
+				TerrainBean.class, ParsedField.class,
+				cells1, "stream", 
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				"%.2d", null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
 		pan4 = ObjectArrayPanelFactory.buildPanel(
-				TerrainBean.class, cells1, "elevation", 
+				TerrainBean.class, ParsedField.class,
+				cells1, "elevation", 
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				"%.2d", null, true, false, false, false,

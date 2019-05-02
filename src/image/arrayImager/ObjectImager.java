@@ -17,7 +17,8 @@ import utils.ArrayUtils.DblArrayMinMax;
 import utils.ArrayUtils.IntArrayMinMax;
 import utils.Sequences;
 
-public class ObjectImager<T, A extends Annotation> implements BeanImager<T, A>
+public class ObjectImager<T> implements BeanImager<T>
+//public class ObjectImager<T, A extends Annotation> implements BeanImager<T, A>
 {
 	interface ImagerData<T>
 	{
@@ -71,7 +72,7 @@ public class ObjectImager<T, A extends Annotation> implements BeanImager<T, A>
 	int[] currentSelectionArrayCoords;
 
 	Class<T> clazz;
-	Class<A> annClass;
+	Class<? extends Annotation> annClass;
 
 	IntArrayMinMax legDatInt;
 	DblArrayMinMax legDatDbl;
@@ -94,7 +95,8 @@ public class ObjectImager<T, A extends Annotation> implements BeanImager<T, A>
 	}
 	
 	protected void initialize(
-			Class<T> clazz, Class<A> annClass,
+			Class<T> clazz, 
+			Class<? extends Annotation> annClass,
 			String dblFmt)
 	{
 		this.dataHeight = objectData.getHeight();
@@ -404,7 +406,7 @@ public class ObjectImager<T, A extends Annotation> implements BeanImager<T, A>
 	@Override public int[] getCurrentSelectedArrayCoords() { return currentSelectionArrayCoords; }
 
 	@Override public Class<T> getObjClass() { return clazz; }
-	@Override public Class<A> getAnnClass() { return annClass; }
+	@Override public Class<? extends Annotation> getAnnClass() { return annClass; }
 
 	@Override public int getDataWidth() { return this.dataWidth; }
 	@Override public int getDataHeight() { return this.dataHeight; }

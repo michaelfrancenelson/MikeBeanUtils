@@ -145,18 +145,6 @@ public interface FieldWatcher<T>
 	 * @return get the display name (for menus, etc.) of the watched field.
 	 */
 	public String getDisplayName();
-//
-//	/**
-//	 * 
-//	 * @param f Set the watched field to this
-//	 */
-//	public void setWatchedField(Field f);
-	
-//	/**
-//	 * 
-//	 * @param fieldName Set the watched field to this
-//	 */
-//	public void setWatchedField(String fieldName);
 	
 	/**
 	 * 
@@ -167,6 +155,4 @@ public interface FieldWatcher<T>
 	String getDblFmt();
 
 	char getCharVal(T t);
-//	long getLongVal(T t);
-//	short getShortVal(T t);
 }

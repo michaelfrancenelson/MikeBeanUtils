@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.lang.annotation.Annotation;
 
 import javax.swing.AbstractAction;
 import javax.swing.JLabel;
@@ -26,9 +27,7 @@ import beans.memberState.SimpleFieldWatcher;
  */
 public class MemberSetterTextField<T> extends JTextField
 {
-	
 	/**
-	 * 
 	 */
 	private static final long serialVersionUID = 3521358047052455671L;
 
@@ -41,7 +40,7 @@ public class MemberSetterTextField<T> extends JTextField
 	KeyAdapter k;
 	MemberWatcherJLabel<T> watcherLabel;
 	
-	public static <T> MemberSetterTextField<T> factory(
+	public static <T, A extends Annotation> MemberSetterTextField<T> factory(
 			MemberWatcherJLabel<T> watcherLabel)
 	{
 		return factory(
@@ -73,7 +72,7 @@ public class MemberSetterTextField<T> extends JTextField
 		m.fieldSetter = BeanStateSetterFactory.factory(clazz, fieldName);
 		
 		if (watcher == null)
-		m.watcher = SimpleFieldWatcher.factory(fieldName, null, clazz);
+		m.watcher = SimpleFieldWatcher.factory(clazz, fieldName, null);
 		else m.watcher = watcher;
 		
 		if (watcherLabel != null) m.watcherLabel = watcherLabel;
@@ -81,9 +80,6 @@ public class MemberSetterTextField<T> extends JTextField
 		m.initialize();
 		return m;
 	}
-
-	
-	
 	
 	private void initialize()
 	{

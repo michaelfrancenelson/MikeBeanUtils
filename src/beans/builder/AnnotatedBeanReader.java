@@ -88,7 +88,7 @@ public class AnnotatedBeanReader
 		}
 
 
-		List<Field> ff = FieldUtils.getAnnotatedFields(clazz, ParsedField.class);
+		List<Field> ff = FieldUtils.getFields(clazz, ParsedField.class, true, true);
 		List<String> headers = data.get(0);
 		List<Integer> colNumbers = new ArrayList<>();
 		for (Field f : ff)
@@ -217,7 +217,7 @@ public class AnnotatedBeanReader
 		if (filename == null) filename = "input data list";
 
 		/* Fields without the annotation are ignored. */
-		List<Field> ff = FieldUtils.getAnnotatedFields(clazz, ParsedField.class);
+		List<Field> ff = FieldUtils.getFields(clazz, ParsedField.class, true, true);
 
 		List<String> fieldNames = new ArrayList<>();
 		for (Field f : ff) fieldNames.add(f.getName());

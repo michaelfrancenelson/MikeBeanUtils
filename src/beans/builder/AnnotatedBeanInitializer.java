@@ -93,7 +93,7 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 	 */
 	private static <T> void initializeInstanceFieldsToNA(Class<T> clazz, T t, int naInt, double naDouble, String naString, char naChar)
 	{
-		for (Field f : FieldUtils.getAnnotatedFields(clazz, InitializedField.class))
+		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, true, false))
 		{
 			try { if (!Modifier.isStatic(f.getModifiers())) setNA(t, f, naInt, naDouble, naString, naChar); }
 			catch (IllegalArgumentException | IllegalAccessException e) { e.printStackTrace();}
@@ -102,7 +102,7 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 
 	private static <T> void initializeStaticFieldsToNA(Class<T> clazz, int naInt, double naDouble, String naString, char naChar)
 	{
-		for (Field f : FieldUtils.getAnnotatedFields(clazz, InitializedField.class))
+		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, false, true))
 		{
 			try { if (Modifier.isStatic(f.getModifiers())) setNA(null, f, naInt, naDouble, naString, naChar); }
 			catch (IllegalArgumentException | IllegalAccessException e) { e.printStackTrace();}
@@ -165,7 +165,7 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 		String message, typeName;
 		typeName = clazz.getSimpleName();
 
-		for (Field f : FieldUtils.getAnnotatedFields(clazz, InitializedField.class))
+		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, true, false))
 		{
 			if (!Modifier.isStatic(f.getModifiers()))
 			{
@@ -191,7 +191,7 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 		String message, typeName;
 		typeName = clazz.getSimpleName();
 
-		for (Field f : FieldUtils.getAnnotatedFields(clazz, InitializedField.class))
+		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, false, true))
 		{
 			if (Modifier.isStatic(f.getModifiers()))
 			{
@@ -216,7 +216,7 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 		String message, typeName;
 		typeName = clazz.getSimpleName();
 
-		for (Field f : FieldUtils.getAnnotatedFields(clazz, InitializedField.class))
+		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, true, true))
 		{
 			if (!Modifier.isStatic(f.getModifiers()))
 			{

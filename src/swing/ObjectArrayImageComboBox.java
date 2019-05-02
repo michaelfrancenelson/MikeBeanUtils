@@ -1,10 +1,11 @@
-package image;
+package swing;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JComboBox;
 
@@ -20,35 +21,45 @@ public class ObjectArrayImageComboBox
 {
 
 	public static <T> JComboBox<String> comboBoxFactory(ObjectImagePanel<T> panel)
-	{ return comboBoxFactory(panel, null, null, null); }
+	{ return comboBoxFactory(
+			panel, 
+			null, 
+			null, 
+			null, null); }
 
 	public static <T> JComboBox<String> comboBoxFactory(
 			ObjectImagePanel<T> panel,
-			Field[] fields, 
-			String[] dispNames,
+			Class<? extends Annotation> annClass,
+			List<Field> fields, 
+			List<String> dispNames,
 			Font font
 			)
 	{
-		final Field[] f2;
+		final List<Field> f2;
 		
-		if (fields == null) f2 = FieldUtils.getInstanceFields(panel.getObjClass());
+		if (fields == null) f2 = FieldUtils.getFields(
+				panel.getObjClass(), annClass, true, true);
 		else f2 = fields;
 
 		if (dispNames == null)
-			dispNames = FieldUtils.getInstanceFieldNames(Arrays.asList(f2));
+			dispNames = FieldUtils.getFieldNames(
+					f2, panel.getObjClass(), annClass, false);
 
 		/* Verify that there are the same number of display names and fields: */
-		if (f2.length != dispNames.length) 
+		if (f2.size() != dispNames.size()) 
 			throw new IllegalArgumentException("Number of fields must be equal to the number of display names");
 		JComboBox<String> out;
-		out = new JComboBox<>(dispNames);
 		
+		String[] dNames = new String[dispNames.size()];
+		for (int i = 0; i < dNames.length; i++) {dNames[i] = dispNames.get(i); }
+		out = new JComboBox<>();
+
 		out.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				panel.setField(f2[out.getSelectedIndex()]);
+				panel.setField(f2.get(out.getSelectedIndex()));
 			}
 		});
 

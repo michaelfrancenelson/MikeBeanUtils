@@ -31,10 +31,15 @@ public class MemberWatcherJLabel<T> extends JLabel
 	public SimpleFieldWatcher<T> getWatcher() { return this.watcher; }
 	
 	public static <T> MemberWatcherJLabel<T> factory(
-			Class<T> clazz, T t, String fieldName, String displayName, String dblFmt,
+			Class<T> clazz, 
+			T t, 
+			String fieldName, 
+			String displayName,
+			String dblFmt,
 			Font font)
 	{
-		SimpleFieldWatcher<T> watcher = SimpleFieldWatcher.factory(fieldName, dblFmt, clazz);
+		SimpleFieldWatcher<T> watcher = SimpleFieldWatcher.factory(
+				clazz, fieldName, dblFmt);
 //		SimpleFieldWatcher<T> watcher = SimpleFieldWatcher.factory(fieldName, displayName, dblFmt, clazz);
 		MemberWatcherJLabel<T> label = new MemberWatcherJLabel<T>(t, watcher);
 		label.setFont(font);

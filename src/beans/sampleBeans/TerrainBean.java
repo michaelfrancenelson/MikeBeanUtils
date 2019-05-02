@@ -2,6 +2,8 @@ package beans.sampleBeans;
 
 import java.util.Random;
 
+import beans.builder.AnnotatedBeanReader.ParsedField;
+
 /** Demonstration bean type. 
  * 
  * @author michaelfrancenelson
@@ -11,10 +13,10 @@ public class TerrainBean
 {
 	static Random r = new Random();
 
-	public int age;
-	boolean stream = false;
-	double elevation;
-	byte road;
+	@ParsedField public int age;
+	@ParsedField boolean stream = false;
+	@ParsedField double elevation;
+	@ParsedField byte road;
 
 	public TerrainBean(double elevation, int age) { this.elevation = elevation; this.age = age; }
 

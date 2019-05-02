@@ -92,9 +92,9 @@ public class FieldUtils
 	 *        useful for trying to match case insensitive text later.
 	 * @return List of names for the matching fields.
 	 */
-	public static <T, A extends Annotation> List<String> getFieldNames(
+	public static <T> List<String> getFieldNames(
 			Class<T> clazz,
-			Class<A> annClass,
+			Class<? extends Annotation> annClass,
 			boolean getInstance, 
 			boolean getStatic,
 			boolean toLowerCase) throws IllegalArgumentException
@@ -114,10 +114,10 @@ public class FieldUtils
 	 *        useful for trying to match case insensitive text later.
 	 * @return a list of field names. Throws an exception of no names could be matched
 	 */
-	public static <T, A extends Annotation> List<String> getFieldNames(
+	public static <T> List<String> getFieldNames(
 			Iterable<Field> fields, 
 			Class<T> clazz,
-			Class<A> annClass,
+			Class<? extends Annotation> annClass,
 			boolean toLowerCase) throws IllegalArgumentException
 	{
 		//		System.out.println("FieldUtils: getting instance field names" );

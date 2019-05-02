@@ -13,7 +13,7 @@ import image.colorInterpolator.SimpleColorInterpolator;
 
 public class ImagerFactory 
 {
-	public static <T, A extends Annotation> BeanImager<T, A> quickFactory(
+	public static <T> BeanImager<T> quickFactory(
 			List<List<T>> beans, int nLegendSteps, 
 			boolean lToH, boolean horz, 
 			String field, Class<T> clazz, 
@@ -21,7 +21,8 @@ public class ImagerFactory
 	{
 		String dblFmt = "%.2f";
 		return ImagerFactory.factory(
-				clazz, ParsedField.class, 
+				clazz,
+				ParsedField.class, 
 				beans, field,
 				gradColors, boolColors,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
@@ -32,14 +33,14 @@ public class ImagerFactory
 				);
 	}
 
-	public static <T, A extends Annotation> BeanImager<T, A> quickFactory(
+	public static <T> BeanImager<T> quickFactory(
 			T[][] beans, int nLegendSteps, 
 			boolean lToH, boolean horz, 
 			String field, Class<T> clazz, 
 			Color[] gradColors, Color[] boolColors)
 	{
 		String dblFmt = "%.2f";
-		return (BeanImager<T, A>) ImagerFactory.factory(
+		return  ImagerFactory.factory(
 				clazz, ParsedField.class, 
 				beans, field,
 				gradColors, boolColors,
@@ -51,8 +52,9 @@ public class ImagerFactory
 				);
 	}
 	
-	public static <T, A extends Annotation> BeanImager<T, A> factory(
-			Class<T> clazz, Class<A> annClass, 
+	public static <T> BeanImager<T> factory(
+			Class<T> clazz, 
+			Class<? extends Annotation> annClass, 
 			List<List<T>> lists,	
 			String fieldName, 
 			Color[] gradientColors, Color[] booleanColors,
@@ -73,7 +75,7 @@ public class ImagerFactory
 		if (dblFmt == null)
 			throw new IllegalArgumentException("Double precision format string cannot be null");
 		
-		ObjectImager<T, A> out = new ObjectImager<T, A>();
+		ObjectImager<T> out = new ObjectImager<T>();
 		out.setData(lists);
 		out.initialize(clazz, annClass, dblFmt);
 		
@@ -103,8 +105,10 @@ public class ImagerFactory
 //		out.buildImage();
 	}
 	
-	public static <T, A extends Annotation> BeanImager<T, A> factory(
-			Class<T> clazz, Class<A> annClass,
+	public static <T> BeanImager<T> factory(
+//			public static <T, A extends Annotation> BeanImager<T, A> factory(
+			Class<T> clazz,
+			Class<? extends Annotation> annClass,
 			T[][] objArray,	String fieldName, 
 			Color[] gradientColors, Color[] booleanColors,
 			double naDouble, int naInt, Color naColor,
@@ -116,7 +120,8 @@ public class ImagerFactory
 		if (dblFmt == null)
 			throw new IllegalArgumentException("Double precision format string cannot be null");
 		
-		ObjectImager<T, A> out = new ObjectImager<>();
+		ObjectImager<T> out = new ObjectImager<>();
+//		ObjectImager<T, A> out = new ObjectImager<>();
 		out.setData(objArray);
 		out.initialize(clazz, annClass, dblFmt);
 		out.watchers = SimpleFieldWatcher.getWatcherMap(clazz, null, dblFmt, true, true);

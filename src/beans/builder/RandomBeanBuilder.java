@@ -33,7 +33,7 @@ public class RandomBeanBuilder extends AnnotatedBeanReader
 	 */
 	public static <T> T randomFactory(Class<T> clazz)
 	{
-		List<Field> ff = FieldUtils.getAnnotatedFields(clazz, ParsedField.class);
+		List<Field> ff = FieldUtils.getFields(clazz, ParsedField.class, true, true);
 		T o = null;
 		try 
 		{

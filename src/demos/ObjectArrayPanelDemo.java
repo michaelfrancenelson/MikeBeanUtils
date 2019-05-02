@@ -16,7 +16,6 @@ import utils.ColorUtils;
 
 public class ObjectArrayPanelDemo
 {
-
 	static List<ObjectImagePanel<?>> panelList;
 	static TerrainBean[][] cells;
 	static JFrame f1, f2;
@@ -64,7 +63,10 @@ public class ObjectArrayPanelDemo
 		setup(width, height, 0.5, Integer.MAX_VALUE);
 		
 		panels.add(ObjectArrayPanelFactory.buildPanel(
-				TerrainBean.class, cells, "elevation",
+				TerrainBean.class,
+//				ParsedField.class,
+				null,
+				cells, "elevation",
 				gradCols, boolCols,
 				null, null, null, 
 				null, null,

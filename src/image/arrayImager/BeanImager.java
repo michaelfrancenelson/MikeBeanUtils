@@ -8,7 +8,8 @@ import java.lang.reflect.Field;
 import beans.memberState.FieldWatcher;
 import image.colorInterpolator.ColorInterpolator;
 
-public interface BeanImager<T, A extends Annotation> 
+public interface BeanImager<T> 
+//public interface BeanImager<T, A extends Annotation> 
 {
 
 	/**
@@ -16,7 +17,7 @@ public interface BeanImager<T, A extends Annotation>
 	 * @return the class of objects from which the images are generated
 	 */
 	public Class<T> getObjClass();
-	public Class<A> getAnnClass();
+	public Class<? extends Annotation> getAnnClass();
 
 	/** Return the current image, generated from the currently active field. */
 	public Image getImage();
