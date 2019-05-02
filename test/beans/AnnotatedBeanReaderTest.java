@@ -15,15 +15,17 @@ import beans.sampleBeans.AllFlavorStaticBean;
 
 public class AnnotatedBeanReaderTest
 {
-
 	@Test
 	public void allFlavorNCDFTest()
 	{
 		List<List<AllFlavorBean>> beans;
-
 		String filename = "testData/AllFlavorBean.nc";
 
 		beans = NetCDFObjBuilder.factory2D(AllFlavorBean.class, filename);
+		NetCDFObjBuilder.factory2D(AllFlavorStaticBean.class, filename);
+
+		assertTrue(AnnotatedBeanInitializer.enforceStaticInitialized(
+				AllFlavorStaticBean.class)); 
 
 		for (List<AllFlavorBean> l1 : beans)
 		{
@@ -51,7 +53,6 @@ public class AnnotatedBeanReaderTest
 		{
 			AnnotatedBeanReader.factory(
 					AllFlavorStaticBean.class, st, false, 1);
-			//				System.out.println("AnnotatedBeanReaderTest: " + st);
 
 			assertTrue(AnnotatedBeanInitializer.checkStaticInitialized(
 					AllFlavorStaticBean.class)); 

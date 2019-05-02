@@ -1,11 +1,11 @@
-package image.imageFactories;
+package imaging.imageFactories;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import beans.memberState.FieldWatcher;
-import image.arrayImager.BeanImager;
-import image.colorInterpolator.ColorInterpolator;
+import imaging.colorInterpolator.ColorInterpolator;
+import imaging.imagers.BeanImager;
 
 
 public class ObjectImageFactory 

@@ -10,10 +10,10 @@ import java.util.Map;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.sampleBeans.AllFlavorBean;
-import fields.FieldUtils;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import utils.ArrayUtils;
+import utils.FieldUtils;
 
 public class NetCDFObjBuilder 
 {

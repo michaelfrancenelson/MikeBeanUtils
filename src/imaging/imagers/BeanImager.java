@@ -1,4 +1,4 @@
-package image.arrayImager;
+package imaging.imagers;
 
 import java.awt.Color;
 import java.awt.Image;
@@ -6,7 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 import beans.memberState.FieldWatcher;
-import image.colorInterpolator.ColorInterpolator;
+import imaging.colorInterpolator.ColorInterpolator;
 
 public interface BeanImager<T> 
 //public interface BeanImager<T, A extends Annotation> 
@@ -24,6 +24,7 @@ public interface BeanImager<T>
 	public String getCurrentFieldName();
 	public Field getCurrentField();
 
+	
 	/** Set or update the color scale used in the image 
 	 * 
 	 * @param colors
@@ -129,4 +130,6 @@ public interface BeanImager<T>
 	
 	public ColorInterpolator getInterpolator();
 	public ColorInterpolator getBooleanInterpolator();
+	void setInterpolator(ColorInterpolator ci);
+	void setBooleanInterpolator(ColorInterpolator ci);
 }

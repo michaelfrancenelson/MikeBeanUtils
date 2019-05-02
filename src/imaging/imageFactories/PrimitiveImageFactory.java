@@ -1,4 +1,4 @@
-package image.imageFactories;
+package imaging.imageFactories;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -6,7 +6,9 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-import image.colorInterpolator.ColorInterpolator;
+import imaging.colorInterpolator.ColorInterpolator;
+import imaging.imagers.ObjectImager.ImagerData;
+import imaging.imagers.ObjectImager.PrimitiveArrayData;
 
 public class PrimitiveImageFactory 
 {
@@ -63,6 +65,7 @@ public class PrimitiveImageFactory
 	 * @param rgbType
 	 * @return
 	 */
+	@Deprecated
 	public static Image buildImage(double[][] data,  ColorInterpolator ci, int rgbType)
 	{
 		BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
@@ -78,6 +81,7 @@ public class PrimitiveImageFactory
 	 * @param ci
 	 * @return
 	 */
+	@Deprecated
 	public static Image buildImage(double[][] data,  ColorInterpolator ci)
 	{ return buildImage(data, ci, ObjectImageFactory.RGB_TYPE); }
 
@@ -91,39 +95,53 @@ public class PrimitiveImageFactory
 	 * @param transpose
 	 * @return
 	 */
-	public static Image buildImage(int[][] data, ColorInterpolator ci, boolean flipAxisX, boolean flipAxisY, boolean transpose)
+	public static Image buildImage(
+			int[][] data, ColorInterpolator ci,
+			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
-		int
-		startX = 0, startY = 0,
-		endX = data.length, endY = data[0].length, 
-		incrementX = 1, incrementY = 1;
-
-		if (flipAxisX) {int t = startX; endX = startX; startX = t; incrementX = -1; }
-		if (flipAxisY) {int t = startY; endY = startY; startY = t; incrementY = -1; }
-
-		BufferedImage img;
-
-		if (!transpose)
-		{
-			img = new BufferedImage(data.length, data[0].length, ObjectImageFactory.RGB_TYPE);
-			for (int i = startX; i != endX; i += incrementX) {
-				for (int j = startY; j != endY; j += incrementY) {
-					img.setRGB(i, j, ci.getColor(data[i][j]));
-				}
-			}
-		}
-		else
-		{
-			img = new BufferedImage(data[0].length, data.length, ObjectImageFactory.RGB_TYPE);
-			for (int i = startX; i != endX; i += incrementX) {
-				for (int j = startY; j != endY; j += incrementY) {
-					img.setRGB(j, i, ci.getColor(data[i][j]));
-				}
-			}
-		}
-
-		return img;
+		
+		
+		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
+		return buildPackageImage(dat, ci);
+//		
+//		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
+//		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
+//		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
+//			out.setRGB(i, j, ci.getColor(dat.getInterpolatorData(i, j)));
+//		return out;
 	}
+//		
+//		int
+//		startX = 0, startY = 0,
+//		endX = data.length, endY = data[0].length, 
+//		incrementX = 1, incrementY = 1;
+//
+//		if (flipAxisX) {int t = startX; endX = startX; startX = t; incrementX = -1; }
+//		if (flipAxisY) {int t = startY; endY = startY; startY = t; incrementY = -1; }
+//
+//		BufferedImage img;
+//
+//		if (!transpose)
+//		{
+//			img = new BufferedImage(data.length, data[0].length, ObjectImageFactory.RGB_TYPE);
+//			for (int i = startX; i != endX; i += incrementX) {
+//				for (int j = startY; j != endY; j += incrementY) {
+//					img.setRGB(i, j, ci.getColor(data[i][j]));
+//				}
+//			}
+//		}
+//		else
+//		{
+//			img = new BufferedImage(data[0].length, data.length, ObjectImageFactory.RGB_TYPE);
+//			for (int i = startX; i != endX; i += incrementX) {
+//				for (int j = startY; j != endY; j += incrementY) {
+//					img.setRGB(j, i, ci.getColor(data[i][j]));
+//				}
+//			}
+//		}
+//
+//		return img;
+//	}
 
 	/**
 	 *  Build an image directly from an array of int data
@@ -132,6 +150,7 @@ public class PrimitiveImageFactory
 	 * @param rgbType
 	 * @return
 	 */
+	@Deprecated
 	public static Image buildImage(int[][] data,  ColorInterpolator ci, int rgbType)
 	{
 		BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
@@ -147,6 +166,7 @@ public class PrimitiveImageFactory
 	 * @param ci
 	 * @return
 	 */
+	@Deprecated
 	public static Image buildImage(int[][] data,  ColorInterpolator ci)
 	{ return buildImage(data, ci, ObjectImageFactory.RGB_TYPE); }
 
@@ -161,39 +181,89 @@ public class PrimitiveImageFactory
 	 * @param transpose
 	 * @return
 	 */
-	public static Image buildImage(byte[][] data, ColorInterpolator ci, boolean flipAxisX, boolean flipAxisY, boolean transpose)
+	public static Image buildImage(
+			
+			byte[][] data, ColorInterpolator ci,
+			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
-		int
-		startX = 0, startY = 0,
-		endX = data.length, endY = data[0].length, 
-		incrementX = 1, incrementY = 1;
-
-		if (flipAxisX) {int t = startX; endX = startX; startX = t; incrementX = -1; }
-		if (flipAxisY) {int t = startY; endY = startY; startY = t; incrementY = -1; }
-
-		BufferedImage img;
-
-		if (!transpose)
-		{
-			img = new BufferedImage(data.length, data[0].length, ObjectImageFactory.RGB_TYPE);
-			for (int i = startX; i != endX; i += incrementX) {
-				for (int j = startY; j != endY; j += incrementY) {
-					img.setRGB(i, j, ci.getColor(data[i][j]));
-				}
-			}
-		}
-		else
-		{
-			img = new BufferedImage(data[0].length, data.length, ObjectImageFactory.RGB_TYPE);
-			for (int i = startX; i != endX; i += incrementX) {
-				for (int j = startY; j != endY; j += incrementY) {
-					img.setRGB(j, i, ci.getColor(data[i][j]));
-				}
-			}
-		}
-
-		return img;
+		
+		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
+		return buildPackageImage(dat, ci);
+		
+//		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
+//		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
+//			out.setRGB(i, j, ci.getColor(dat.getInterpolatorData(i, j)));
+//		return out;
 	}
+	
+	private static Image buildPackageImage(ImagerData<?> dat, ColorInterpolator ci)
+	{
+		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
+		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
+			out.setRGB(i, j, ci.getColor(dat.getInterpolatorData(i, j)));
+		return out;
+	}
+	
+	
+	
+//		
+//		
+//		int
+//		startX = 0, startY = 0,
+//		endX = data.length, endY = data[0].length, 
+//		incrementX = 1, incrementY = 1;
+//
+//		int width = data.length, height = data[0].length;
+//		
+//		int offsetX = 0;
+//		int offsetY = 0;
+//		
+//		if (flipAxisX) 
+//		{
+//			int t = endX; endX = startX - 1; startX = t - 1; incrementX = -1; 
+//			offsetX = width - 1;
+//		}
+//		if (flipAxisY) {
+//			int t = endY; endY = startY - 1; startY = t - 1; incrementY = -1; 
+//			offsetY = height - 1;
+//		}
+//
+//		BufferedImage img;
+//
+//		int imgI = 0; int imgJ = 0;
+		
+//		
+//		if (!transpose)
+//		{
+//			
+//			img = new BufferedImage(width, height, ObjectImageFactory.RGB_TYPE);
+//			for (int i = startX; i != endX; i += incrementX) 
+//			{
+//				imgI = offsetX + (incrementX * i);
+//				for (int j = startY; j != endY; j += incrementY) 
+//				{
+//					imgJ = offsetY + (incrementY * j);
+//					img.setRGB(imgI, imgJ, ci.getColor(data[i][j]));
+//				}
+//			}
+//		}
+//		else
+//		{
+//			img = new BufferedImage(height, width, ObjectImageFactory.RGB_TYPE);
+//			for (int i = startX; i != endX; i += incrementX) 
+//			{
+//				imgI = offsetX + (incrementX * i);
+//				
+//				for (int j = startY; j != endY; j += incrementY) 
+//				{
+//					imgJ = offsetY + (incrementY * j);
+//					img.setRGB(j, i, ci.getColor(data[i][j]));
+//				}
+//			}
+//		}
+//
+//		return out;
+//	}
 
 	/**
 	 *  Build an image directly from an array of byte data
@@ -202,6 +272,7 @@ public class PrimitiveImageFactory
 	 * @param rgbType
 	 * @return
 	 */
+	@Deprecated
 	public static Image buildImage(byte[][] data,  ColorInterpolator ci, int rgbType)
 	{
 		BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
@@ -217,6 +288,7 @@ public class PrimitiveImageFactory
 	 * @param ci
 	 * @return
 	 */
+	@Deprecated
 	public static Image buildImage(byte[][] data,  ColorInterpolator ci)
 	{ return buildImage(data, ci, ObjectImageFactory.RGB_TYPE); }
 
@@ -263,8 +335,6 @@ public class PrimitiveImageFactory
 		}
 		return img;
 	}
-	
-	
 
 	/**
 	 *  Build an image directly from an array of boolean data
@@ -273,6 +343,7 @@ public class PrimitiveImageFactory
 	 * @param ci
 	 * @return
 	 */
+	@Deprecated
 	public static Image buildImage(boolean[][] data,  ColorInterpolator ci)
 	{ return buildImage(data, ci, ObjectImageFactory.RGB_TYPE); }
 
@@ -283,6 +354,7 @@ public class PrimitiveImageFactory
 	 * @param rgbType
 	 * @return
 	 */
+	@Deprecated
 	public static Image buildImage(boolean[][] data,  ColorInterpolator ci, int rgbType)
 	{
 		BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
@@ -341,6 +413,7 @@ public class PrimitiveImageFactory
 	 * @param ci
 	 * @return
 	 */
+	@Deprecated
 	public static Image buildImage(Boolean[][] data,  ColorInterpolator ci)
 	{ return buildImage(data, ci, ObjectImageFactory.RGB_TYPE); }
 
@@ -351,6 +424,7 @@ public class PrimitiveImageFactory
 	 * @param rgbType
 	 * @return
 	 */
+	@Deprecated
 	public static Image buildImage(Boolean[][] data,  ColorInterpolator ci, int rgbType)
 	{
 		BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
@@ -371,10 +445,4 @@ public class PrimitiveImageFactory
 			g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
 		}
 	}
-
-
-
-
-
-
 }

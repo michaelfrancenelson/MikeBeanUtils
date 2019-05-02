@@ -8,7 +8,7 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import beans.sampleBeans.TerrainBean;
-import image.arrayImager.BeanImager;
+import imaging.imagers.BeanImager;
 import swing.SwingUtils;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
@@ -66,7 +66,7 @@ public class ObjectArrayPanelDemo
 				TerrainBean.class,
 //				ParsedField.class,
 				null,
-				cells, "elevation",
+				null, cells, "elevation",
 				gradCols, boolCols,
 				null, null, null, 
 				null, null,

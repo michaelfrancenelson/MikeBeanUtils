@@ -6,12 +6,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-import csvIO.CSVHelper;
-import fields.FieldUtils;
-import xlsx.XLSXHelper;
+import io.CSVHelper;
+import io.XLSXHelper;
+import utils.FieldUtils;
 
 public class AnnotatedBeanReader 
 {
@@ -174,10 +171,10 @@ public class AnnotatedBeanReader
 			if (d > 0) return true;
 			else return false;
 		}
-		catch(Exception e) { }
+		catch(Exception e) { return false; }
 
-		throw new IllegalArgumentException("Input: " + s + " "
-				+ "could not be parsed to a boolean value");
+//		throw new IllegalArgumentException("Input: " + s + " "
+//				+ "could not be parsed to a boolean value");
 	}
 
 	/**

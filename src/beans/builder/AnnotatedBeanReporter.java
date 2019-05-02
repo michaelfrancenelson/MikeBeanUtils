@@ -10,7 +10,7 @@ import java.util.List;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.builder.GetterGetterGetter.StringValGetter;
-import fields.FieldUtils;
+import utils.FieldUtils;
 
 /** Utilities for recording the states of annotated beans 
  *  and writing the results to a file

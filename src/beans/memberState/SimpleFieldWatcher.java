@@ -16,7 +16,7 @@ import beans.builder.GetterGetterGetter.DoubleGetter;
 import beans.builder.GetterGetterGetter.IntGetter;
 import beans.builder.GetterGetterGetter.ParsingBooleanGetter;
 import beans.builder.GetterGetterGetter.StringValGetter;
-import fields.FieldUtils;
+import utils.FieldUtils;
 import utils.ArrayUtils.ByteArrayMinMax;
 import utils.ArrayUtils.DblArrayMinMax;
 import utils.ArrayUtils.IntArrayMinMax;
@@ -172,7 +172,6 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 		return new DblArrayMinMax(out, min, max);
 	}
 	
-
 	@Override public IntArrayMinMax     getIntVal(List<List<T>> t)
 	{
 		int min = Integer.MAX_VALUE; int max = Integer.MIN_VALUE;
@@ -209,7 +208,7 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 		byte min = Byte.MAX_VALUE; byte max = Byte.MIN_VALUE;
 		byte val = 0;
 		byte[][] out = new byte[t.length][t[0].length];
-		for (byte i = 0; i < t.length; i++) for (byte j = 0; j < t[0].length; j++)
+		for (int i = 0; i < t.length; i++) for (int j = 0; j < t[0].length; j++)
 		{
 			val = byteGetter.get(t[i][j]);
 			if (val < min) min = val;

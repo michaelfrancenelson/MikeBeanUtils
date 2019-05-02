@@ -1,9 +1,9 @@
-package image.imageFactories;
+package imaging.imageFactories;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
-import image.colorInterpolator.ColorInterpolator;
+import imaging.colorInterpolator.ColorInterpolator;
 import utils.Sequences;
 
 public class GradientImageFactory 

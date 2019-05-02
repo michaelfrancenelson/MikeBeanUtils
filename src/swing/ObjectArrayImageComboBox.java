@@ -9,8 +9,8 @@ import java.util.List;
 
 import javax.swing.JComboBox;
 
-import fields.FieldUtils;
 import swing.stretchAndClick.ObjectImagePanel;
+import utils.FieldUtils;
 
 /**
  *  Methods to build combo boxes for choosing which field to display in an object array imager or panel.
@@ -23,7 +23,7 @@ public class ObjectArrayImageComboBox
 	public static <T> JComboBox<String> comboBoxFactory(ObjectImagePanel<T> panel)
 	{ return comboBoxFactory(
 			panel, 
-			null, 
+			panel.getAnnClass(), 
 			null, 
 			null, null); }
 
@@ -41,6 +41,9 @@ public class ObjectArrayImageComboBox
 				panel.getObjClass(), annClass, true, true);
 		else f2 = fields;
 
+		
+		
+		
 		if (dispNames == null)
 			dispNames = FieldUtils.getFieldNames(
 					f2, panel.getObjClass(), annClass, false);
@@ -52,7 +55,7 @@ public class ObjectArrayImageComboBox
 		
 		String[] dNames = new String[dispNames.size()];
 		for (int i = 0; i < dNames.length; i++) {dNames[i] = dispNames.get(i); }
-		out = new JComboBox<>();
+		out = new JComboBox<>(dNames);
 
 		out.addActionListener(new ActionListener() {
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import fields.FieldUtils;
+import utils.FieldUtils;
 
 public class RandomBeanBuilder extends AnnotatedBeanReader 
 {
@@ -89,17 +89,18 @@ public class RandomBeanBuilder extends AnnotatedBeanReader
 	public static String randomString(String shortName)
 	{
 		String val = "";
-		switch (shortName) {
+		switch (shortName.toLowerCase()) {
 		case("int"):     val = String.format("%d", randInt(-100, 100)); break;
+		case("byte"):     val = String.format("%d", randInt(-100, 100)); break;
+		case("short"):     val = String.format("%d", randInt(-100, 100)); break;
+		case("long"):     val = String.format("%d", randInt(-100, 100)); break;
 		case("double"):  val = String.format("%f", randDouble(-100, 100)); break;
+		case("float"):  val = String.format("%f", randDouble(-100, 100)); break;
 		case("boolean"): val = Boolean.toString(randBool(0.5)); break;
-		case("String"):	 val = randomString(r.nextInt(12) + 1, '9', 'Z'); break; 
-
-		case("Integer"): val = String.format("%d", randInt(-100, 100)); break;
-		case("Double"):  val = String.format("%f", randDouble(-100, 100)); break;
-		case("Boolean"): val = Boolean.toString(randBool(0.5)); break;
-
-		case("char"):    val = String.format("%s", randChar('9', 'Z')); break;
+		case("string"):	 val = randomString(r.nextInt(12) + 1, '9', 'Z'); break; 
+		case("char"):	 val =  String.format("%s", randomString(r.nextInt(12) + 1, '9', 'Z').charAt(0)); break; 
+		case("character"):	 val =  String.format("%s", randomString(r.nextInt(12) + 1, '9', 'Z').charAt(0)); break; 
+		case("integer"): val = String.format("%d", randInt(-100, 100)); break;
 
 		default: throw new IllegalArgumentException("Input value for field of type " 
 				+ shortName + " could not be parsed");

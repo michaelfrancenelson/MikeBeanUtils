@@ -152,6 +152,10 @@ public interface FieldWatcher<T>
 	 */
 	public Field getField();
 
+	/**
+	 * 
+	 * @return
+	 */
 	String getDblFmt();
 
 	char getCharVal(T t);

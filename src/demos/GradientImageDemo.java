@@ -8,11 +8,11 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.border.Border;
 
-import image.colorInterpolator.ColorInterpolator;
-import image.colorInterpolator.SimpleBooleanColorInterpolator;
-import image.colorInterpolator.SimpleColorInterpolator;
-import image.imageFactories.GradientImageFactory;
-import image.imageFactories.PrimitiveImageFactory.SimpleImagePanel;
+import imaging.colorInterpolator.ColorInterpolator;
+import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
+import imaging.colorInterpolator.SimpleColorInterpolator;
+import imaging.imageFactories.GradientImageFactory;
+import imaging.imageFactories.PrimitiveImageFactory.SimpleImagePanel;
 import swing.SwingUtils;
 import utils.ColorUtils;
 

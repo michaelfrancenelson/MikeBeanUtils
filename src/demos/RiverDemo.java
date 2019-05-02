@@ -13,8 +13,8 @@ import javax.swing.JFrame;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.sampleBeans.TerrainBean;
-import image.arrayImager.BeanImager;
-import image.arrayImager.ImagerFactory;
+import imaging.imagers.BeanImager;
+import imaging.imagers.ImagerFactory;
 import swing.ObjectArrayImageComboBox;
 import swing.SwingUtils;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
@@ -32,7 +32,7 @@ public class RiverDemo
 
 		pointLabelDemo();
 		
-//		arrayPanelDemo();
+		arrayPanelDemo();
 
 	}
 
@@ -42,7 +42,8 @@ public class RiverDemo
 		int nRow = 8, nCol = 8;
 		
 		TerrainBean[][] cells1 = TerrainBean.factory(nRow, nCol, 1.5, 13);
-		TerrainBean.randomRivers(cells1, 0.32, 0.528, 0.5, 0.5, 1);
+		TerrainBean.randomPath(cells1, false, true, 0.32, 0.528, 0.5, 0.5, 0.9, 1);
+		TerrainBean.randomPath(cells1, true, false, 0.32, 0.528, 0.5, 0.5, 0.1, 1);
 //		TerrainBean.randomRivers(cells1, 0.52, 0.628, 0.5, 0.5, 2);
 		ObjectImagePanel<TerrainBean> pan1;
 		
@@ -54,7 +55,7 @@ public class RiverDemo
 		pan1 = ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, 
 				ParsedField.class,
-				cells1, "age", 
+				null, cells1, "age", 
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				"%.2d", null, true, false, false, false,
@@ -70,21 +71,34 @@ public class RiverDemo
 		}
 		
 	}
-	
-	
-	public static void comboBoxDemop()
-	{
-
-	}
-
 
 	public static void arrayPanelDemo()
 	{
-		TerrainBean[][] cells1 = TerrainBean.factory(150, 230, 1.5, 13);
-		TerrainBean.randomRivers(cells1, 0.32, 0.528, 0.5, 0.5, 2);
-		TerrainBean.randomRivers(cells1, 0.52, 0.628, 0.5, 0.5, 2);
-		ObjectImagePanel<TerrainBean> pan1, pan2, pan3, pan4;
 		
+		double riverCorr = 0.05;
+		double roadCorr = 0.7;
+		boolean road = true;
+		boolean stream = true;
+		
+		double streamRight = 0.5;
+		double roadRight = 0.3;
+
+		double streamDown = 0.5;
+		double roadDown = 0.45;
+		
+		double streamVertical = 0.5;
+		double roadVertical = 0.5;
+		
+		
+		String dblFmt = "%.2f";
+		
+		TerrainBean[][] cells1 = TerrainBean.factory(150, 230, 1.5, 13);
+		
+		TerrainBean.randomPath(cells1, road, !stream, roadRight, roadDown, roadVertical, 0.5, roadCorr, 10);
+		
+		TerrainBean.randomPath(cells1, !road, stream, streamRight, streamDown, streamVertical, 0.5, riverCorr, 4);
+		
+		ObjectImagePanel<TerrainBean> pan1, pan2, pan3, pan4;
 		
 		double ptSize = 0.15;
 		
@@ -92,31 +106,34 @@ public class RiverDemo
 
 		pan1 = ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, ParsedField.class,
-				cells1, "stream", 
+				null, cells1, "stream", 
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-				"%.2d", null, true, false, false, false,
+				dblFmt, null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
-		pan2 = ObjectArrayPanelFactory.buildPanel(
+		pan2 = 
+				
+				
+				ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, ParsedField.class,
-				cells1, "elevation", 
+				null, cells1, "elevation", 
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-				"%.2d", null, true, false, false, false,
+				dblFmt, null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
 		pan3 = ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, ParsedField.class,
-				cells1, "stream", 
+				null, cells1, "age", 
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-				"%.2d", null, true, false, false, false,
+				dblFmt, null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
 		pan4 = ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, ParsedField.class,
-				cells1, "elevation", 
+				null, cells1, "elevation", 
 				ColorUtils.HEAT_COLORS, bCol,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-				"%.2d", null, true, false, false, false,
+				dblFmt, null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
 
 		f1.setLayout(new GridLayout(2, 2));
@@ -183,15 +200,18 @@ public class RiverDemo
 		double probDown = 0.75;
 		double probDiagonal = 0.9;
 		double probVertical = 0.7;
-
+		double curvature = 0;
+		
 		String filename = String.format("riverDemo_diag_%.2f_vert_%.2f_right_%.2f_up_%.2f_rivers_%d_%d_by_%d.png",
 				probDiagonal, probVertical, probRight, probDown, nRivers, nRows, nCols);
 
 		TerrainBean[][] cells = TerrainBean.factory(nRows, nCols, 0, 13);
-		TerrainBean.randomRivers(
+		TerrainBean.randomPath(
 				cells, 
+				false, 
+				true,
 				probRight, probDown, 
-				probVertical, probDiagonal, 
+				probVertical, probDiagonal, curvature, 
 				nRivers);
 		File imgFile = new File("sampleOutput/" + filename);
 		JFrame f1 = SwingUtils.frameFactory(nRows, nCols);

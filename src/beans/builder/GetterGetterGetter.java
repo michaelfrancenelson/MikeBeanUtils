@@ -11,6 +11,29 @@ import java.util.List;
  */
 public class GetterGetterGetter
 {
+
+	
+	public static void main(String[] args) 
+	{
+		String dblFmt = "%.1f";
+		System.out.println(String.format(dblFmt, doubleCaster(1f)));
+		System.out.println(String.format(dblFmt, doubleCaster((byte)1)));
+		System.out.println(String.format(dblFmt, doubleCaster((short)1)));
+		System.out.println(String.format(dblFmt, doubleCaster(1l)));
+		System.out.println(String.format(dblFmt, doubleCaster((int)1)));
+		System.out.println(String.format(dblFmt, doubleCaster((char)1)));
+		System.out.println(String.format(dblFmt, doubleCaster(true)));
+	}
+	
+	
+	public static double doubleCaster(float f) { return (double) f; }
+	public static double doubleCaster(byte f) { return (double) f; }
+	public static double doubleCaster(char f) { return (double) f; }
+	public static double doubleCaster(short f) { return (double) f; }
+	public static double doubleCaster(int f) { return (double) f; }
+	public static double doubleCaster(long f) { return (double) f; }
+	public static double doubleCaster(boolean f) { if (f) return 1; return 0; } 
+	
 	@FunctionalInterface public interface StringValGetter<T> { String get(T t);};
 
 	@FunctionalInterface public interface IntGetter <T> { int get(T obj); }
@@ -230,6 +253,25 @@ public class GetterGetterGetter
 			out = (T tt) -> { return (Byte) g.get(tt); };
 			break;
 		}
+		case("int"): out = (T tt) -> { return (byte) (int) getFieldObj(t, f, tt); }; break;
+		case("Integer"): out = (T tt) -> { return (byte) (int) getFieldObj(t, f, tt); }; break;
+		case("long"): out = (T tt) -> { return (byte) (long) getFieldObj(t, f, tt); }; break;
+		case("Long"): out = (T tt) -> { return (byte) (long) getFieldObj(t, f, tt); }; break;
+		case("short"): out = (T tt) -> { return (byte) (short) getFieldObj(t, f, tt); }; break;
+		case("Short"): out = (T tt) -> { return (byte) (short) getFieldObj(t, f, tt); }; break;
+		case("char"): out = (T tt) -> { return (byte) (int) (char) getFieldObj(t, f, tt); }; break;
+		case("Character"): out = (T tt) -> { return (byte) (int) (char) getFieldObj(t, f, tt); }; break;
+		case("double"): out = (T tt) -> { return (byte)  (int) (double) getFieldObj(t, f, tt); }; break;
+		case("Double"): out = (T tt) -> { return (byte) (int) (double) getFieldObj(t, f, tt); }; break;
+		case("float"): out = (T tt) -> { return (byte) (int) (double) (float) getFieldObj(t, f, tt); }; break;
+		case("Float"): out = (T tt) -> { return (byte) (int) (double) (float) getFieldObj(t, f, tt); }; break;
+		case("boolean"): out = (T tt) -> { return (byte) (char) intFromBool((boolean) getFieldObj(t, f, tt)); }; break;
+		case("Boolean"): out = (T tt) -> { return (byte) (char) intFromBool((boolean) getFieldObj(t, f, tt)); }; break;
+		case("String"):
+		{
+			ObjGetter<T> g = objectGetterGetter(t, f);
+			out = (T tt) -> {return (byte) (int) (((String) g.get(tt)).charAt(0)); };
+		} break;
 		}
 		return out;
 	}
@@ -265,14 +307,14 @@ public class GetterGetterGetter
 			out = (T tt) -> { return (Double) g.get(tt); };
 			break;
 		}
-		case("int"): out = (T tt) -> { return (double) getFieldObj(t, f, tt); }; break;
-		case("Integer"): out = (T tt) -> { return (double) getFieldObj(t, f, tt); }; break;
+		case("int"): out = (T tt) -> { return (double) (int) getFieldObj(t, f, tt); }; break;
+		case("Integer"): out = (T tt) -> { return (double) (int) getFieldObj(t, f, tt); }; break;
 		case("byte"): out = (T tt) -> { return (int) (byte) getFieldObj(t, f, tt); }; break;
 		case("Byte"): out = (T tt) -> { return (int) (byte) getFieldObj(t, f, tt); }; break;
 		case("long"): out = (T tt) -> { return (int) (long) getFieldObj(t, f, tt); }; break;
 		case("Long"): out = (T tt) -> { return (int) (long) getFieldObj(t, f, tt); }; break;
-		case("short"): out = (T tt) -> { return (double) getFieldObj(t, f, tt); }; break;
-		case("Short"): out = (T tt) -> { return (double) getFieldObj(t, f, tt); }; break;
+		case("short"): out = (T tt) -> { return (double) (short) getFieldObj(t, f, tt); }; break;
+		case("Short"): out = (T tt) -> { return (double) (short) getFieldObj(t, f, tt); }; break;
 		case("float"): out = (T tt) -> { return (double) (float) getFieldObj(t, f, tt); }; break;
 		case("Float"):	out = (T tt) -> { return (double) (float) getFieldObj(t, f, tt); }; break;
 		case("char"): out = (T tt) -> { return (int) (char) getFieldObj(t, f, tt); }; break;
@@ -282,6 +324,8 @@ public class GetterGetterGetter
 			ObjGetter<T> g = objectGetterGetter(t, f);
 			out = (T tt) -> {return ((String) g.get(tt)).charAt(0); };
 		} break;
+		case("boolean"): out = (T tt) -> { return (byte) (char) intFromBool((boolean) getFieldObj(t, f, tt)); }; break;
+		case("Boolean"): out = (T tt) -> { return (byte) (char) intFromBool((boolean) getFieldObj(t, f, tt)); }; break;
 		}
 		//		if (out == null) throw new IllegalArgumentException("Unable to create a double getter for field " + f.getName());
 		return out;
@@ -321,12 +365,12 @@ public class GetterGetterGetter
 		case("Short"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) (short) getFieldObj(t, f, tt)); }; break;
 		case("byte"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) (byte) getFieldObj(t, f, tt)); }; break;
 		case("Byte"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) (byte) getFieldObj(t, f, tt)); }; break;
-		case("char"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) getFieldObj(t, f, tt)); }; break;
+		case("char"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) (char) getFieldObj(t, f, tt)); }; break;
 		case("double"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((double) getFieldObj(t, f, tt)); }; break;
 		case("Double"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((double) getFieldObj(t, f, tt)); }; break;
 		case("float"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((double) (float) getFieldObj(t, f, tt)); }; break;
 		case("Float"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((double) (float) getFieldObj(t, f, tt)); }; break;
-		case("Character"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) getFieldObj(t, f, tt)); }; break;
+		case("Character"): out = (T tt) -> {return AnnotatedBeanReader.parseBool((int) (char) getFieldObj(t, f, tt)); }; break;
 		case("String"):
 		{
 			ObjGetter<T> g = objectGetterGetter(t, f);
@@ -366,8 +410,8 @@ public class GetterGetterGetter
 			break;
 		}
 
-		case("long"): out = (T tt) -> { return (char) getFieldObj(t, f, tt); }; break;
-		case("Long"): out = (T tt) -> { return (char) getFieldObj(t, f, tt); }; break;
+		case("long"): out = (T tt) -> { return (char) (int) (long) getFieldObj(t, f, tt); }; break;
+		case("Long"): out = (T tt) -> { return (char) (int) (long) getFieldObj(t, f, tt); }; break;
 		case("short"): out = (T tt) -> { return (char) (int) (short) getFieldObj(t, f, tt); }; break;
 		case("Short"): out = (T tt) -> { return (char) (int) (short) getFieldObj(t, f, tt); }; break;
 		case("int"): out = (T tt) -> { return (char) (int) getFieldObj(t, f, tt); }; break;
@@ -413,7 +457,8 @@ public class GetterGetterGetter
 		{
 			try 
 			{ 
-				String val = (String) f.get(tt);
+				String val = (f.get(tt)).toString();
+//				String val = (String) f.get(tt);
 				return AnnotatedBeanReader.parseBool(val);
 			}
 			catch (IllegalArgumentException | IllegalAccessException e) 

@@ -10,6 +10,11 @@ import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.RenderedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +23,9 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import beans.memberState.FieldWatcher;
-import fields.FieldUtils;
-import image.arrayImager.BeanImager;
+import imaging.imagers.BeanImager;
 import swing.ObjectArrayImageComboBox;
+import utils.FieldUtils;
 
 /**
  * 
@@ -56,6 +61,27 @@ public class ObjectImagePanel<T> extends JPanel
 	imgDisplayWidth, imgDisplayHeight, 
 	imgCornerX, imgCornerY;
 
+	
+	/**
+	 * This method makes a "deep clone" of any Java object it is given.
+	 * @author Alvin Alexander, http://alvinalexander.com
+	 */
+	 public static Object deepClone(Object object) {
+	   try {
+	     ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	     ObjectOutputStream oos = new ObjectOutputStream(baos);
+	     oos.writeObject(object);
+	     ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+	     ObjectInputStream ois = new ObjectInputStream(bais);
+	     return ois.readObject();
+	   }
+	   catch (Exception e) {
+	     e.printStackTrace();
+	     return null;
+	   }
+	 }
+	
+	
 	/** 
 	 *  If the image is derived form an <code>ObjectArrayImager</code>, refresh the image to
 	 *  reflect any changes in the objects' state. 
@@ -388,6 +414,7 @@ public class ObjectImagePanel<T> extends JPanel
 
 	public RenderedImage getRenderedImage() { return (RenderedImage)this.image; }
 	public Class<T> getObjClass() { return this.getImager().getObjClass(); }
+	public Class<? extends Annotation> getAnnClass() { return this.getImager().getAnnClass(); }
 
 	public void setLabelVisibility(boolean b) { this.decorate = b; repaint();}
 
@@ -566,4 +593,5 @@ public class ObjectImagePanel<T> extends JPanel
 
 	public void drawValueLabels(Graphics g, int imgWidth, int imgHeight, int imgCornerX, int imgCornerY) 
 	{ for (ObjectTextLabel l : valueLabels) l.draw(g, imgWidth, imgHeight, imgCornerX, imgCornerY);	}
+	
 }

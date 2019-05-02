@@ -11,10 +11,10 @@ import javax.swing.border.Border;
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.builder.NetCDFObjBuilder;
 import beans.sampleBeans.AllFlavorBean;
-import image.arrayImager.BeanImager;
-import image.arrayImager.ImagerFactory;
-import image.colorInterpolator.ColorInterpolator;
-import image.imageFactories.PrimitiveImageFactory.SimpleImagePanel;
+import imaging.colorInterpolator.ColorInterpolator;
+import imaging.imageFactories.PrimitiveImageFactory.SimpleImagePanel;
+import imaging.imagers.BeanImager;
+import imaging.imagers.ImagerFactory;
 import swing.SwingUtils;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
@@ -80,7 +80,7 @@ public class ListImageDemo
 		return ImagerFactory.factory(
 				AllFlavorBean.class,
 				ParsedField.class,
-				beans, field,
+				beans, null, field,
 				gradCols, boolCols,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				"%.4f",  null,

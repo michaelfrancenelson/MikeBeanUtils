@@ -3,7 +3,7 @@ package beans.builder;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import fields.FieldUtils;
+import utils.FieldUtils;
 
 /** Tools for initializing and checking initialization status of annotated beans.
  *  This has gotten much more boilerplate-y than I had hoped.

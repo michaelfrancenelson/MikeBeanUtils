@@ -6,11 +6,11 @@ import java.util.List;
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.builder.NetCDFObjBuilder;
 import beans.sampleBeans.AllFlavorBean;
-import fields.FieldUtils;
-import image.arrayImager.BeanImager;
-import image.arrayImager.ImagerFactory;
+import imaging.imagers.BeanImager;
+import imaging.imagers.ImagerFactory;
 import swing.SwingUtils;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
+import utils.FieldUtils;
 
 public class NetCDFReaderDemo extends BeanImageDemo
 {
@@ -21,7 +21,6 @@ public class NetCDFReaderDemo extends BeanImageDemo
 		boolean show = true;
 		netCDFDemo(width, height, show);
 	}
-
 
 	static void netCDFDemo(int cellWidth, int cellHeight, boolean show)
 	{
