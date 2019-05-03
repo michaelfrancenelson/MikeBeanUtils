@@ -28,7 +28,7 @@ public class GradientImageFactory
 		if (nSteps == 1) nSteps = 2;
 		if (nSteps <= 0) nSteps = 100;
 		double[][] data = Sequences.spacedIntervals2D(min, max, nSteps - 1, horizontal);
-		return PrimitiveImageFactory.buildImage(data, ci, false, false, false).img;
+		return ImageFactory.buildImage(data, ci, false, false, false).img;
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class GradientImageFactory
 			int t = start; end = start; start = t;
 		}
 		int[][] data = Sequences.spacedIntervals2D(start, end, nSteps, horizontal);
-		return PrimitiveImageFactory.buildImage(data, ci, false, false, false).img;
+		return ImageFactory.buildImage(data, ci, false, false, false).img;
 	}
 
 	

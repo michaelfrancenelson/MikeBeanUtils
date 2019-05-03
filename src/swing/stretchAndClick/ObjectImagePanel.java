@@ -152,48 +152,49 @@ public class ObjectImagePanel<T> extends JPanel
 		return controlComboBox;
 	}
 
-	public String queryDataArray(int i, int j)
-	{
-		if (!isLegend)
-		{
-			T t = imager.getObjAt(i, j);
-			return watcher.getStringVal(t);
-		}
-		else return imager.queryLegendAt(i, j);	
-	}
-
-	/**
-	 * Ignored if the label image is not derived from an <code>ObjectArrayImager</code>
-	 * 
-	 * Truncates queries with coordinates outside the panel's dimensions.
-	 * 
-	 * @param i pixel coordinate within the panel.
-	 * @param j pixel coordinate within the panel.
-	 * @return a string representation of the data value of the object at the corresponding pixel.
-	 */
-	public String queryPixel(int i, int j)
-	{
-		if (fixedImg) return null;
-
-		/* determine which cell in the data array corresponds to the input pixel */
-		int relImgI = Math.max(0, Math.min(i - imgCornerX, imgDisplayWidth));;
-		int relImgJ = Math.max(0, Math.min(j - imgCornerY, imgDisplayHeight));;
-
-		double relX = ((double) relImgI) / ((double) imgDisplayWidth);
-		double relY = ((double) relImgJ) / ((double) imgDisplayHeight);
-
-		String out = queryRelative(relX, relY);
-		System.out.println("ObjectArrayImagePanel.queryPixel() Value of " +
-				watcher.getFieldName() + ": " + out);
-
-		return out;
-	}
+//	public String queryDataArray(int i, int j)
+//	{
+//		if (!isLegend)
+//		{
+//			T t = imager.getObjAt(i, j);
+//			return watcher.getStringVal(t);
+//		}
+//		else return imager.queryLegendAt(i, j);	
+//	}
+//
+//	/**
+//	 * Ignored if the label image is not derived from an <code>ObjectArrayImager</code>
+//	 * 
+//	 * Truncates queries with coordinates outside the panel's dimensions.
+//	 * 
+//	 * @param i pixel coordinate within the panel.
+//	 * @param j pixel coordinate within the panel.
+//	 * @return a string representation of the data value of the object at the corresponding pixel.
+//	 */
+//	public String queryPixel(int i, int j)
+//	{
+//		if (fixedImg) return null;
+//
+//		/* determine which cell in the data array corresponds to the input pixel */
+//		int relImgI = Math.max(0, Math.min(i - imgCornerX, imgDisplayWidth));;
+//		int relImgJ = Math.max(0, Math.min(j - imgCornerY, imgDisplayHeight));;
+//
+//		double relX = ((double) relImgI) / ((double) imgDisplayWidth);
+//		double relY = ((double) relImgJ) / ((double) imgDisplayHeight);
+//
+//		String out = queryRelative(relX, relY);
+//		System.out.println("ObjectArrayImagePanel.queryPixel() Value of " +
+//				watcher.getFieldName() + ": " + out);
+//
+//		return out;
+//	}
 
 	public String queryRelative(double relativeI, double relativeJ)
 	{
 		if (fixedImg) return null;
 		if (! isLegend)
 		{
+			return ()
 			T t = imager.getObjAt(relativeI, relativeJ);
 			return watcher.getStringVal(t);
 		}
@@ -351,6 +352,15 @@ public class ObjectImagePanel<T> extends JPanel
 	public void setField(String name)  { getImager().setField(name); updateImage(); }
 	public void setField(Field f) { getImager().setField(f); updateImage(); }
 
+	public void labelPixels(Font font)
+	{
+		for (int row = 0; row < imager.getDataHeight(); row++)
+			for (int col = 0; col < imager.getDataWidth(); col++)
+			{
+				addValueLabel(col, row, font);
+			}
+	}
+	
 	/**
 	 * 
 	 * @param label

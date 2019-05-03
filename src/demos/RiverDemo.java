@@ -217,7 +217,7 @@ public class RiverDemo
 		JFrame f1 = SwingUtils.frameFactory(nRows, nCols);
 		ObjectImagePanel<TerrainBean> p1;
 		BeanImager<TerrainBean> imager1 = ImagerFactory.quickFactory(
-				cells, 100,
+				null, cells, 100,
 				true, false,
 				"stream", TerrainBean.class, 
 				ColorUtils.HEAT_COLORS, bCol);

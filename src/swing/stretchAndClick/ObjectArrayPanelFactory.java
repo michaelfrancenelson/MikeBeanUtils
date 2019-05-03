@@ -98,7 +98,7 @@ public class ObjectArrayPanelFactory
 			int fixedWidth, int fixedHeight, double decoratorRelPointSize)
 	{
 		ObjectImagePanel<T> out = new ObjectImagePanel<T>();
-		if (fieldName != null) imager.setField(fieldName);
+		if (fieldName != null) imager.setField(fieldName.toLowerCase());
 		out.setLabelVisibility(true);
 		out.setPtRelSize(decoratorRelPointSize);
 		out.init(imager, fixedWidth, fixedHeight, keepAspectRatio, false);

@@ -12,7 +12,7 @@ import imaging.colorInterpolator.ColorInterpolator;
 import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.colorInterpolator.SimpleColorInterpolator;
 import imaging.imageFactories.GradientImageFactory;
-import imaging.imageFactories.PrimitiveImageFactory.SimpleImagePanel;
+import imaging.imageFactories.ImageFactory.SimpleImagePanel;
 import swing.SwingUtils;
 import utils.ColorUtils;
 

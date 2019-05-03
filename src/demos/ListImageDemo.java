@@ -12,7 +12,7 @@ import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.builder.NetCDFObjBuilder;
 import beans.sampleBeans.AllFlavorBean;
 import imaging.colorInterpolator.ColorInterpolator;
-import imaging.imageFactories.PrimitiveImageFactory.SimpleImagePanel;
+import imaging.imageFactories.ImageFactory.SimpleImagePanel;
 import imaging.imagers.BeanImager;
 import imaging.imagers.ImagerFactory;
 import swing.SwingUtils;

@@ -16,8 +16,8 @@ import javax.swing.border.Border;
 import imaging.colorInterpolator.ColorInterpolator;
 import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.colorInterpolator.SimpleColorInterpolator;
-import imaging.imageFactories.PrimitiveImageFactory;
-import imaging.imageFactories.PrimitiveImageFactory.SimpleImagePanel;
+import imaging.imageFactories.ImageFactory;
+import imaging.imageFactories.ImageFactory.SimpleImagePanel;
 import swing.SwingUtils;
 import utils.ColorUtils;
 import utils.Sequences;
@@ -70,9 +70,9 @@ public class PrimitiveImageFactoryDemo
 
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
 		{
-			f.add(new SimpleImagePanel(PrimitiveImageFactory.buildImage(
+			f.add(new SimpleImagePanel(ImageFactory.buildImage(
 					bytes[i * j], c1, trueFalse[j], trueFalse[i], false)));
-			fTranspose.add(new SimpleImagePanel(PrimitiveImageFactory.buildImage(
+			fTranspose.add(new SimpleImagePanel(ImageFactory.buildImage(
 					bytes[j], c1, trueFalse[j], trueFalse[i], true)));
 		}
 
@@ -83,7 +83,7 @@ public class PrimitiveImageFactoryDemo
 		{
 			File imgFile = new File("sampleOutput/" + "primitive_demo_byte.png");
 			try {
-				ImageIO.write((RenderedImage) PrimitiveImageFactory.buildImage(datByte, c1, false, false, false), "png", imgFile);
+				ImageIO.write((RenderedImage) ImageFactory.buildImage(datByte, c1, false, false, false), "png", imgFile);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -110,10 +110,10 @@ public class PrimitiveImageFactoryDemo
 		c1 = SimpleBooleanColorInterpolator.factory(ColorUtils.BLUES, Color.gray);
 		f = SwingUtils.frameFactory((int)(2 * width * size), (int)(height * size), "Boolean array demos", 1, 2);
 
-		JPanel pp = new SimpleImagePanel(PrimitiveImageFactory.buildImage(datBool, c1, false, false, false));
+		JPanel pp = new SimpleImagePanel(ImageFactory.buildImage(datBool, c1, false, false, false));
 		pp.setBorder(b);
 		f.add(pp);
-		pp = new SimpleImagePanel(PrimitiveImageFactory.buildImage(datByte, c1, false, false, false));
+		pp = new SimpleImagePanel(ImageFactory.buildImage(datByte, c1, false, false, false));
 		pp.setBorder(b);
 		f.add(pp);
 		f.setVisible(show);
@@ -122,8 +122,8 @@ public class PrimitiveImageFactoryDemo
 			File imgFile = new File("sampleOutput/" + "primitive_demo_boolean.png");
 			File imgFile2 = new File("sampleOutput/" + "primitive_demo_boolean_from_byte.png");
 			try {
-				ImageIO.write((RenderedImage) PrimitiveImageFactory.buildImage(datBool, c1, false, false, false), "png", imgFile);
-				ImageIO.write((RenderedImage) PrimitiveImageFactory.buildImage(datByte, c1, false, false, false), "png", imgFile2);
+				ImageIO.write((RenderedImage) ImageFactory.buildImage(datBool, c1, false, false, false), "png", imgFile);
+				ImageIO.write((RenderedImage) ImageFactory.buildImage(datByte, c1, false, false, false), "png", imgFile2);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -159,9 +159,9 @@ public class PrimitiveImageFactoryDemo
 		int z = 0;
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
 		{
-			f.add(new SimpleImagePanel(PrimitiveImageFactory.buildImage(
+			f.add(new SimpleImagePanel(ImageFactory.buildImage(
 					ints[z], c1, trueFalse[j], trueFalse[i], false)));
-			fTranspose.add(new SimpleImagePanel(PrimitiveImageFactory.buildImage(
+			fTranspose.add(new SimpleImagePanel(ImageFactory.buildImage(
 					ints[z], c1, trueFalse[j], trueFalse[i], true)));
 			z++;
 		}
@@ -174,7 +174,7 @@ public class PrimitiveImageFactoryDemo
 		{
 			File imgFile = new File("sampleOutput/" + "primitive_demo_int.png");
 			try { ImageIO.write((RenderedImage) 
-					PrimitiveImageFactory.buildImage(datInt, c1, false, false, false), "png", imgFile);
+					ImageFactory.buildImage(datInt, c1, false, false, false), "png", imgFile);
 			} catch (IOException e) {e.printStackTrace();}
 		}
 	}
@@ -208,12 +208,12 @@ public class PrimitiveImageFactoryDemo
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, "%0.4f");
 
 		f = SwingUtils.frameFactory((int)(width * size), (int) (height * size), "Double value array demo");
-		f.add(new SimpleImagePanel(PrimitiveImageFactory.buildImage(datDbl, c1, false, false, false)));
+		f.add(new SimpleImagePanel(ImageFactory.buildImage(datDbl, c1, false, false, false)));
 		f.setVisible(show);
 
 		if (saveFile)
 		{
-			try { ImageIO.write((RenderedImage) PrimitiveImageFactory.buildImage(datDbl, c1, false, false, false), "png", imgFile);
+			try { ImageIO.write((RenderedImage) ImageFactory.buildImage(datDbl, c1, false, false, false), "png", imgFile);
 			} catch (IOException e) { e.printStackTrace(); }
 		}
 

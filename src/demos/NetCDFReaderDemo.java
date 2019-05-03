@@ -41,7 +41,7 @@ public class NetCDFReaderDemo extends BeanImageDemo
 		List<BeanImager<AllFlavorBean>> imagers = new ArrayList<>(nFields);
 		for (int i = 0; i < nFields; i++)
 		{
-			imagers.add(ImagerFactory.quickFactory(beans, 12, true, true, fieldNames.get(i),
+			imagers.add(ImagerFactory.quickFactory(beans, null, 12, true, true, fieldNames.get(i),
 					AllFlavorBean.class,
 					gradCols, boolCols));
 			objPan = ObjectArrayPanelFactory.buildPanel(

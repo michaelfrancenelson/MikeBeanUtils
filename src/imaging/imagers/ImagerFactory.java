@@ -7,34 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
-import beans.memberState.SimpleFieldWatcher;
 import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.colorInterpolator.SimpleColorInterpolator;
 
 public class ImagerFactory 
 {
-	public static <T> BeanImager<T> quickFactory(
-			List<List<T>> beans, int nLegendSteps, 
-			boolean lToH, boolean horz, 
-			String field, Class<T> clazz, 
-			Color[] gradColors, Color[] boolColors)
-	{
-		String dblFmt = "%.2f";
-		return ImagerFactory.factory(
-				clazz,
-				ParsedField.class, 
-				beans, null, field,
-				gradColors, boolColors,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-				dblFmt,  null,
-				true,
-				false, false, false,
-				nLegendSteps, lToH, horz
-				);
-	}
 
 	public static <T> BeanImager<T> quickFactory(
-			T[][] beans, int nLegendSteps, 
+			List<List<T>> listDat,  T[][] arrayDat, int nLegendSteps, 
+			boolean invertX, boolean invertY, boolean transpose,
 			boolean lToH, boolean horz, 
 			String field, Class<T> clazz, 
 			Color[] gradColors, Color[] boolColors)
@@ -42,7 +23,46 @@ public class ImagerFactory
 		String dblFmt = "%.2f";
 		return  ImagerFactory.factory(
 				clazz, ParsedField.class, 
-				null, beans, field,
+				listDat, arrayDat, field,
+				gradColors, boolColors,
+				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
+				dblFmt,  null,
+				true,
+				invertX, invertY, transpose,
+				nLegendSteps, lToH, horz
+				);
+	}
+	
+	
+	/**
+	 * Build an imager with some default options:
+	 * <li> axes not inverted
+	 * <li> default na values/colors
+	 * <li> default double format = "%.2d"
+	 * <li> no parsed boolean fields
+	 * <li> uses <code>ParsedField</code> as the field annotation
+	 * 
+	 * 
+	 * @param arrayDat
+	 * @param nLegendSteps
+	 * @param lToH
+	 * @param horz
+	 * @param field
+	 * @param clazz
+	 * @param gradColors
+	 * @param boolColors
+	 * @return
+	 */
+	public static <T> BeanImager<T> quickFactory(
+			List<List<T>> listDat,  T[][] arrayDat, int nLegendSteps, 
+			boolean lToH, boolean horz, 
+			String field, Class<T> clazz, 
+			Color[] gradColors, Color[] boolColors)
+	{
+		String dblFmt = "%.2f";
+		return  ImagerFactory.factory(
+				clazz, ParsedField.class, 
+				listDat, arrayDat, field,
 				gradColors, boolColors,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				dblFmt,  null,
@@ -103,7 +123,7 @@ public class ImagerFactory
 		Map<String, Boolean> mp = new HashMap<>();
 		if (!(parsedBooleanFields == null)) for (String s : parsedBooleanFields) mp.put(s, true);
 		out.parsedBooleanFieldNames = mp;
-		out.setField(fieldName);
+		out.setField(fieldName.toLowerCase());
 		return out;
 	}
 	
@@ -153,3 +173,23 @@ public class ImagerFactory
 		return out;
 	}
 }
+
+//public static <T> BeanImager<T> quickFactory(
+//		List<List<T>> beans, int nLegendSteps, 
+//		boolean lToH, boolean horz, 
+//		String field, Class<T> clazz, 
+//		Color[] gradColors, Color[] boolColors)
+//{
+//	String dblFmt = "%.2f";
+//	return ImagerFactory.factory(
+//			clazz,
+//			ParsedField.class, 
+//			beans, null, field,
+//			gradColors, boolColors,
+//			Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
+//			dblFmt,  null,
+//			true,
+//			false, false, false,
+//			nLegendSteps, lToH, horz
+//			);
+//}

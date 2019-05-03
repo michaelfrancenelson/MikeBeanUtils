@@ -6,12 +6,53 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
-import imaging.imagers.ObjectImager.ImagerData;
+import imaging.imagers.ImagerData;
 import imaging.imagers.PrimitiveArrayData;
 
-public class PrimitiveImageFactory 
+public class ImageFactory 
 {
+
+	public static class ImageMinMax
+	{
+		public ImageMinMax(double min, double max, Image img)
+		{ this.min = min; this.max = max; this.img = img; }
+		private double min;
+		private double max;
+		private Image img;
+		public Image getImg() { return this.img; }
+		public double getMin() { return this.min; }
+		public double getMax() { return this.max; }
+	}
+
+	public static <T> ImageMinMax buildPackageImage(
+			ImagerData<T> dat, ColorInterpolator ci, FieldWatcher<T> w)
+	{
+		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
+		ci.updateMinMax(dat.getDataMin(), dat.getDataMax());
+		
+		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
+		{
+			out.setRGB(i, j, dat.getRGBInt(i, j, ci, w));
+		}
+		return new ImageMinMax(dat.getDataMin(), dat.getDataMax(), out);
+	}
+	public static <T> ImageMinMax buildPackageImage(
+			ImagerData<T> dat, ColorInterpolator ci, FieldWatcher<T> w, double min, double max)
+	{
+		BufferedImage out = new BufferedImage(
+				dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
+		ci.updateMinMax(min, max);
+		
+		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
+		{
+			out.setRGB(i, j, dat.getRGBInt(i, j, ci, w));
+		}
+		return new ImageMinMax(dat.getDataMin(), dat.getDataMax(), out);
+	}
+	
+	
 	/**
 	 *  Build an image directly from an array of int data
 	 * 
@@ -27,7 +68,7 @@ public class PrimitiveImageFactory
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
 		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
-		return buildPackageImage(dat, ci);
+		return buildPackageImage(dat, ci, null);
 	}
 
 	/**
@@ -45,7 +86,7 @@ public class PrimitiveImageFactory
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
 		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
-		return buildPackageImage(dat, ci);
+		return buildPackageImage(dat, ci, null);
 	}
 
 	/**
@@ -58,40 +99,18 @@ public class PrimitiveImageFactory
 	 * @param transpose
 	 * @return
 	 */
-	public static ImageMinMax buildImage(
+	public static <T> ImageMinMax buildImage(
 			byte[][] data, ColorInterpolator ci,
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
 		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
-		return buildPackageImage(dat, ci);
+		return buildPackageImage(dat, ci, null);
 	}
+
 
 	
-	public static ImageMinMax buildPackageImage(ImagerData<?> dat, ColorInterpolator ci)
-	{
-		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
-		double min = Double.MAX_VALUE;
-		double max = Double.MIN_VALUE;
-		double val;
-		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
-		{
-			val = dat.getInterpolatorData(i, j);
-			out.setRGB(i, j, ci.getColor(val));
-			if (val < min) min = val;
-			if (val > max) max = val;
-		}
-		return new ImageMinMax(min, max, out);
-	}
-
-	public static class ImageMinMax
-	{
-		public ImageMinMax(double min, double max, Image img)
-		{ this.min = min; this.max = max; this.img = img; }
-		public double min;
-		public double max;
-		public Image img;
-	}
-
+	
+	
 	/**
 	 *  Build an image directly from an array of boolean data
 	 * 
@@ -102,10 +121,12 @@ public class PrimitiveImageFactory
 	 * @param transpose
 	 * @return
 	 */
-	public static ImageMinMax buildImage(boolean[][] data, ColorInterpolator ci, boolean flipAxisX, boolean flipAxisY, boolean transpose)
+	public static ImageMinMax buildImage(
+			boolean[][] data, ColorInterpolator ci,
+			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
 		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
-		return buildPackageImage(dat, ci);
+		return buildPackageImage(dat, ci, null);
 	}
 
 
@@ -151,33 +172,7 @@ public class PrimitiveImageFactory
 		}
 		return new ImageMinMax(0, 1, img);
 	}
-	//
-	//	/**
-	//	 *  Build an image directly from an array of boolean data
-	//	 * 
-	//	 * @param data
-	//	 * @param ci
-	//	 * @return
-	//	 */
-	//	@Deprecated
-	//	public static Image buildImage(Boolean[][] data,  ColorInterpolator ci)
-	//	{ return buildImage(data, ci, ObjectImageFactory.RGB_TYPE); }
-	//
-	//	/**
-	//	 *  Build an image directly from an array of boolean data
-	//	 * @param data
-	//	 * @param ci
-	//	 * @param rgbType
-	//	 * @return
-	//	 */
-	//	@Deprecated
-	//	public static Image buildImage(Boolean[][] data,  ColorInterpolator ci, int rgbType)
-	//	{
-	//		BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
-	//		for (int i = 0; i < data.length; i++) for (int j = 0; j < data[0].length; j++)
-	//			out.setRGB(i, j, ci.getBoxedColor(data[i][j]));
-	//		return out;
-	//	}
+	
 
 	/** A simple panel, filled with a resizing image. */
 	public static class SimpleImagePanel extends JPanel
@@ -194,6 +189,33 @@ public class PrimitiveImageFactory
 	}
 }
 
+//
+//	/**
+//	 *  Build an image directly from an array of boolean data
+//	 * 
+//	 * @param data
+//	 * @param ci
+//	 * @return
+//	 */
+//	@Deprecated
+//	public static Image buildImage(Boolean[][] data,  ColorInterpolator ci)
+//	{ return buildImage(data, ci, ObjectImageFactory.RGB_TYPE); }
+//
+//	/**
+//	 *  Build an image directly from an array of boolean data
+//	 * @param data
+//	 * @param ci
+//	 * @param rgbType
+//	 * @return
+//	 */
+//	@Deprecated
+//	public static Image buildImage(Boolean[][] data,  ColorInterpolator ci, int rgbType)
+//	{
+//		BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
+//		for (int i = 0; i < data.length; i++) for (int j = 0; j < data[0].length; j++)
+//			out.setRGB(i, j, ci.getBoxedColor(data[i][j]));
+//		return out;
+//	}
 //
 //ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
 //BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
