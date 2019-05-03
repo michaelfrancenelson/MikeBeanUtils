@@ -96,7 +96,7 @@ public class RiverDemo
 		
 		TerrainBean.randomPath(cells1, road, !stream, roadRight, roadDown, roadVertical, 0.5, roadCorr, 10);
 		
-		TerrainBean.randomPath(cells1, !road, stream, streamRight, streamDown, streamVertical, 0.5, riverCorr, 4);
+		TerrainBean.randomPath(cells1, !road, stream, streamRight, streamDown, streamVertical, 0.5, riverCorr, 1);
 		
 		ObjectImagePanel<TerrainBean> pan1, pan2, pan3, pan4;
 		

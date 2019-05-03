@@ -11,15 +11,14 @@ import beans.memberState.FieldWatcher;
 import beans.memberState.SimpleFieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
 import imaging.imageFactories.PrimitiveImageFactory;
+import imaging.imageFactories.PrimitiveImageFactory.ImageMinMax;
 import utils.ArrayUtils.ByteArrayMinMax;
 import utils.ArrayUtils.DblArrayMinMax;
 import utils.ArrayUtils.IntArrayMinMax;
 import utils.Sequences;
 
 public class ObjectImager<T> implements BeanImager<T>
-//public class ObjectImager<T, A extends Annotation> implements BeanImager<T, A>
 {
-
 	private ColorInterpolator ci, booleanCI;
 
 	String dblFmt;
@@ -38,7 +37,8 @@ public class ObjectImager<T> implements BeanImager<T>
 
 	double datMin, datMax;
 
-	Image img, legendImg;
+	ImageMinMax img;
+	Image legendImg;
 
 	Map<String, FieldWatcher<T>> watchers;
 	FieldWatcher<T> currentWatcher;
@@ -86,186 +86,200 @@ public class ObjectImager<T> implements BeanImager<T>
 		String type = currentWatcher.getField().getType().getSimpleName();
 		//		System.out.println("ObjectImager.buildImage() type = " + type);
 		clearLegendData();
+		img = PrimitiveImageFactory.buildPackageImage(objectData, interp);
 		switch (type.toLowerCase())
 		{
 		case("int"):
 		{
-			IntArrayMinMax dat = objectData.intMinMax();
-			int legMin = dat.getMin(), legMax = dat.getMax();
+//			IntArrayMinMax dat = objectData.intMinMax();
+//			int legMin = dat.getMin(), legMax = dat.getMax();
+//			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+//			img = PrimitiveImageFactory.buildPackageImage(objectData, interp);
+			int legMin = (int) img.min, legMax = (int) img.max;
 			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
-
 			ci.updateMinMax(legMin, legMax);
-			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
-
 			legDatInt = new IntArrayMinMax( 
 					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
 					legMin, legMax);
 			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
-			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg).img;
 			break;
 		}
 		case("double"):
 		{
-			DblArrayMinMax dat = objectData.dblMinMax(); 
-			double legMin = dat.getMin(), legMax = dat.getMax();
+//			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+//			DblArrayMinMax dat = objectData.dblMinMax(); 
+//			img = PrimitiveImageFactory.buildPackageImage(objectData, interp);
+			
+			double legMin = img.min, legMax = img.max;
 			ci.updateMinMax(legMin, legMax);
 			if (legLoToHi && legMin > legMax) { double t = legMin; legMax = legMin; legMin = t; }
 
-			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
 			legDatDbl = new DblArrayMinMax( 
 					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
 					legMin, legMax);
 			legDatWidth = legDatDbl.getDat().length; legDatHeight = legDatDbl.getDat()[0].length;
-			legendImg = PrimitiveImageFactory.buildImage(legDatDbl.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legendImg = PrimitiveImageFactory.buildImage(legDatDbl.getDat(), interp, flipAxisX, flipAxisY, transposeImg).img;
 			break;
 		}
 		case("byte"):
 		{
-			ByteArrayMinMax dat = objectData.byteMinMax();
-			byte legMin = dat.getMin(), legMax = dat.getMax();
+//			ByteArrayMinMax dat = objectData.byteMinMax();
+//			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+//			img = PrimitiveImageFactory.buildPackageImage(objectData, interp);
+
+			byte legMin = (byte) img.min, legMax = (byte) img.max;
 			ci.updateMinMax(legMin, legMax);
 			if (legLoToHi && legMin > legMax) { byte t = legMin; legMax = legMin; legMin = t; }
 
-			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
 			legDatByte = new ByteArrayMinMax( 
 					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
 					legMin, legMax);
 			legDatWidth = legDatByte.getDat().length; legDatHeight = legDatByte.getDat()[0].length;
-			legendImg = PrimitiveImageFactory.buildImage(legDatByte.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legendImg = PrimitiveImageFactory.buildImage(legDatByte.getDat(), interp, flipAxisX, flipAxisY, transposeImg).img;
 
 			break;
 		}
 		case("char"):
 		{
-			IntArrayMinMax dat = objectData.intMinMax();
-			int legMin = dat.getMin(), legMax = dat.getMax();
+//			IntArrayMinMax dat = objectData.intMinMax();
+//			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+//			img = PrimitiveImageFactory.buildPackageImage(objectData, interp);
+
+			int legMin = (int) img.min, legMax = (int) img.max;
 			ci.updateMinMax(legMin, legMax);
 			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
 
-			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
 			legDatInt = new IntArrayMinMax( 
 					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
 					legMin, legMax);
 			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
-			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg).img;
 
 			break;
 		}
 		case("boolean"):
 		{
-			boolean[][] dat = objectData.boolVal();
-			img = PrimitiveImageFactory.buildImage(dat, interp, flipAxisX, flipAxisY, transposeImg);
+//			img = PrimitiveImageFactory.buildImage(dat, interp, flipAxisX, flipAxisY, transposeImg);
+//			boolean[][] dat = objectData.boolVal();
+//			img = PrimitiveImageFactory.buildPackageImage(objectData, interp);
+//			int legMin = (int) img.min, legMax = (int) img.max;
+			
 			legDatBool = Sequences.booleanGradient2D(showBoolNA, horizLeg);
 			legDatWidth = legDatBool.length; legDatHeight = legDatBool[0].length;
-			legendImg = PrimitiveImageFactory.buildImage(legDatBool, interp, flipAxisX, flipAxisY, transposeImg);
+			legendImg = PrimitiveImageFactory.buildImage(legDatBool, interp, flipAxisX, flipAxisY, transposeImg).img;
 			break;
 		}
 		case("short"):
 		{
-			IntArrayMinMax dat = objectData.intMinMax();
-			int legMin = dat.getMin(), legMax = dat.getMax();
+//			img = PrimitiveImageFactory.buildPackageImage(objectData, interp);
+//			IntArrayMinMax dat = objectData.intMinMax();
+//			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+
+			int legMin = (int) img.min, legMax = (int) img.max;
 			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
-
 			ci.updateMinMax(legMin, legMax);
-			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
-
 			legDatInt = new IntArrayMinMax( 
 					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
 					legMin, legMax);
 			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
-			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg).img;
 			break;
 		}
 		case("long"):
 		{
-			IntArrayMinMax dat = objectData.intMinMax();
-			int legMin = dat.getMin(), legMax = dat.getMax();
+//			IntArrayMinMax dat = objectData.intMinMax();
+//			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+//			int legMin = dat.getMin(), legMax = dat.getMax();
+
+			int legMin = (int) img.min, legMax = (int) img.max;
 			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
 
 			ci.updateMinMax(legMin, legMax);
-			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
 
 			legDatInt = new IntArrayMinMax( 
 					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
 					legMin, legMax);
 			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
-			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg).img;
 			break;
 		}
 		case("float"):
 		{
-			DblArrayMinMax dat = objectData.dblMinMax(); 
-			double legMin = dat.getMin(), legMax = dat.getMax();
+//			DblArrayMinMax dat = objectData.dblMinMax(); 
+//			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+
+			double legMin = img.min, legMax = img.max;
 			ci.updateMinMax(legMin, legMax);
 			if (legLoToHi && legMin > legMax) { double t = legMin; legMax = legMin; legMin = t; }
 
-			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
 			legDatDbl = new DblArrayMinMax( 
 					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
 					legMin, legMax);
 			legDatWidth = legDatDbl.getDat().length; legDatHeight = legDatDbl.getDat()[0].length;
-			legendImg = PrimitiveImageFactory.buildImage(legDatDbl.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legendImg = PrimitiveImageFactory.buildImage(legDatDbl.getDat(), interp, flipAxisX, flipAxisY, transposeImg).img;
 			break;
 		}
 		case("integer"):
 		{
-			IntArrayMinMax dat = objectData.intMinMax();
-			int legMin = dat.getMin(), legMax = dat.getMax();
+//			IntArrayMinMax dat = objectData.intMinMax();
+//			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+
+			int legMin = (int) img.min, legMax = (int) img.max;
 			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
 
 			ci.updateMinMax(legMin, legMax);
-			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
 
 			legDatInt = new IntArrayMinMax( 
 					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
 					legMin, legMax);
 			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
-			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg).img;
 			break;
 		}
 		case("character"):
 		{
-			IntArrayMinMax dat = objectData.intMinMax();
-			int legMin = dat.getMin(), legMax = dat.getMax();
+//			IntArrayMinMax dat = objectData.intMinMax();
+//			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+
+			int legMin = (int) img.min, legMax = (int) img.max;
 			ci.updateMinMax(legMin, legMax);
 			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
 
-			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
 			legDatInt = new IntArrayMinMax( 
 					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
 					legMin, legMax);
 			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
-			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg).img;
 
 			break;
 		}
 		case("string"):
 		{
-			IntArrayMinMax dat = objectData.intMinMax();
-			int legMin = dat.getMin(), legMax = dat.getMax();
+//			IntArrayMinMax dat = objectData.intMinMax();
+//			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+
+			int legMin = (int) img.min, legMax = (int) img.max;
 			ci.updateMinMax(legMin, legMax);
 			if (legLoToHi && legMin > legMax) { int t = legMin; legMax = legMin; legMin = t; }
 
-			img = PrimitiveImageFactory.buildImage(dat.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
 			legDatInt = new IntArrayMinMax( 
 					Sequences.spacedIntervals2D(legMin, legMax, nLegendSteps, horizLeg),
 					legMin, legMax);
 			legDatWidth = legDatInt.getDat().length; legDatHeight = legDatInt.getDat()[0].length;
-			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg);
+			legendImg = PrimitiveImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg).img;
 
 			break;
 		}
 		}
 	}
 
-	@Override public Image getImage() { return img; }
+	@Override public Image getImage() { return img.img; }
 	@Override public Image getLegendImage() { return legendImg; }
-
 	@Override public String getCurrentFieldName() { return getCurrentField().getName(); }
 	@Override public Field getCurrentField() { return currentWatcher.getField(); }
 	@Override public void setColors(Color[] colors) { ci.updateColors(colors); }
 	@Override public void setField(String fieldName) { this.currentWatcher = watchers.get(fieldName); refresh(); } 
-
 	@Override public void refresh() { buildImage(); }
 
 	/** 
@@ -279,7 +293,6 @@ public class ObjectImager<T> implements BeanImager<T>
 		{
 			setCurrentSelectedArrayCoords(i, j);
 			return getCurrentSelectedObj();
-			//			return objectData.getData(i, j);
 		}
 		else throw new IllegalArgumentException("Input coordinates + (" + i + ", " + j + 
 				") are incompatible with the object array size (" + dataWidth + ", " + dataHeight+ ".");
@@ -313,12 +326,7 @@ public class ObjectImager<T> implements BeanImager<T>
 		if (transposeImg) { double t = relativeI; relativeJ = relativeI; relativeI = t; }
 		if (flipAxisX) relativeI = 1.0 - relativeI;
 		if (flipAxisY) relativeJ = 1.0 - relativeJ;
-		return BeanImager.getObjArrayCoords(
-				relativeI, relativeJ, dataWidth, dataHeight);
-
-
-
-
+		return BeanImager.getObjArrayCoords(relativeI, relativeJ, dataWidth, dataHeight);
 	}
 
 	@Override
@@ -350,8 +358,9 @@ public class ObjectImager<T> implements BeanImager<T>
 		else throw new IllegalArgumentException("Input data type not yet implemented");
 	}
 
-	public void setData(T[][] dat) { this.objectData = new ArrayData(dat);	}
-	public void setData(List<List<T>> dat) { this.objectData = new ListData(dat); }
+	public void setData(T[][] dat) { this.objectData = new ArrayData(dat, flipAxisX, flipAxisY, transposeImg); }
+	public void setData(List<List<T>> dat) { this.objectData = new ListData(dat, flipAxisX, flipAxisY, transposeImg); }
+	
 	@Override public void setField(Field field) { setField(field.getName()); }
 	@Override public FieldWatcher<T> getWatcher() { return currentWatcher; }
 
@@ -373,53 +382,30 @@ public class ObjectImager<T> implements BeanImager<T>
 	public interface ImagerData<T>
 	{
 		public T getData(int x, int y);
-
-
 		public double getInterpolatorData(int x, int y);
-		public IntArrayMinMax intMinMax();
-		public DblArrayMinMax dblMinMax();
-		public ByteArrayMinMax byteMinMax();
-		public boolean[][] boolVal();
-		public boolean[][] parsedBoolVal();
 		public int getWidth();
 		public int getHeight();
 	}
 
-
-
-
-
-
-
-	public static class PrimitiveArrayData<T> implements ImagerData<T>
+	public class ArrayData implements ImagerData<T>
 	{
-
-		private int width, height;
-		private int startX, startY;
-		private int endX, endY;
-		private int incrementX, incrementY;
-		private int offsetX, offsetY;
+		int width, height;
+		int startX, startY;
+		int endX, endY;
+		int incrementX, incrementY;
+		int offsetX, offsetY;
 		boolean transpose;
-
-
-		String type;
 		int arrayX, arrayY;
-
-		private void setOrientation(boolean flipX, boolean flipY, boolean transpose)
+		
+		protected void setOrientation(boolean flipX, boolean flipY, boolean transpose)
 		{
 			this.transpose = transpose;
 			incrementX = 1; incrementY = 1; offsetX = 0; offsetY = 0;
 			startX = 0; startY = 0;
 			endY = height; endX = width;
 
-			if (transpose)
-			{
-//				int t = height; height = width; width = t;
-				boolean b = flipX; 
-				flipX = flipY;
-				flipY = b;
-			}
-			
+			if (transpose) { boolean b = flipX; flipX = flipY; flipY = b; }
+
 			if (flipX) 
 			{
 				int t = endX; endX = startX - 1; startX = t - 1; incrementX = -1; 
@@ -429,25 +415,11 @@ public class ObjectImager<T> implements BeanImager<T>
 				int t = endY; endY = startY - 1; startY = t - 1; incrementY = -1; 
 				offsetY = height - 1;
 			}
-
-			if (transpose)
-			{
-				int t = height; height = width; width = t;
-			}
-
-			//				t = startY; startY = startX; startX = t;
-			//				t = endY; endY = endX; endX = t;
-			//				t = incrementY; incrementY = incrementX; incrementX = t;
-			//				t = offsetY; offsetY = offsetX; offsetX = t; 
-			//			}
-
+			if (transpose) { int t = height; height = width; width = t; }
 		}
-
-		private void setDataCoords(int inputX, int inputY)
+		
+		protected void setDataCoords(int inputX, int inputY)
 		{
-			//			arrayX = offsetX + (incrementX * inputX);
-			//			arrayY = offsetY + (incrementY * inputY);
-
 			if(!transpose)
 			{
 				arrayX = offsetX + (incrementX * inputX);
@@ -459,192 +431,55 @@ public class ObjectImager<T> implements BeanImager<T>
 				arrayY = offsetY + (incrementY * inputX);
 			}
 		}
-
-
-
+		
 		@Override
 		public double getInterpolatorData(int x, int y) 
 		{
-			//			arrayX = offsetX + (incrementX * x);
-			//			arrayY = offsetY + (incrementY * y);
-
 			setDataCoords(x, y);
-
-			switch(type)
-			{
-			case("dbl"): return dblDat[arrayX][arrayY];
-			case("flt"): return doubleCaster(fltDat[arrayX][arrayY]);
-			case("byt"): return doubleCaster(bytDat[arrayX][arrayY]);
-			case("sht"): return doubleCaster(shtDat[arrayX][arrayY]);
-			case("int"): return doubleCaster(intDat[arrayX][arrayY]);
-			case("lng"): return doubleCaster(lngDat[arrayX][arrayY]);
-			case("chr"): return doubleCaster(chrDat[arrayX][arrayY]);
-			case("boo"): return doubleCaster(booDat[arrayX][arrayY]);
-			}
-			return Double.MIN_VALUE;			
+			return currentWatcher.getDoubleVal(arrayData[arrayX][arrayY]);
 		}
-
-
-		@Override public int getWidth() { return this.width; }
-		@Override public int getHeight() { return this.height; }
-
-
-
-
-		public PrimitiveArrayData(double[][] dat, boolean flipX, boolean flipY, boolean transpose)
-		{ dblDat = dat; width = dat.length; type = "dbl"; height = dat[0].length; setOrientation(flipX, flipY, transpose); }
-		public PrimitiveArrayData(float[][] dat, boolean flipX, boolean flipY, boolean transpose)
-		{ fltDat = dat; width = dat.length; type = "flt"; height = dat[0].length; setOrientation(flipX, flipY, transpose); }
-
-		public PrimitiveArrayData(byte[][] dat, boolean flipX, boolean flipY, boolean transpose)
-		{
-			bytDat = dat;  
-			type = "byt";
-			width = dat.length; 
-			height = dat[0].length; 
-			setOrientation(flipX, flipY, transpose); 
-		}
-		public PrimitiveArrayData(short[][] dat, boolean flipX, boolean flipY, boolean transpose)
-		{ shtDat = dat; width = dat.length; type = "sht"; height = dat[0].length; setOrientation(flipX, flipY, transpose); }
-		public PrimitiveArrayData(int[][] dat, boolean flipX, boolean flipY, boolean transpose)
+		
+		public ArrayData() {}
+		public ArrayData(T[][] dat, boolean flipX, boolean flipY, boolean transpose)
 		{ 
-			intDat = dat;  
-			type = "int";
-			width = dat.length; 
-			height = dat[0].length; 
+			this.arrayData = dat; 
+			width = dat.length; height = dat[0].length; 
 			setOrientation(flipX, flipY, transpose); 
 		}
 
-		public PrimitiveArrayData(long[][] dat, boolean flipX, boolean flipY, boolean transpose)
-		{ lngDat = dat; width = dat.length; type = "lng"; height = dat[0].length;setOrientation(flipX, flipY, transpose); }
-		public PrimitiveArrayData(char[][] dat, boolean flipX, boolean flipY, boolean transpose)
-		{ chrDat = dat; width = dat.length; type = "chr"; height = dat[0].length;setOrientation(flipX, flipY, transpose); }
-		public PrimitiveArrayData(boolean[][] dat, boolean flipX, boolean flipY, boolean transpose)
-		{ booDat = dat; width = dat.length; type = "boo"; height = dat[0].length;setOrientation(flipX, flipY, transpose); }
-
-
-		double[][]  dblDat; float[][] fltDat;
-		byte[][]    bytDat; short[][] shtDat; int[][] intDat; long[][] lngDat; char[][] chrDat;
-		boolean[][] booDat;
-
-
-
-
-
-
-
-		int i = 4;
-
-
-
-
-		@Override
-		public T getData(int x, int y) {
-			// TODO Auto-generated method stub
-
-			System.out.println(((Object) i).toString());
-
-			return null;
-
-
-		}
-
-		@Override
-		public IntArrayMinMax intMinMax() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public DblArrayMinMax dblMinMax() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public ByteArrayMinMax byteMinMax() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public boolean[][] boolVal() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public boolean[][] parsedBoolVal() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-	}
-
-
-	private class ArrayData implements ImagerData<T>
-	{
-		//		boolean flipX, flipY, transpose;
-		//		int width, height;
-		public ArrayData(T[][] dat)
-		//		boolean flipX, boolean flipY, boolean transpose) 
-		{ 
-			this.data = dat; 
-			//			this.flipX = flipX; this.flipY = flipY; this.transpose = transpose;
-		}
-
-
-
-
-		private T[][] data;
+		private T[][] arrayData;
+		
 		@Override public T getData(int x, int y) { 
-
-			return data[x][y]; 
+			setDataCoords(x, y);
+			return arrayData[arrayX][arrayY]; 
 		}
 
-
-		@Override public IntArrayMinMax intMinMax() { return currentWatcher.getIntVal(data); }
-		@Override public DblArrayMinMax dblMinMax() { return currentWatcher.getDoubleVal(data); }
-		@Override public ByteArrayMinMax byteMinMax() { return currentWatcher.getByteVal(data); }
-		@Override public boolean[][] boolVal() { return currentWatcher.getBoolVal(data); }
-		@Override public boolean[][] parsedBoolVal() { return currentWatcher.getParsedBoolVal(data); }
-		@Override public int getWidth() { return data.length; }
-		@Override public int getHeight() { return data[0].length; }
-
-
-		@Override
-		public double getInterpolatorData(int x, int y) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
+		@Override public int getWidth() { return arrayData.length; }
+		@Override public int getHeight() { return arrayData[0].length; }
 	}
 
-	private class ListData implements ImagerData<T>
+	public class ListData extends ArrayData 
 	{
-		boolean flipX, flipY, transpose;
-		public ListData(List<List<T>> dat) { this.data = dat; }
 		List<List<T>> data;
-		@Override public T getData(int x, int y) { return data.get(x).get(y); }
-		@Override public IntArrayMinMax intMinMax() { return currentWatcher.getIntVal(data); }
-		@Override public DblArrayMinMax dblMinMax() { return currentWatcher.getDoubleVal(data); }
-		@Override public ByteArrayMinMax byteMinMax() { return currentWatcher.getByteVal(data); }
-		@Override public boolean[][] boolVal() { return currentWatcher.getBoolVal(data); }
-		@Override public boolean[][] parsedBoolVal() { return currentWatcher.getParsedBoolVal(data); }
+		public ListData(List<List<T>> dat, boolean flipX, boolean flipY, boolean transpose)
+		{ 
+			
+			this.data = dat; 
+			width = dat.size(); height = dat.get(0).size();
+			setOrientation(flipX, flipY, transpose); 
+		}
+		
+		@Override public T getData(int x, int y) { 
+			setDataCoords(x, y);
+			return data.get(arrayX).get(arrayY); 
+		}
+		@Override
+		public double getInterpolatorData(int x, int y) 
+		{
+			setDataCoords(x, y);
+			return currentWatcher.getDoubleVal(data.get(arrayX).get(arrayY));
+		}
 		@Override public int getWidth() { return data.size(); }
 		@Override public int getHeight() { return data.get(0).size(); }
-		@Override
-		public double getInterpolatorData(int x, int y) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
 	}
-
-	public static double doubleCaster(float f) { return (double) f; }
-	public static double doubleCaster(byte f) { return (double) f; }
-	public static double doubleCaster(char f) { return (double) f; }
-	public static double doubleCaster(short f) { return (double) f; }
-	public static double doubleCaster(int f) { return (double) f; }
-	public static double doubleCaster(long f) { return (double) f; }
-	public static double doubleCaster(boolean f) { if (f) return 1; return 0; } 
-
 }

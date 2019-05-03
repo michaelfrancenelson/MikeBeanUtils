@@ -64,8 +64,8 @@ public class BeanImageDemo
 	{
 		boolean save = false;
 		netcdfDemo(600, 475, true, save);
-		SimpleImagePanelDemo(31, 31, 50, true, save);
-		objectArrayImageMultiPanelDemo(50, 60, true, save);
+//		SimpleImagePanelDemo(22, 17, 50, true, save);
+//		objectArrayImageMultiPanelDemo(50, 60, true, save);
 	}
 
 	static void netcdfDemo(int width, int height, boolean show, boolean save)
