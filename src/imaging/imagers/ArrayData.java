@@ -2,16 +2,18 @@ package imaging.imagers;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
 import utils.ArrayUtils;
 import utils.Sequences;
-import utils.ArrayUtils.ByteArrayMinMax;
-import utils.ArrayUtils.DblArrayMinMax;
-import utils.ArrayUtils.IntArrayMinMax;
 
 public class ArrayData<T> implements ImagerData<T>
 {
+	static Logger logger = LoggerFactory.getLogger(ArrayData.class);
+	
 	private T[][] arrayData;
 	protected T currentObj;
 	protected int outputWidth, outputHeight;
@@ -41,8 +43,7 @@ public class ArrayData<T> implements ImagerData<T>
 		else { outputWidth = dataWidth; outputHeight = dataHeight; }
 	}
 
-
-	@Override public void setDataMinMax(FieldWatcher<T> w)
+	@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
 	{
 		dataMin = Double.MAX_VALUE;
 		dataMax = Double.MIN_VALUE;
@@ -54,13 +55,17 @@ public class ArrayData<T> implements ImagerData<T>
 				if (val < dataMin) dataMin = val;
 				if (val > dataMax) dataMax = val;
 			}
+		ci.updateMinMax(dataMin, dataMax);
+		logger.debug(String.format("Data min/max = (%.2f, %.2f)", dataMin, dataMax));
+		
 	}
 
 	protected void setDataCoords(double relativeX, double relativeY)
 	{
+		logger.trace(String.format("Setting data coordinates for relative positions = %.2f, %.2f" , relativeX, relativeY));
 		setDataCoords(
-				ArrayUtils.getRelativeIndex(relativeX, outputWidth),
-				ArrayUtils.getRelativeIndex(relativeY, outputHeight)
+				ArrayUtils.relToAbsCoord(relativeX, outputWidth),
+				ArrayUtils.relToAbsCoord(relativeY, outputHeight)
 				);
 	}
 
@@ -75,6 +80,10 @@ public class ArrayData<T> implements ImagerData<T>
 		{
 			int t = dataX; dataX = dataY; dataY = t;
 		}
+		
+		logger.trace(String.format("Input coords: (%d, %d) data coords: (%d, %d)",
+				inputX, inputY, dataX, dataY));
+		
 		setCurrentObj();
 	}
 
@@ -102,7 +111,10 @@ public class ArrayData<T> implements ImagerData<T>
 	@Override
 	public String queryData(double relativeX, double relativeY, FieldWatcher<T> w) {
 		setDataCoords(relativeX, relativeY);
-		return w.getStringVal(currentObj);
+		String out =  w.getStringVal(currentObj);
+		logger.info(String.format("Querying object at relative coords: %.2f, %.2f "
+				+ "field %s with value %s", relativeX, relativeY, w.getFieldName(), out));
+		return out;
 	}
 
 	@Override
@@ -125,7 +137,7 @@ public class ArrayData<T> implements ImagerData<T>
 			setDims(dat.size(), dat.get(0).size(), flipX, flipY, transpose);
 		}
 
-		@Override public void setDataMinMax(FieldWatcher<T> w)
+		@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
 		{
 			dataMin = Double.MAX_VALUE;
 			dataMax = Double.MIN_VALUE;
@@ -137,6 +149,8 @@ public class ArrayData<T> implements ImagerData<T>
 					if (val < dataMin) dataMin = val;
 					if (val > dataMax) dataMax = val;
 				}
+			ci.updateMinMax(dataMin, dataMax);
+			logger.debug(String.format("Data min/max = (%.2f, %.2f)", dataMin, dataMax));
 		}
 
 		@Override protected void setCurrentObj() { currentObj = listData.get(dataX).get(dataY); }
@@ -144,7 +158,8 @@ public class ArrayData<T> implements ImagerData<T>
 	}
 
 	@Override
-	public IntArrayMinMax intLegendData(int nSteps, boolean loToHi, boolean horiz) 
+	public ImagerData<Object> getIntLegend(
+			int nSteps, boolean loToHi, boolean horiz) 
 	{
 		int dataWidth = (int)Math.abs(dataMax - dataMin);
 		int legMax, legMin;
@@ -153,25 +168,27 @@ public class ArrayData<T> implements ImagerData<T>
 		else {legMax = (int) dataMin; legMin = (int) dataMin; }
 
 		if (dataWidth < nSteps) nSteps = dataWidth;
-		return new IntArrayMinMax(Sequences.spacedIntervals2D(
-				legMin, legMax, nSteps, horiz), legMin, legMax);
+		int[][] data = Sequences.spacedIntervals2D(legMin, legMax, nSteps, horiz);
+		return new PrimitiveArrayData<Object>(data, false, false, false);
 	}
-
+	
 	@Override
-	public DblArrayMinMax dblLegendData(int nSteps, boolean loToHi, boolean horiz)
+	public ImagerData<Object> getDoubleLegend(
+			int nSteps, boolean loToHi, boolean horiz)
 	{
 		double legMax, legMin;
 
 		if ((dataMax > dataMin) & loToHi) {legMax = dataMax; legMin = dataMin; }
 		else {legMax = dataMin; legMin = dataMin; }
-
-		return new DblArrayMinMax(Sequences.spacedIntervals2D(
-				legMin, legMax, nSteps, horiz), legMin, legMax);		
+double[][] data = Sequences.spacedIntervals2D(legMin, legMax, nSteps, horiz);
+return new PrimitiveArrayData<Object>(data, false, false, false);
 	}
 
 	@Override
-	public ByteArrayMinMax byteLegendData(int nSteps, boolean loToHi, boolean horiz)
+	public ImagerData<Object> getByteLegend(
+			int nSteps, boolean loToHi, boolean horiz) 
 	{
+
 		int dataWidth = (int)Math.abs(dataMax - dataMin);
 		byte legMax, legMin;
 
@@ -179,8 +196,59 @@ public class ArrayData<T> implements ImagerData<T>
 		else {legMax = (byte) (int) dataMin; legMin = (byte) (int) dataMin; }
 
 		if (dataWidth < nSteps) nSteps = dataWidth;
-		return new ByteArrayMinMax(Sequences.spacedIntervals2D(
-				legMin, legMax, nSteps, horiz), legMin, legMax);
+		byte[][] data = Sequences.spacedIntervals2D(
+				legMin, legMax, nSteps, horiz);
+		return new PrimitiveArrayData<Object>(data, false, false, false);
 	}
+	
+	@Override
+	public ImagerData<Object> getBooleanLegend(boolean includeNA, boolean horizontal)
+	{
+		Boolean[][] data = Sequences.booleanGradient2D(includeNA, horizontal);
+		return new ArrayData<Object>(data, false, false, false);
+	}
+	
+	
+	
+	
+//	@Override
+//	public IntArrayMinMax intLegendData(int nSteps, boolean loToHi, boolean horiz) 
+//	{
+//		int dataWidth = (int)Math.abs(dataMax - dataMin);
+//		int legMax, legMin;
+//
+//		if ((dataMax > dataMin) & loToHi) {legMax = (int) dataMax; legMin = (int) dataMin; }
+//		else {legMax = (int) dataMin; legMin = (int) dataMin; }
+//
+//		if (dataWidth < nSteps) nSteps = dataWidth;
+//		return new IntArrayMinMax(Sequences.spacedIntervals2D(
+//				legMin, legMax, nSteps, horiz), legMin, legMax);
+//	}
+//
+//	@Override
+//	public DblArrayMinMax dblLegendData(int nSteps, boolean loToHi, boolean horiz)
+//	{
+//		double legMax, legMin;
+//
+//		if ((dataMax > dataMin) & loToHi) {legMax = dataMax; legMin = dataMin; }
+//		else {legMax = dataMin; legMin = dataMin; }
+//
+//		return new DblArrayMinMax(Sequences.spacedIntervals2D(
+//				legMin, legMax, nSteps, horiz), legMin, legMax);		
+//	}
+//
+//	@Override
+//	public ByteArrayMinMax byteLegendData(int nSteps, boolean loToHi, boolean horiz)
+//	{
+//		int dataWidth = (int)Math.abs(dataMax - dataMin);
+//		byte legMax, legMin;
+//
+//		if ((dataMax > dataMin) & loToHi) {legMax = (byte) (int) dataMax; legMin = (byte) (int) dataMin; }
+//		else {legMax = (byte) (int) dataMin; legMin = (byte) (int) dataMin; }
+//
+//		if (dataWidth < nSteps) nSteps = dataWidth;
+//		return new ByteArrayMinMax(Sequences.spacedIntervals2D(
+//				legMin, legMax, nSteps, horiz), legMin, legMax);
+//	}
 
 }

@@ -21,7 +21,7 @@ import swing.stretchAndClick.ObjectArrayPanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
 import utils.ColorUtils;
 
-public class BeanImageDemo 
+public class BeanImageDemo extends DemoConsts
 {
 	static Font font = new Font("times", 2, 20);
 	static Color[] boolCol = new Color[] {Color.gray, Color.green};
@@ -30,7 +30,6 @@ public class BeanImageDemo
 	static ColorInterpolator c;
 
 	static String inputNCDF = "testData/AllFlavorBean.nc";
-
 
 	static TerrainBean[][] cells;
 	static int nRows;
@@ -63,8 +62,8 @@ public class BeanImageDemo
 	public static void main(String[] args) 
 	{
 		boolean save = false;
-		netcdfDemo(600, 475, true, save);
-//		SimpleImagePanelDemo(22, 17, 50, true, save);
+//		netcdfDemo(600, 475, true, save);
+		SimpleImagePanelDemo(22, 17, 50, true, save);
 //		objectArrayImageMultiPanelDemo(100, 117, true, save);
 	}
 
@@ -104,11 +103,11 @@ public class BeanImageDemo
 
 				objPan = ObjectArrayPanelFactory.buildPanel(
 						imagerElev, "elevation", true, 0, 0, ptSize);
-				objPan.addValueLabel(0.2, 0.4, font);
+				objPan.addValueLabel(0.2, 0.4, font, color);
 				tPanels.add(objPan);
 				objPan = ObjectArrayPanelFactory.buildPanel(
 						imagerAge, "age", true, 0, 0, ptSize);
-				objPan.addValueLabel(0.1 , 0.7, font);
+				objPan.addValueLabel(0.1 , 0.7, font, color);
 				tPanels.add(objPan);
 			}
 		}
@@ -141,8 +140,11 @@ public class BeanImageDemo
 		objPan = ObjectArrayPanelFactory.buildPanel(
 				imagerAge, "elevation", true, 0, 0, ptSize);
 
-		for (int i = 0; i < width ; i++) for (int j = 0; j < height; j++)
-			objPan.addValueLabel(i, j, font);
+		objPan.labelPixels(font, color);
+		
+		
+//		for (int i = 0; di < width ; i++) for (int j = 0; j < height; j++)
+//			objPan.addValueLabel(i, j, font, color);
 		objPan.setBorder(border); 
 
 		f = SwingUtils.frameFactory((int) (mult * width), (int) (mult * height),

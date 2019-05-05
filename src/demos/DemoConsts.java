@@ -18,5 +18,6 @@ public class DemoConsts
 	static List<List<AllFlavorBean>> listDat;
 	static JFrame f1, f2, f3, f4;
 	public static Font font = new Font("times", 2, 24);
+	static Color color = Color.black;
 
 }

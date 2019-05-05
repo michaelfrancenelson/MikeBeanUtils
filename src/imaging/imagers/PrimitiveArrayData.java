@@ -8,7 +8,7 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 {
 	private String type;
 
-	@Override public void setDataMinMax(FieldWatcher<T> w)
+	@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
 	{
 		double[] minmax = null;
 		switch(type)
@@ -25,7 +25,10 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		}
 		dataMin = minmax[0];
 		dataMin = minmax[1];
+		ci.updateMinMax(minmax[0], minmax[1]);
 	}
+	
+	@Override protected void setCurrentObj() {}
 	
 	@Override
 	public int getRGBInt(int x, int y, ColorInterpolator ci, FieldWatcher<T> w) 
@@ -34,14 +37,14 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		setDataCoords(x, y);
 		switch(type)
 		{
-		case("dbl"): val = dblDat[dataX][dataY];
-		case("flt"): val = ArrayUtils.doubleCaster(fltDat[dataX][dataY]);
-		case("byt"): val = ArrayUtils.doubleCaster(bytDat[dataX][dataY]);
-		case("sht"): val = ArrayUtils.doubleCaster(shtDat[dataX][dataY]);
-		case("int"): val = ArrayUtils.doubleCaster(intDat[dataX][dataY]);
-		case("lng"): val = ArrayUtils.doubleCaster(lngDat[dataX][dataY]);
-		case("chr"): val = ArrayUtils.doubleCaster(chrDat[dataX][dataY]);
-		case("boo"): val = ArrayUtils.doubleCaster(booDat[dataX][dataY]);
+		case("dbl"): val = dblDat[dataX][dataY]; break;
+		case("flt"): val = ArrayUtils.doubleCaster(fltDat[dataX][dataY]); break;
+		case("byt"): val = ArrayUtils.doubleCaster(bytDat[dataX][dataY]); break;
+		case("sht"): val = ArrayUtils.doubleCaster(shtDat[dataX][dataY]); break;
+		case("int"): val = ArrayUtils.doubleCaster(intDat[dataX][dataY]); break;
+		case("lng"): val = ArrayUtils.doubleCaster(lngDat[dataX][dataY]); break;
+		case("chr"): val = ArrayUtils.doubleCaster(chrDat[dataX][dataY]); break;
+		case("boo"): val = ArrayUtils.doubleCaster(booDat[dataX][dataY]); break;
 		}
 		val = Double.MIN_VALUE;
 		

@@ -4,15 +4,20 @@ public class ArrayUtils
 {
 	/**
 	 * 
-	 * @param relativePosition
+	 * @param relCoord
 	 * @param length
 	 * @return
 	 */
-	public static int getRelativeIndex(double relativePosition, int length)
+	public static int relToAbsCoord(double relCoord, int length)
 	{
 		return Math.min(
 				length - 1, 
-				(int)Math.floor(((double) length) * relativePosition));
+				(int)Math.floor(((double) length) * relCoord));
+	}
+	
+	public static double absToRelCoord(int point, int length)
+	{
+		return  Math.min(1.0, Math.max(0.0, ((double) point) / ((double) length)));
 	}
 	
 	

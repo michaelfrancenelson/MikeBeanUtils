@@ -63,11 +63,12 @@ public class ImageFactory
 	 * @param transpose
 	 * @return
 	 */
-	public static ImageMinMax buildImage(
+	public static ImageMinMax buildPrimitiveImage(
 			int[][] data, ColorInterpolator ci,
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
-		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
+		ImagerData<Object> dat = new 
+				PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
 		return buildPackageImage(dat, ci, null);
 	}
 
@@ -81,7 +82,7 @@ public class ImageFactory
 	 * @param transpose
 	 * @return
 	 */
-	public static ImageMinMax buildImage(
+	public static ImageMinMax buildPrimitiveImage(
 			double[][] data, ColorInterpolator ci,
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
@@ -99,7 +100,7 @@ public class ImageFactory
 	 * @param transpose
 	 * @return
 	 */
-	public static <T> ImageMinMax buildImage(
+	public static <T> ImageMinMax buildPrimitiveImage(
 			byte[][] data, ColorInterpolator ci,
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
@@ -121,7 +122,7 @@ public class ImageFactory
 	 * @param transpose
 	 * @return
 	 */
-	public static ImageMinMax buildImage(
+	public static ImageMinMax buildPrimitiveImage(
 			boolean[][] data, ColorInterpolator ci,
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
@@ -140,7 +141,7 @@ public class ImageFactory
 	 * @param transpose
 	 * @return
 	 */
-	public static ImageMinMax buildImage(Boolean[][] data, ColorInterpolator ci, boolean flipAxisX, boolean flipAxisY, boolean transpose)
+	public static ImageMinMax buildPrimitiveImage(Boolean[][] data, ColorInterpolator ci, boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
 		int
 		startX = 0, startY = 0,
@@ -198,8 +199,8 @@ public class ImageFactory
 //	 * @return
 //	 */
 //	@Deprecated
-//	public static Image buildImage(Boolean[][] data,  ColorInterpolator ci)
-//	{ return buildImage(data, ci, ObjectImageFactory.RGB_TYPE); }
+//	public static Image buildPrimitiveImage(Boolean[][] data,  ColorInterpolator ci)
+//	{ return buildPrimitiveImage(data, ci, ObjectImageFactory.RGB_TYPE); }
 //
 //	/**
 //	 *  Build an image directly from an array of boolean data
@@ -209,7 +210,7 @@ public class ImageFactory
 //	 * @return
 //	 */
 //	@Deprecated
-//	public static Image buildImage(Boolean[][] data,  ColorInterpolator ci, int rgbType)
+//	public static Image buildPrimitiveImage(Boolean[][] data,  ColorInterpolator ci, int rgbType)
 //	{
 //		BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
 //		for (int i = 0; i < data.length; i++) for (int j = 0; j < data[0].length; j++)
@@ -323,7 +324,7 @@ public class ImageFactory
 //* @return
 //*/
 //@Deprecated
-//public static Image buildImage(double[][] data,  ColorInterpolator ci, int rgbType)
+//public static Image buildPrimitiveImage(double[][] data,  ColorInterpolator ci, int rgbType)
 //{
 //	BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
 //	for (int i = 0; i < data.length; i++) for (int j = 0; j < data[0].length; j++)
@@ -339,8 +340,8 @@ public class ImageFactory
  * @return
  */
 //@Deprecated
-//public static Image buildImage(double[][] data,  ColorInterpolator ci)
-//{ return buildImage(data, ci, ObjectImageFactory.RGB_TYPE); }
+//public static Image buildPrimitiveImage(double[][] data,  ColorInterpolator ci)
+//{ return buildPrimitiveImage(data, ci, ObjectImageFactory.RGB_TYPE); }
 //
 ///**
 //
@@ -354,7 +355,7 @@ public class ImageFactory
 //* @return
 //*/
 //@Deprecated
-//public static Image buildImage(int[][] data,  ColorInterpolator ci, int rgbType)
+//public static Image buildPrimitiveImage(int[][] data,  ColorInterpolator ci, int rgbType)
 //{
 //	BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
 //	for (int i = 0; i < data.length; i++) for (int j = 0; j < data[0].length; j++)
@@ -370,8 +371,8 @@ public class ImageFactory
 //* @return
 //*/
 //@Deprecated
-//public static Image buildImage(int[][] data,  ColorInterpolator ci)
-//{ return buildImage(data, ci, ObjectImageFactory.RGB_TYPE); }
+//public static Image buildPrimitiveImage(int[][] data,  ColorInterpolator ci)
+//{ return buildPrimitiveImage(data, ci, ObjectImageFactory.RGB_TYPE); }
 
 
 ///**
@@ -382,7 +383,7 @@ public class ImageFactory
 // * @return
 // */
 //@Deprecated
-//public static Image buildImage(byte[][] data,  ColorInterpolator ci, int rgbType)
+//public static Image buildPrimitiveImage(byte[][] data,  ColorInterpolator ci, int rgbType)
 //{
 //	BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
 //	for (int i = 0; i < data.length; i++) for (int j = 0; j < data[0].length; j++)
@@ -398,8 +399,8 @@ public class ImageFactory
 // * @return
 // */
 //@Deprecated
-//public static Image buildImage(byte[][] data,  ColorInterpolator ci)
-//{ return buildImage(data, ci, ObjectImageFactory.RGB_TYPE); }
+//public static Image buildPrimitiveImage(byte[][] data,  ColorInterpolator ci)
+//{ return buildPrimitiveImage(data, ci, ObjectImageFactory.RGB_TYPE); }
 
 //int
 //startX = 0, startY = 0,
@@ -440,8 +441,8 @@ public class ImageFactory
 //* @return
 //*/
 //@Deprecated
-//public static Image buildImage(boolean[][] data,  ColorInterpolator ci)
-//{ return buildImage(data, ci, ObjectImageFactory.RGB_TYPE); }
+//public static Image buildPrimitiveImage(boolean[][] data,  ColorInterpolator ci)
+//{ return buildPrimitiveImage(data, ci, ObjectImageFactory.RGB_TYPE); }
 //
 ///**
 //*  Build an image directly from an array of boolean data
@@ -451,7 +452,7 @@ public class ImageFactory
 //* @return
 //*/
 //@Deprecated
-//public static Image buildImage(boolean[][] data,  ColorInterpolator ci, int rgbType)
+//public static Image buildPrimitiveImage(boolean[][] data,  ColorInterpolator ci, int rgbType)
 //{
 //BufferedImage out = new BufferedImage(data.length, data[0].length, rgbType);
 //for (int i = 0; i < data.length; i++) for (int j = 0; j < data[0].length; j++)

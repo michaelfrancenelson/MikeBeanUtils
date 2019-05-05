@@ -28,10 +28,10 @@ public class ObjectImager<T> implements BeanImager<T>
 	Class<T> clazz;
 	Class<? extends Annotation> annClass;
 
-	IntArrayMinMax legDatInt;
-	DblArrayMinMax legDatDbl;
-	ByteArrayMinMax legDatByte;
-	Boolean[][] legDatBool = null;
+//	IntArrayMinMax legDatInt;
+//	DblArrayMinMax legDatDbl;
+//	ByteArrayMinMax legDatByte;
+//	Boolean[][] legDatBool = null;
 
 	double datMin, datMax;
 
@@ -43,6 +43,7 @@ public class ObjectImager<T> implements BeanImager<T>
 	Map<String, Boolean> parsedBooleanFieldNames;
 
 	private ImagerData<T> objectData;
+	private ImagerData<Object> legendData;
 
 	protected void buildWatchers()
 	{
@@ -53,21 +54,31 @@ public class ObjectImager<T> implements BeanImager<T>
 	protected void initialize(
 			Class<T> clazz, 
 			Class<? extends Annotation> annClass,
-			String dblFmt)
+			String dblFmt,
+			boolean showBoolNa, boolean transpose, 
+			boolean flipX, boolean flipY, 
+			int nLegendSteps, boolean loToHi, boolean horiz)
 	{
 		this.clazz = clazz;
 		this.annClass = annClass;
 		this.dblFmt = dblFmt;
+		this.showBoolNA = showBoolNa;
+		this.transposeImg = transpose;
+		this.flipAxisX = flipX;
+		this.flipAxisY = flipY;
+		this.nLegendSteps = nLegendSteps;
+		this.legLoToHi = loToHi;
+		this.horizLeg = horiz;
 		buildWatchers();
 	}
 
-	void clearLegendData()
-	{
-		legDatInt = null;
-		legDatDbl = null;
-		legDatByte = null;
-		legDatBool = null;
-	}
+//	void clearLegendData()
+//	{
+////		legDatInt = null;
+////		legDatDbl = null;
+////		legDatByte = null;
+////		legDatBool = null;
+//	}
 
 	void buildImage()
 	{
@@ -78,35 +89,37 @@ public class ObjectImager<T> implements BeanImager<T>
 		else interp = ci;
 
 		String type = currentWatcher.getField().getType().getSimpleName();
-
+		
 		//		System.out.println("ObjectImager.buildImage() type = " + type);
-		clearLegendData();
+//		clearLegendData();
 		img = ImageFactory.buildPackageImage(objectData, interp, currentWatcher);
 		switch (type.toLowerCase())
 		{
 		case("int"): case("short"): case("long"): case("char"):	case("character"):
 		case("string"): case("integer"):
 		{
-			legDatInt = objectData.intLegendData(nLegendSteps, legLoToHi, horizLeg); 
-			legendImg = ImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg).getImg();
+			legendData = objectData.getIntLegend(nLegendSteps, legLoToHi, horizLeg);
+//			legDatInt = objectData.intLegendData(nLegendSteps, legLoToHi, horizLeg); 
+//			legendImg = ImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg).getImg();
 			break;
 		}
 		case("double"): case("float"):
 		{
-			legDatDbl = objectData.dblLegendData(nLegendSteps, legLoToHi, horizLeg); 
-			legendImg = ImageFactory.buildImage(legDatDbl.getDat(), interp, flipAxisX, flipAxisY, transposeImg).getImg();
+			legendData = objectData.getDoubleLegend(nLegendSteps, legLoToHi, horizLeg);
+//			legDatDbl = objectData.dblLegendData(nLegendSteps, legLoToHi, horizLeg); 
+//			legendImg = ImageFactory.buildImage(legDatDbl.getDat(), interp, flipAxisX, flipAxisY, transposeImg).getImg();
 			break;
 		}
 		case("byte"):
 		{
-			legDatByte = objectData.byteLegendData(nLegendSteps, legLoToHi, horizLeg); 
-			legendImg = ImageFactory.buildImage(legDatByte.getDat(), interp, flipAxisX, flipAxisY, transposeImg).getImg();
+			legendData = objectData.getByteLegend(nLegendSteps, legLoToHi, horizLeg);
+//			legDatByte = objectData.byteLegendData(nLegendSteps, legLoToHi, horizLeg); 
+//			legendImg = ImageFactory.buildImage(legDatByte.getDat(), interp, flipAxisX, flipAxisY, transposeImg).getImg();
 			break;
 		}
 		case("boolean"): 
 		{
-			legDatBool = Sequences.booleanGradient2D(showBoolNA, horizLeg);
-			legendImg = ImageFactory.buildImage(legDatBool, interp, flipAxisX, flipAxisY, transposeImg).getImg();
+			legendData = objectData.getBooleanLegend(showBoolNA, horizLeg);
 			break;
 //			legDatWidth = legDatBool.length; legDatHeight = legDatBool[0].length;
 		}
@@ -126,6 +139,7 @@ public class ObjectImager<T> implements BeanImager<T>
 	@Override
 	public String queryLegendAt(double relativeI, double relativeJ) 
 	{
+		
 		//		int[] xy = BeanImager.getObjArrayCoords(relativeI, relativeJ, legDatWidth, legDatHeight);
 		//
 		//		if (legDatInt != null)
@@ -177,6 +191,8 @@ public class ObjectImager<T> implements BeanImager<T>
 	{	
 		queryDataAt(relativeI, relativeJ);
 	}
+
+	@Override public ImagerData<T> getImgData() { return this.objectData; }
 }
 
 ///** 

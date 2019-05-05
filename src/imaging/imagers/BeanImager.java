@@ -17,6 +17,8 @@ public interface BeanImager<T>
 	public Class<T> getObjClass();
 	public Class<? extends Annotation> getAnnClass();
 
+	public ImagerData<T> getImgData();
+	
 	/** Return the current image, generated from the currently active field. */
 	public Image getImage();
 	public Image getLegendImage();

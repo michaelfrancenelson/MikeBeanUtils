@@ -107,7 +107,8 @@ public class ImagerFactory
 		}
 		else out.setData(objArray);
 		
-		out.initialize(clazz, annClass, dblFmt);
+		out.initialize(clazz, annClass, dblFmt, includeNABoolean, transpose, flipX, flipY,
+				nLegendSteps, legLowToHi, horizLegend);
 		
 		out.setInterpolator(SimpleColorInterpolator.factory(
 				gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt));
@@ -115,63 +116,63 @@ public class ImagerFactory
 		out.setBooleanInterpolator(SimpleBooleanColorInterpolator.factory(
 				booleanColors, naColor));
 
-		out.showBoolNA = includeNABoolean;
-		out.transposeImg = transpose;
-		out.flipAxisX = flipX; 
-		out.flipAxisY = flipY;
-		out.nLegendSteps = nLegendSteps; out.legLoToHi = legLowToHi; out.horizLeg = horizLegend;
 		Map<String, Boolean> mp = new HashMap<>();
 		if (!(parsedBooleanFields == null)) for (String s : parsedBooleanFields) mp.put(s, true);
 		out.parsedBooleanFieldNames = mp;
 		out.setField(fieldName.toLowerCase());
 		return out;
+//		out.showBoolNA = includeNABoolean;
+//		out.transposeImg = transpose;
+//		out.flipAxisX = flipX; 
+//		out.flipAxisY = flipY;
+//		out.nLegendSteps = nLegendSteps; out.legLoToHi = legLowToHi; out.horizLeg = horizLegend;
 	}
 	
-	@Deprecated
-	public static <T> BeanImager<T> factory(
-			Class<T> clazz, 
-			Class<? extends Annotation> annClass, 
-			List<List<T>> lists,	
-			String fieldName, 
-			Color[] gradientColors, Color[] booleanColors,
-			double naDouble, int naInt, Color naColor,
-			String dblFmt, Iterable<String> parsedBooleanFields,
-			boolean includeNABoolean,
-			boolean transpose, boolean flipX, boolean flipY,
-			int nLegendSteps, boolean legLowToHi, boolean horizLegend)
-	{
-		/* First make sure all the lists are the same length. */
-		int len = lists.get(0).size();
-		for (List<T> ll : lists)
-		{
-			if (ll.size() != len)
-				throw new IllegalArgumentException("Data rows/columns are not all the same length.");
-		}
-		
-		if (dblFmt == null)
-			throw new IllegalArgumentException("Double precision format string cannot be null");
-		
-		ObjectImager<T> out = new ObjectImager<T>();
-		out.setData(lists);
-		out.initialize(clazz, annClass, dblFmt);
-		
-		out.setInterpolator(SimpleColorInterpolator.factory(
-				gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt));
-	
-		out.setBooleanInterpolator(SimpleBooleanColorInterpolator.factory(
-				booleanColors, naColor));
-
-		out.showBoolNA = includeNABoolean;
-		out.transposeImg = transpose;
-		out.flipAxisX = flipX; 
-		out.flipAxisY = flipY;
-		out.nLegendSteps = nLegendSteps; out.legLoToHi = legLowToHi; out.horizLeg = horizLegend;
-		Map<String, Boolean> mp = new HashMap<>();
-		if (!(parsedBooleanFields == null)) for (String s : parsedBooleanFields) mp.put(s, true);
-		out.parsedBooleanFieldNames = mp;
-		out.setField(fieldName);
-		return out;
-	}
+//	@Deprecated
+//	public static <T> BeanImager<T> factory(
+//			Class<T> clazz, 
+//			Class<? extends Annotation> annClass, 
+//			List<List<T>> lists,	
+//			String fieldName, 
+//			Color[] gradientColors, Color[] booleanColors,
+//			double naDouble, int naInt, Color naColor,
+//			String dblFmt, Iterable<String> parsedBooleanFields,
+//			boolean includeNABoolean,
+//			boolean transpose, boolean flipX, boolean flipY,
+//			int nLegendSteps, boolean legLowToHi, boolean horizLegend)
+//	{
+//		/* First make sure all the lists are the same length. */
+//		int len = lists.get(0).size();
+//		for (List<T> ll : lists)
+//		{
+//			if (ll.size() != len)
+//				throw new IllegalArgumentException("Data rows/columns are not all the same length.");
+//		}
+//		
+//		if (dblFmt == null)
+//			throw new IllegalArgumentException("Double precision format string cannot be null");
+//		
+//		ObjectImager<T> out = new ObjectImager<T>();
+//		out.setData(lists);
+//		out.initialize(clazz, annClass, dblFmt);
+//		
+//		out.setInterpolator(SimpleColorInterpolator.factory(
+//				gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt));
+//	
+//		out.setBooleanInterpolator(SimpleBooleanColorInterpolator.factory(
+//				booleanColors, naColor));
+//
+//		out.showBoolNA = includeNABoolean;
+//		out.transposeImg = transpose;
+//		out.flipAxisX = flipX; 
+//		out.flipAxisY = flipY;
+//		out.nLegendSteps = nLegendSteps; out.legLoToHi = legLowToHi; out.horizLeg = horizLegend;
+//		Map<String, Boolean> mp = new HashMap<>();
+//		if (!(parsedBooleanFields == null)) for (String s : parsedBooleanFields) mp.put(s, true);
+//		out.parsedBooleanFieldNames = mp;
+//		out.setField(fieldName);
+//		return out;
+//	}
 }
 
 //public static <T> BeanImager<T> quickFactory(
