@@ -12,7 +12,6 @@ import imaging.imageFactories.ImageFactory.SimpleImagePanel;
 import swing.SwingUtils;
 import utils.ColorUtils;
 
-
 /**
  * Demonstration cases for the gradient images.
  * @author michaelfrancenelson
@@ -20,15 +19,14 @@ import utils.ColorUtils;
  */
 public class GradientImageDemo extends DemoConsts
 {
-
 	public static void main(String[] args) 
 	{ 
 		int nBreaks = 30;
 		cellSize = 230;
-//		directionOrientationDemo(nBreaks, 10, 10);
-//		intGradientImgDemo(nBreaks, 10 + 4 * cellSize, 10);
+		directionOrientationDemo(nBreaks, 10, 10);
+		intGradientImgDemo(nBreaks, 10 + 4 * cellSize, 10);
 		doubleGradientImgDemo(nBreaks, 10 + 4 * cellSize, 10 + 4 * cellSize);
-//		booleanGradientImgDemo(10 + 9 * cellSize, 10 + 4 * cellSize);
+		booleanGradientImgDemo(10 + 9 * cellSize, 10 + 4 * cellSize);
 	}
 
 	/** Show the vertical/horizontal and increasing/decreasing arrangements. */
@@ -47,25 +45,6 @@ public class GradientImageDemo extends DemoConsts
 			f1.add(simplePan);
 		}
 		f1.setVisible(true);
-		
-//		horiz = true;loToHi = true;
-//		simplePan = new SimpleImagePanel(GradientImageFactory.buildGradientImage(min, max, nBreaks, c, loToHi, horiz));
-//		f1.add(simplePan); f1.setVisible(true); f1.setLocation(x, y);
-//
-//		horiz = true; loToHi = false;
-//		simplePan = new SimpleImagePanel(GradientImageFactory.buildGradientImage(min, max, nBreaks, c, horiz, loToHi));
-//		f1 = SwingUtils.frameFactory(4 * cellSize , 2 * cellSize, "Horizontal, high to low", 1, 1);
-//		f1.add(simplePan); f1.setVisible(true); f1.setLocation(x, y + 2 * cellSize);
-//
-//		horiz = false;	loToHi = true;
-//		simplePan = new SimpleImagePanel(GradientImageFactory.buildGradientImage(min, max, nBreaks, c, horiz, loToHi));
-//		f1 = SwingUtils.frameFactory(4 * cellSize , 2 * cellSize, "Vertical, low to high", 1, 1);
-//		f1.add(simplePan); f1.setVisible(true); f1.setLocation(x, y + 4 * cellSize);
-//
-//		horiz = false;	loToHi = false;
-//		simplePan = new SimpleImagePanel(GradientImageFactory.buildGradientImage(min, max, nBreaks, c, horiz, loToHi));
-//		f1 = SwingUtils.frameFactory(4 * cellSize , 2 * cellSize,"Vertical, high to low", 1, 1);
-//		f1.add(simplePan); f1.setVisible(true); f1.setLocation(x , y + 6 * cellSize);
 	}
 
 	public static void intGradientImgDemo(int nBreaks, int x, int y)

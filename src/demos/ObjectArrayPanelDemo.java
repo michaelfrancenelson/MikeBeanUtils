@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import beans.sampleBeans.TerrainBean;
 import imaging.imagers.BeanImager;
 import swing.SwingUtils;
-import swing.stretchAndClick.ObjectArrayPanelFactory;
+import swing.stretchAndClick.ImagePanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
 
 public class ObjectArrayPanelDemo extends DemoConsts
@@ -48,7 +48,7 @@ public class ObjectArrayPanelDemo extends DemoConsts
 		names.add("ObjectArrayPanelDemo_factory_builder_legend");
 		setup(width, height, 0.5, Integer.MAX_VALUE);
 		
-		panels.add(ObjectArrayPanelFactory.buildPanel(
+		panels.add(ImagePanelFactory.buildPanel(
 				TerrainBean.class,
 //				ParsedField.class,
 				null,

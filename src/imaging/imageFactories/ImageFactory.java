@@ -39,14 +39,14 @@ public class ImageFactory
 		return new ImageMinMax(dat.getDataMin(), dat.getDataMax(), out);
 	}
 	public static <T> ImageMinMax buildPrimitiveImage(
-			PrimitiveArrayData<T> dat, ColorInterpolator ci, FieldWatcher<T> w)
+			PrimitiveArrayData<T> dat, ColorInterpolator ci)
 	{
 		dat.setDataMinMax(null, ci);
 		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
 		
 		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
 		{
-			out.setRGB(i, j, dat.getRGBInt(i, j, ci, w));
+			out.setRGB(i, j, dat.getRGBInt(i, j, ci, null));
 		}
 		return new ImageMinMax(dat.getDataMin(), dat.getDataMax(), out);
 	}

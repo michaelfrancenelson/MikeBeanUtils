@@ -156,7 +156,7 @@ public class ArrayUtils
 	}
 	public static double[] getArrMinMax(char[][] dat)
 	{
-		double dataMin = Double.MAX_VALUE; double dataMax = -
+		double dataMin = Double.MAX_VALUE; double dataMax = -dataMin;
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++)
 		{
 			double val = doubleCaster(dat[i][j]);
@@ -209,14 +209,21 @@ public class ArrayUtils
 		return new double[] { 0.0, 1.0 };
 	}
 	
-	
-	
 	public static double doubleCaster(float f) { return (double) f; }
 	public static double doubleCaster(byte f) { return (double) f; }
 	public static double doubleCaster(char f) { return (double) f; }
 	public static double doubleCaster(short f) { return (double) f; }
 	public static double doubleCaster(int f) { return (double) f; }
 	public static double doubleCaster(long f) { return (double) f; }
-	public static double doubleCaster(boolean f) { if (f) return 1; return 0; } 
+	public static double doubleCaster(boolean f) { if (f) return 1; return 0; }
+	
+	public static String stringCaster(double f, String fmt) { return String.format(fmt, f); }
+	public static String stringCaster(float f, String fmt) { return String.format(fmt, f); }
+	public static String stringCaster(byte f, String fmt) { return String.format("%d", f); }
+	public static String stringCaster(char f, String fmt) { return String.format("%s", f); }
+	public static String stringCaster(short f, String fmt) { return String.format("%d", f); }
+	public static String stringCaster(int f, String fmt) { return String.format("%d", f); }
+	public static String stringCaster(long f, String fmt) { return String.format("%d", f); }
+	public static String stringCaster(boolean f, String fmt) { if (f) return "true" ; return "false"; }
 	
 }

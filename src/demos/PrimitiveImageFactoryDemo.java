@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -14,7 +17,10 @@ import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.colorInterpolator.SimpleColorInterpolator;
 import imaging.imageFactories.ImageFactory;
 import imaging.imageFactories.ImageFactory.SimpleImagePanel;
+import imaging.imagers.PrimitiveArrayData;
 import swing.SwingUtils;
+import swing.stretchAndClick.ImagePanelFactory;
+import swing.stretchAndClick.PrimitiveImagePanel;
 import utils.ColorUtils;
 import utils.Sequences;
 
@@ -24,20 +30,20 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 	static int[][] datInt;
 	static boolean[][] datBool;
 	static byte[][] datByte;
+	static Random r = new Random();
 
 	static void setup()
 	{
-	
 	}
 
 	public static void main(String[] args) 
 	{
 		boolean show = true, save = false;
 
-		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
+		//		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
 		intDemo(500, 700, 10, 20, 1.3, show, save);
-		booleanDemo(500, 600, 1.5, show, save);
-		byteDemo(200, 300, 4, show, save);
+		//		booleanDemo(500, 600, 1.5, show, save);
+		//		byteDemo(200, 300, 4, show, save);
 	}
 
 	static void byteDemo(int width, int height, double size, boolean show, boolean saveFile)
@@ -119,7 +125,9 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		}
 	}
 
-	static void intDemo(int nCol, int nRow, int min, int max, double size, boolean show, boolean saveFile)
+	static void intDemo(int nCol, int nRow, 
+			int min, int max, double size,
+			boolean show, boolean saveFile)
 	{
 		setup();
 		int nPts = max - min;
@@ -129,14 +137,29 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		int[] x2 = new int[nPts], y2 = new int[nPts];
 		double[] dists = new double[nPts];
 
-		for (int i = 0; i < nPts; i++) { x2[i] = r.nextInt(nCol + 1); y2[i] = r.nextInt(nRow + 1); }
-		int[][][] ints = new int[4][nCol][nRow];
+		for (int i = 0; i < nPts; i++) { 
+			x2[i] = r.nextInt(nCol + 1); 
+			y2[i] = r.nextInt(nRow + 1); }
+		//		int[][][] ints = new int[4][nCol][nRow];
 
-		for (int iii = 0; iii < 4; iii++) 
+
+		List<PrimitiveArrayData<Object>> arrDat1 = new ArrayList<>();
+		List<PrimitiveArrayData<Object>> arrDat2 = new ArrayList<>();
+
+		for (int tr = 0; tr < 2; tr++) for (int fa = 0; fa < 2; fa++)
 		{
-			for (int ii = 0; ii < nPts; ii++) { x[ii] = r.nextInt(nCol + 1); y[ii] = r.nextInt(nRow + 1); }
+			int[][] dat1 = new int[nCol][nRow];
+			for (int ii = 0; ii < nPts; ii++) 
+			{
+				x[ii] = r.nextInt(nCol + 1); y[ii] = r.nextInt(nRow + 1); 
+			}
 			for (int i = 0; i < nCol; i++) for (int j = 0; j < nRow; j++)
-			{	dists = dist(i, j, x, y); ints[iii][i][j] = nearest(dists, vals); }
+			{
+				dists = dist(i, j, x, y); 
+				dat1[i][j] = nearest(dists, vals); 
+			}
+			arrDat1.add(new PrimitiveArrayData<Object>(dat1, trueFalse[tr], trueFalse[fa], false));
+			arrDat2.add(new PrimitiveArrayData<Object>(dat1, trueFalse[tr], trueFalse[fa], true));
 		}
 
 		c = SimpleColorInterpolator.factory(ColorUtils.TOPO_COLORS, min, max,
@@ -148,10 +171,43 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		int z = 0;
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
 		{
-			f1.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
-					ints[z], c, trueFalse[j], trueFalse[i], false)));
-			f2.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
-					ints[z], c, trueFalse[j], trueFalse[i], true)));
+			PrimitiveImagePanel<Object> pan = 
+					ImagePanelFactory.buildPanel(
+							arrDat1.get(z),
+							c, 
+							"int", 
+							null, null, null,
+							"%.0d", 
+							true, 
+							false, false, false,
+							100,
+							trueFalse[j], trueFalse[i],
+							false,
+							-1, -1,
+							0.01);
+			f1.add(pan);
+
+			pan = ImagePanelFactory.buildPanel(
+					arrDat2.get(z),
+					c, 
+					"int", 
+					null, null, null,
+					"%.0d", 
+					true, 
+					false, false, false,
+					100,
+					trueFalse[j], trueFalse[i],
+					true,
+					-1, -1,
+					0.01);
+			f2.add(pan);
+
+
+			//
+			//			f1.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
+			//					ints[z], c, trueFalse[j], trueFalse[i], false)));
+			//			f2.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
+			//					ints[z], c, trueFalse[j], trueFalse[i], true)));
 			z++;
 		}
 

@@ -44,18 +44,26 @@ public class WatchersTest {
 			watcherMap.get(st).getByteVal(beans.get(0).get(0));
 			watcherMap.get(st).getBoolVal(beans.get(0).get(0));
 			watcherMap.get(st).getParsedBoolVal(beans.get(0).get(0));
+			
+			watcherMap.get(st).getStringVal(bArray[0][1]);
+			watcherMap.get(st).getDoubleVal(bArray[0][1]);
+			watcherMap.get(st).getCharVal(bArray[0][1]);
+			watcherMap.get(st).getIntVal(bArray[0][1]);
+			watcherMap.get(st).getByteVal(bArray[0][1]);
+			watcherMap.get(st).getBoolVal(bArray[0][1]);
+			watcherMap.get(st).getParsedBoolVal(bArray[0][1]);
 
-			watcherMap.get(st).getDoubleVal(beans);
-			watcherMap.get(st).getIntVal(beans);
-			watcherMap.get(st).getByteVal(beans);
-			watcherMap.get(st).getBoolVal(beans);
-			watcherMap.get(st).getParsedBoolVal(beans);
-
-			watcherMap.get(st).getDoubleVal(bArray);
-			watcherMap.get(st).getIntVal(bArray);
-			watcherMap.get(st).getByteVal(bArray);
-			watcherMap.get(st).getBoolVal(bArray);
-			watcherMap.get(st).getParsedBoolVal(bArray);
+//			watcherMap.get(st).getDoubleVal(beans);
+//			watcherMap.get(st).getIntVal(beans);
+//			watcherMap.get(st).getByteVal(beans);
+//			watcherMap.get(st).getBoolVal(beans);
+//			watcherMap.get(st).getParsedBoolVal(beans);
+//
+//			watcherMap.get(st).getDoubleVal(bArray);
+//			watcherMap.get(st).getIntVal(bArray);
+//			watcherMap.get(st).getByteVal(bArray);
+//			watcherMap.get(st).getBoolVal(bArray);
+//			watcherMap.get(st).getParsedBoolVal(bArray);
 		}
 	}
 }

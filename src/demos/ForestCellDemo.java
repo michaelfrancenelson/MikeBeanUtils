@@ -7,7 +7,7 @@ import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.builder.NetCDFObjBuilder;
 import beans.sampleBeans.ForestCell;
 import swing.SwingUtils;
-import swing.stretchAndClick.ObjectArrayPanelFactory;
+import swing.stretchAndClick.ImagePanelFactory;
 import utils.ColorUtils;
 
 public class ForestCellDemo extends DemoConsts
@@ -29,7 +29,7 @@ public class ForestCellDemo extends DemoConsts
 		forest = NetCDFObjBuilder.factory2D(ForestCell.class, filename);
 		f1 = SwingUtils.frameFactory(width, height, "Forest Cell Demo");
 		
-		objPan = ObjectArrayPanelFactory.buildPanel(
+		objPan = ImagePanelFactory.buildPanel(
 				ForestCell.class, ParsedField.class, 
 				forest, null, "elevation",
 				ColorUtils.TERRAIN_COLORS, ColorUtils.GREENS,

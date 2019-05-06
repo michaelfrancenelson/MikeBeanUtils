@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
+import imaging.colorInterpolator.ColorInterpolator;
 import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.colorInterpolator.SimpleColorInterpolator;
 
 public class ImagerFactory 
 {
-
 	public static <T> BeanImager<T> quickFactory(
 			List<List<T>> listDat,  T[][] arrayDat, int nLegendSteps, 
 			boolean invertX, boolean invertY, boolean transpose,
@@ -32,7 +32,6 @@ public class ImagerFactory
 				nLegendSteps, lToH, horz
 				);
 	}
-	
 	
 	/**
 	 * Build an imager with some default options:
@@ -89,11 +88,11 @@ public class ImagerFactory
 		if (dblFmt == null)
 			throw new IllegalArgumentException("Double precision format string cannot be null");
 		
-		ObjectImager<T> out = new ObjectImager<T>();
-
 		if (lists != null && objArray != null) 
 			throw new IllegalArgumentException("Only one of the 'lists', or 'objArray' parameters can be non-null.");
 		
+		ObjectImager<T> out = new ObjectImager<T>();
+
 		if (lists != null)
 		{
 			/* First make sure all the lists are the same length. */
@@ -105,27 +104,40 @@ public class ImagerFactory
 			}
 			out.setData(lists);
 		}
+
 		else out.setData(objArray);
 		
-		out.initialize(clazz, annClass, dblFmt, includeNABoolean, transpose, flipX, flipY,
-				nLegendSteps, legLowToHi, horizLegend);
-		
-		out.setInterpolator(SimpleColorInterpolator.factory(
-				gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt));
-	
-		out.setBooleanInterpolator(SimpleBooleanColorInterpolator.factory(
-				booleanColors, naColor));
-
 		Map<String, Boolean> mp = new HashMap<>();
 		if (!(parsedBooleanFields == null)) for (String s : parsedBooleanFields) mp.put(s, true);
-		out.parsedBooleanFieldNames = mp;
-		out.setField(fieldName.toLowerCase());
+		
+		out.initialize(
+				clazz, annClass, 
+				dblFmt, fieldName,
+				SimpleColorInterpolator.factory(
+						gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt),
+				SimpleBooleanColorInterpolator.factory(booleanColors, naColor),
+				includeNABoolean, transpose, flipX, flipY,
+				nLegendSteps, legLowToHi, horizLegend, mp);
 		return out;
-//		out.showBoolNA = includeNABoolean;
-//		out.transposeImg = transpose;
-//		out.flipAxisX = flipX; 
-//		out.flipAxisY = flipY;
-//		out.nLegendSteps = nLegendSteps; out.legLoToHi = legLowToHi; out.horizLeg = horizLegend;
+	}
+
+	
+	public static <T> PrimitiveImager factory(
+			PrimitiveArrayData<T> dat,
+			ColorInterpolator ci,
+			double naDouble, int naInt, Color naColor,
+			String dblFmt,
+			boolean includeNABoolean,
+			boolean transpose, boolean flipX, boolean flipY,
+			int nLegendSteps, boolean legLowToHi, boolean horizLegend
+			)
+	{
+		if (dblFmt == null)
+			throw new IllegalArgumentException("Double precision format string cannot be null");
+		PrimitiveImager out = new PrimitiveImager();
+		out.setData(dat);
+		out.initialize(dblFmt, ci);
+		return out;
 	}
 	
 //	@Deprecated

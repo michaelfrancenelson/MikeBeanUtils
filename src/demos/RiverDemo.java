@@ -17,7 +17,7 @@ import imaging.imagers.BeanImager;
 import imaging.imagers.ImagerFactory;
 import swing.ObjectArrayImageComboBox;
 import swing.SwingUtils;
-import swing.stretchAndClick.ObjectArrayPanelFactory;
+import swing.stretchAndClick.ImagePanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
 import utils.ColorUtils;
 
@@ -49,7 +49,7 @@ public class RiverDemo extends DemoConsts
 		
 		JFrame f1 = SwingUtils.frameFactory(1100, 1100);
 		
-		pan1 = ObjectArrayPanelFactory.buildPanel(
+		pan1 = ImagePanelFactory.buildPanel(
 				TerrainBean.class, 
 				ParsedField.class,
 				null, cells1, "age", 
@@ -97,7 +97,7 @@ public class RiverDemo extends DemoConsts
 		
 		f1 = SwingUtils.frameFactory(800, 1500);
 
-		pan1 = ObjectArrayPanelFactory.buildPanel(
+		pan1 = ImagePanelFactory.buildPanel(
 				TerrainBean.class, ParsedField.class,
 				null, terrainArray, "stream", 
 				ColorUtils.HEAT_COLORS, boolCols,
@@ -107,21 +107,21 @@ public class RiverDemo extends DemoConsts
 		pan2 = 
 				
 				
-				ObjectArrayPanelFactory.buildPanel(
+				ImagePanelFactory.buildPanel(
 				TerrainBean.class, ParsedField.class,
 				null, terrainArray, "elevation", 
 				ColorUtils.HEAT_COLORS, boolCols,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				dblFmt, null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
-		pan3 = ObjectArrayPanelFactory.buildPanel(
+		pan3 = ImagePanelFactory.buildPanel(
 				TerrainBean.class, ParsedField.class,
 				null, terrainArray, "age", 
 				ColorUtils.HEAT_COLORS, boolCols,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				dblFmt, null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
-		pan4 = ObjectArrayPanelFactory.buildPanel(
+		pan4 = ImagePanelFactory.buildPanel(
 				TerrainBean.class, ParsedField.class,
 				null, terrainArray, "elevation", 
 				ColorUtils.HEAT_COLORS, boolCols,
@@ -215,7 +215,7 @@ public class RiverDemo extends DemoConsts
 				"stream", TerrainBean.class, 
 				ColorUtils.HEAT_COLORS, boolCols);
 
-		p1 = ObjectArrayPanelFactory.buildPanel(imager1, "stream", true, 0, 0, 0.1);
+		p1 = ImagePanelFactory.buildPanel(imager1, "stream", true, 0, 0, 0.1);
 		f1.setLayout(new GridLayout(1, 1));
 		f1.add(p1);
 		f1.setVisible(true);

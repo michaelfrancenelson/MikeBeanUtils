@@ -2,6 +2,7 @@ package demos;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.io.File;
 import java.util.List;
 import java.util.Random;
 
@@ -14,6 +15,7 @@ import beans.sampleBeans.TerrainBean;
 import imaging.colorInterpolator.ColorInterpolator;
 import imaging.imageFactories.ImageFactory.SimpleImagePanel;
 import imaging.imagers.BeanImager;
+import swing.stretchAndClick.ImagePanel;
 import swing.stretchAndClick.ObjectImagePanel;
 import utils.ColorUtils;
 
@@ -37,9 +39,13 @@ public class DemoConsts
 
 	static Random r;
 	
-	static BeanImager<?> im1, im2;
+	static BeanImager<AllFlavorBean> imA1, imA2;
+	static BeanImager<TerrainBean> imT1, imT2;
 
+	static String france = "testImages" + File.separator + "france.jpg";
+	
 	static SimpleImagePanel simplePan;
+	static ImagePanel imgPan;
 	static ObjectImagePanel<?> objPan;
 	
 	static int nLegendSteps;

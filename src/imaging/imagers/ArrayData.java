@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
-import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import utils.ArrayUtils;
 import utils.Sequences;
 

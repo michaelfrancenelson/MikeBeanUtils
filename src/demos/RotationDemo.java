@@ -3,7 +3,7 @@ package demos;
 import beans.sampleBeans.AllFlavorBean;
 import imaging.imagers.ImagerFactory;
 import swing.SwingUtils;
-import swing.stretchAndClick.ObjectArrayPanelFactory;
+import swing.stretchAndClick.ImagePanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
 
 public class RotationDemo extends DemoConsts
@@ -35,7 +35,7 @@ public class RotationDemo extends DemoConsts
 			for (int flipX = 0; flipX < 1; flipX++)
 		{
 
-			ObjectImagePanel<AllFlavorBean> pan = ObjectArrayPanelFactory.buildPanel(
+			ObjectImagePanel<AllFlavorBean> pan = ImagePanelFactory.buildPanel(
 					ImagerFactory.quickFactory(
 							null, objArray, 100,
 							trueFalse[flipX], trueFalse[flipY], trueFalse[trans],

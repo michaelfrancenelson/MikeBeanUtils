@@ -7,7 +7,7 @@ import utils.ArrayUtils;
 public class PrimitiveArrayData<T> extends ArrayData<T>
 {
 	private String type;
-
+	String dblFmt;
 	@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
 	{
 		double[] minmax = null;
@@ -50,7 +50,29 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		
 		return ci.getColor(val);
 	}
-
+	
+	public String queryData(double relativeX, double relativeY)
+	{
+		setDataCoords(relativeX, relativeY);
+		String val;
+		switch(type)
+		{
+		case("dbl"): val = ArrayUtils.stringCaster(dblDat[dataX][dataY], dblFmt); break;
+		case("flt"): val = ArrayUtils.stringCaster(fltDat[dataX][dataY], dblFmt); break;
+		case("byt"): val = ArrayUtils.stringCaster(bytDat[dataX][dataY], dblFmt); break;
+		case("sht"): val = ArrayUtils.stringCaster(shtDat[dataX][dataY], dblFmt); break;
+		case("int"): val = ArrayUtils.stringCaster(intDat[dataX][dataY], dblFmt); break;
+		case("lng"): val = ArrayUtils.stringCaster(lngDat[dataX][dataY], dblFmt); break;
+		case("chr"): val = ArrayUtils.stringCaster(chrDat[dataX][dataY], dblFmt); break;
+		case("boo"): val = ArrayUtils.stringCaster(booDat[dataX][dataY], dblFmt); break;
+		default: val = null;
+		}
+		
+		logger.debug(String.format("Querying object at relative coords: %.2f, %.2f "
+				+ " %s with value %s", relativeX, relativeY, type, val));
+		return val;
+	}
+	
 	public PrimitiveArrayData(double[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{  
 		dblDat = dat;  type = "dbl";

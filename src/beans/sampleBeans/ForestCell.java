@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import beans.builder.AnnotatedBeanReader.ParsedField;
 
 
+@SuppressWarnings("unused")
 public class ForestCell
 {
 	@Retention(RetentionPolicy.RUNTIME)

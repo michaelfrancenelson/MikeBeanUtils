@@ -1,12 +1,7 @@
 package imaging.imagers;
 
-import java.awt.Color;
 import java.awt.Image;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-
-import beans.memberState.FieldWatcher;
-import imaging.colorInterpolator.ColorInterpolator;
 
 public interface BeanImager<T> 
 {
@@ -14,24 +9,17 @@ public interface BeanImager<T>
 	 * 
 	 * @return the class of objects from which the images are generated
 	 */
-	public Class<T> getObjClass();
-	public Class<? extends Annotation> getAnnClass();
+//	public Class<T> getObjClass();
+//	public Class<? extends Annotation> getAnnClass();
 
-	public ImagerData<T> getImgData();
-	
 	/** Return the current image, generated from the currently active field. */
 	public Image getImage();
-	public Image getLegendImage();
-
 	public String getCurrentFieldName();
-	public Field getCurrentField();
 	
-	/** Set or update the color scale used in the image 
-	 * 
-	 * @param colors
-	 */
-	public void setColors(Color[] colors);
-
+	
+	int getDataWidth();
+	int getDataHeight();
+	
 	/** Set the field to be imaged:
 	 *  Read data from field and build image.
 	 * @param fieldName
@@ -49,22 +37,17 @@ public interface BeanImager<T>
 	 */
 	public void refresh();
 
-	/**
-	 * 
-	 * @return a watcher for the currently selected field.
-	 */
-	public FieldWatcher<T> getWatcher();
-
-	String queryLegendAt(double relativeI, double relativeJ);
-	String queryDataAt(double relativeI, double relativeJ);
+	String queryData(double relativeI, double relativeJ);
 	
 	public void setDataSelection(double relativeI, double relativeJ);
-	
-	public ColorInterpolator getInterpolator();
-	public ColorInterpolator getBooleanInterpolator();
-	void setInterpolator(ColorInterpolator ci);
-	void setBooleanInterpolator(ColorInterpolator ci);
 	void setDblFmt(String fmt);
+	
+//	public FieldWatcher<T> getWatcher();
+//	String queryLegendAt(double relativeI, double relativeJ);
+//	public ColorInterpolator getInterpolator();
+//	public ColorInterpolator getBooleanInterpolator();
+//	void setInterpolator(ColorInterpolator ci);
+//	void setBooleanInterpolator(ColorInterpolator ci);
 }
 
 
@@ -126,3 +109,11 @@ public interface BeanImager<T>
 // * @return
 // */
 //public String queryObjectAt(int i, int j);
+
+//	public Field getCurrentField();
+
+/** Set or update the color scale used in the image 
+ * 
+ * @param colors
+ */
+//	public void setColors(Color[] colors);

@@ -24,7 +24,6 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import beans.memberState.FieldWatcher;
 import imaging.imagers.BeanImager;
 import imaging.imagers.PanelLabel;
 import swing.ObjectArrayImageComboBox;
@@ -45,95 +44,102 @@ public class ObjectImagePanel<T> extends JPanel
 	static final long serialVersionUID = -2893196948005659813L;
 	static Logger logger = LoggerFactory.getLogger(ObjectImagePanel.class);
 
-	private List<PanelLabel>  labels = new ArrayList<>();
-	private List<PanelLabel>  valueLabels = new ArrayList<>();
-	private List<PanelLabel> points = new ArrayList<>();
+	protected List<PanelLabel> labels = new ArrayList<>();
+	protected List<PanelLabel> valueLabels = new ArrayList<>();
+	protected List<PanelLabel> points = new ArrayList<>();
 
-	private String currentClickValue;
+	protected String currentClickValue;
 
 	private BeanImager<T> imager;
-	private ObjectImagePanel<T> legendPanel;
-	private FieldWatcher<T> watcher;
-	private Image image = null;
+	private Class<T> clazz;
+	private Class<? extends Annotation> annClass;
+
+	protected Image image = null;
 
 	private JComboBox<String> controlComboBox;
 
-	private double imageAspectRatio, compAspectRatio;
+	protected double imageAspectRatio, compAspectRatio;
 
-	private boolean centerInPanel = true;
-	private boolean fixedAspectRatio, fixedWidth, fixedHeight, fixedImg, decorate;
-	private boolean isLegend;
-	double ptRelSize;
+	protected boolean centerInPanel = true;
+	protected boolean fixedAspectRatio, fixedWidth, fixedHeight, decorate;
+	protected double ptRelSize;
 	int 
 	panelWidth, panelHeight, 
 	imgDisplayWidth, imgDisplayHeight, 
-	imgCornerX, imgCornerY;
+	imgCornerX, imgCornerY, dataWidth, dataHeight;
 
 
 	void init(
 			BeanImager<T> imgr, 
 			int width, int height, 
 			boolean keepAspectRatio, 
-			boolean legend)
+			Class<T> clazz, Class<? extends Annotation> annClass)
 	{
+		this.clazz = clazz; this.annClass = annClass;
 		fixedWidth = false; fixedHeight = false;
-		if (width > 0)  
+		this.imageAspectRatio = -1;
+		
+		if ((width > 0) && (height > 0))
 		{
-			fixedAspectRatio = false;
-			fixedWidth = true;
-			imgDisplayWidth = width;
-		} 
-
-		if (height > 0)
-		{
-			fixedAspectRatio = false;
-			fixedHeight = true; 
-			imgDisplayHeight = height;
+			keepAspectRatio = true;
+			this.imageAspectRatio = 
+					((double) width) / ((double) height);
 		}
-
-		if (this.image != null)	this.fixedImg = true;
-		else if (imgr == null)
-			throw new IllegalArgumentException("Either an Image or a BeanImager must be passed to init()");
 		else
 		{
-			this.imager = imgr;
-			this.isLegend = legend;
-			this.watcher = imager.getWatcher();
-			if (isLegend) image = imager.getLegendImage();
-			else image = imager.getImage();
+			if (width > 0)  
+			{
+				fixedAspectRatio = false;
+				fixedWidth = true;
+				imgDisplayWidth = width;
+			} 
 
-			this.addMouseListener(new MouseListener() {
-				@Override public void mouseClicked(MouseEvent click)
-				{
-					int mouseX = click.getX(); int mouseY = click.getY();
-
-					double[] imgRelCoords = 
-							new double[]
-									{
-											ArrayUtils.absToRelCoord(mouseX - imgCornerX, imgDisplayWidth),
-											ArrayUtils.absToRelCoord(mouseY - imgCornerY, imgDisplayHeight)
-									};
-					currentClickValue = imager.queryDataAt(imgRelCoords[0], imgRelCoords[1]); 					
-					logger.debug(String.format("Value of %s: %s", 
-							imager.getCurrentFieldName(), currentClickValue));
-				}
-				@Override public void mouseEntered(MouseEvent arg0) {}
-				@Override public void mouseExited(MouseEvent arg0) {}
-				@Override public void mousePressed(MouseEvent arg0) {}
-				@Override public void mouseReleased(MouseEvent arg0) {}
-			});
+			if (height > 0)
+			{
+				fixedAspectRatio = false;
+				fixedHeight = true; 
+				imgDisplayHeight = height;
+			}
 		}
+
+		this.imager = imgr;
+		image = imager.getImage();
+
+		this.addMouseListener(new MouseListener() {
+			@Override public void mouseClicked(MouseEvent click)
+			{
+				int mouseX = click.getX(); int mouseY = click.getY();
+
+				double[] imgRelCoords = 
+						new double[]
+								{
+										ArrayUtils.absToRelCoord(mouseX - imgCornerX, imgDisplayWidth),
+										ArrayUtils.absToRelCoord(mouseY - imgCornerY, imgDisplayHeight)
+								};
+				currentClickValue = imager.queryData(imgRelCoords[0], imgRelCoords[1]); 					
+				logger.debug(String.format("Value of %s: %s", 
+						imager.getCurrentFieldName(), currentClickValue));
+			}
+			@Override public void mouseEntered(MouseEvent arg0) {}
+			@Override public void mouseExited(MouseEvent arg0) {}
+			@Override public void mousePressed(MouseEvent arg0) {}
+			@Override public void mouseReleased(MouseEvent arg0) {}
+		});
 
 		if (this.image == null)
 			throw new IllegalArgumentException("Not able to create image from field " 
-					+ imgr.getCurrentFieldName() + " of type " +
-					imgr.getCurrentField().getType());
+					+ imgr.getCurrentFieldName() + ".");
 
 		this.fixedAspectRatio = keepAspectRatio;
-		this.imageAspectRatio = ((double) image.getWidth(null)) / ((double) image.getHeight(null));
+		
+		if (this.imageAspectRatio < 0)
+		this.imageAspectRatio = 
+				((double) image.getWidth(null)) / ((double) image.getHeight(null));
 
 		imgDisplayWidth = image.getWidth(null);
 		imgDisplayHeight = image.getHeight(null);
+		this.dataWidth = imager.getDataWidth();
+		this.dataHeight = imager.getDataHeight();
 	}
 
 	/** 
@@ -142,103 +148,47 @@ public class ObjectImagePanel<T> extends JPanel
 	 */
 	public void updateImage()
 	{
-		if (!fixedImg) 
-		{
-			this.watcher = imager.getWatcher();
-			imager.refresh();
-			image = imager.getImage();
-			if (legendPanel != null)
-			{
-				logger.debug("ObjectArrayImagePanel: updating legend image to field " +
-						watcher.getFieldName());
-				legendPanel.watcher = watcher;
-				legendPanel.image = imager.getLegendImage();
-				legendPanel.paintComponent(legendPanel.getGraphics());
-			}
-			logger.debug("ObjectArrayImagePanel: updating array image to field " + watcher.getFieldName());
-			paintComponent(this.getGraphics());
-		}
+		imager.refresh();
+		image = imager.getImage();
+		logger.debug("ObjectArrayImagePanel: updating array image to field " + imager.getCurrentFieldName());
+		paintComponent(this.getGraphics());
 	}
 
-	public ObjectImagePanel<T> getLegendPanel()
-	{
-		int w = 0, h = 0;
-		if (fixedWidth) w = imgDisplayWidth;
-		if (fixedHeight) h = imgDisplayHeight;
-		legendPanel = ObjectArrayPanelFactory.buildLegendPanel(
-				imager, watcher.getFieldName(),
-				fixedAspectRatio, 
-				w, h, ptRelSize
-				);
-		return legendPanel;
-	}
+	//	public ObjectImagePanel<T> getLegendPanel()
+	//	{
+	//		int w = 0, h = 0;
+	//		if (fixedWidth) w = imgDisplayWidth;
+	//		if (fixedHeight) h = imgDisplayHeight;
+	//		legendPanel = ObjectArrayPanelFactory.buildLegendPanel(
+	//				imager, watcher.getFieldName(),
+	//				fixedAspectRatio, 
+	//				w, h, ptRelSize
+	//				);
+	//		return legendPanel;
+	//	}
 
-	public JComboBox<String> getControlComboBox(
-			Font font
-			)
+	public JComboBox<String> getControlComboBox(Font font)
 	{
 		final List<Field> f2;
-		f2 = FieldUtils.getFields(
-				imager.getObjClass(), imager.getAnnClass(), true, true);
+		f2 = FieldUtils.getFields(clazz, annClass, true, true);
 		List<String> dispNames = FieldUtils.getFieldNames(
-				f2, imager.getObjClass(), 
-				imager.getAnnClass(), true
-				);
-
+				f2, clazz, annClass, true); 
 		controlComboBox = ObjectArrayImageComboBox.comboBoxFactory(
-				this, imager.getAnnClass(), 
-				f2, dispNames, font);
-
-		//		controlComboBox = new JComboBox<String>(dispNames);
-		//
-		//		controlComboBox.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e)
-		//			{
-		//				System.out.println("ObjectArrayImagePanel: setting field to " +
-		//						f2.get(controlComboBox.getSelectedIndex()).getName());
-		//
-		//				setField(f2.get(controlComboBox.getSelectedIndex()));
-		//			}
-		//		});
-
+				this, annClass,	f2, dispNames, font);
 		if (font != null) controlComboBox.setFont(font);
 		return controlComboBox;
 	}
 
 	public String queryRelative(double relativeI, double relativeJ)
 	{
-		if (fixedImg) return null;
-		if (! isLegend)
-		{
-			return imager.queryDataAt(relativeI, relativeJ);
-		}
-		else
-		{
-			logger.debug("ObjectArrayImagePanel.queryRelative()"
-					+ " legend value at (" + relativeI + ", " + relativeJ + ")");
-			return imager.queryLegendAt(relativeI, relativeJ);
-		}
-	}
-
-	/** Set the image and image scaling properties of the panel.
-	 * 
-	 * @param img
-	 * @param width
-	 * @param height
-	 * @param keepAspectRatio
-	 */
-	void init(Image img, int width, int height, boolean keepAspectRatio) 
-	{
-		this.image = img;
-		init(null, width, height, keepAspectRatio, false);
+		return imager.queryData(relativeI, relativeJ);
 	}
 
 	@Override public void paintComponent(Graphics g)
 	{
-		int datWidth  = imager.getImgData().getWidth();
-		int datHeight = imager.getImgData().getHeight();
-		logger.trace(String.format("Data width: %d, data height: %d", datWidth, datHeight));
+//		int datWidth  = imager.getDataWidth();
+//		int datHeight = imager.getDataHeight();
+		logger.trace(String.format("Data width: %d, data height: %d", dataWidth, dataHeight));
 		Insets insets = getInsets();
 		Graphics2D g2d = (Graphics2D) g.create();
 		int fixedX = this.imgDisplayWidth, fixedY = this.imgDisplayHeight;
@@ -282,16 +232,16 @@ public class ObjectImagePanel<T> extends JPanel
 
 		g2d.drawImage(image, imgCornerX, imgCornerY, imgDisplayWidth, imgDisplayHeight, null);
 
-		int cellWidth  = (int) ((double) imgDisplayWidth / (double) datWidth);
-		int cellHeight = (int) ((double) imgDisplayHeight / (double) datHeight);
+		int cellWidth  = (int) ((double) imgDisplayWidth / (double) dataWidth);
+		int cellHeight = (int) ((double) imgDisplayHeight / (double) dataHeight);
 
 		if (fixedAspectRatio)
 		{
 			cellWidth = Math.min(cellWidth, cellHeight);
 			cellHeight = cellWidth;
 		}
-		
-		
+
+
 		if (decorate)
 		{
 			logger.trace("Adding labels and points.");
@@ -324,10 +274,10 @@ public class ObjectImagePanel<T> extends JPanel
 	public void labelPixels(Font font, Color color)
 	{
 		double relI, relJ;
-		int datWidth = imager.getImgData().getWidth();
-		int datHeight = imager.getImgData().getHeight();
-		for (int row = 0; row < imager.getImgData().getHeight(); row++)
-			for (int col = 0; col < imager.getImgData().getWidth(); col++)
+		int datWidth = imager.getDataWidth();
+		int datHeight = imager.getDataHeight();
+		for (int row = 0; row < datHeight; row++)
+			for (int col = 0; col < datWidth; col++)
 			{
 				relI = ArrayUtils.absToRelCoord(col, datWidth);
 				relJ = ArrayUtils.absToRelCoord(row, datHeight);
@@ -364,14 +314,14 @@ public class ObjectImagePanel<T> extends JPanel
 			double relI, double relJ, Font font, Color color)
 	{
 		if (font == null) font = this.getFont();
-		String label = imager.getImgData().queryData(relI, relJ, imager.getWatcher());
+		String label = imager.queryData(relI, relJ);
 		labelFromImageRelCoords(
 				relI, relJ, label, font, color, -9999, "value label");
-	
+
 		logger.trace(String.format("Adding value "
 				+ "label %s at coords (%.0f%%, %.0f%%)",
 				label, 100 * relI, 100 * relJ));
-		
+
 		//		addLabel(dataX, dataY, label, font, Color.black, true, -1);
 
 		//		int[] coords = new int[] {
@@ -396,8 +346,8 @@ public class ObjectImagePanel<T> extends JPanel
 	public Image getImg() { return this.image; }
 
 	public RenderedImage getRenderedImage() { return (RenderedImage)this.image; }
-	public Class<T> getObjClass() { return this.getImager().getObjClass(); }
-	public Class<? extends Annotation> getAnnClass() { return this.getImager().getAnnClass(); }
+	//	public Class<T> getObjClass() { return this.getImager().getObjClass(); }
+	//	public Class<? extends Annotation> getAnnClass() { return this.getImager().getAnnClass(); }
 
 	public void setLabelVisibility(boolean b) { this.decorate = b; repaint();}
 
@@ -407,7 +357,6 @@ public class ObjectImagePanel<T> extends JPanel
 	public String getCurrentClickValue() { return currentClickValue; }
 	public int getImgDisplayWidth() { return imgDisplayWidth;}
 	public int getImgDisplayHeight() { return imgDisplayHeight; }
-
 
 	/**
 	 * This method makes a "deep clone" of any Java object it is given.
@@ -427,7 +376,6 @@ public class ObjectImagePanel<T> extends JPanel
 			return null;
 		}
 	}
-
 
 }
 /**
