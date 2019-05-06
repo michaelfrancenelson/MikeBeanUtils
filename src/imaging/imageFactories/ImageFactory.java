@@ -29,8 +29,20 @@ public class ImageFactory
 	public static <T> ImageMinMax buildPackageImage(
 			ImagerData<T> dat, ColorInterpolator ci, FieldWatcher<T> w)
 	{
+		dat.setDataMinMax(w, ci);
 		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
-		ci.updateMinMax(dat.getDataMin(), dat.getDataMax());
+		
+		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
+		{
+			out.setRGB(i, j, dat.getRGBInt(i, j, ci, w));
+		}
+		return new ImageMinMax(dat.getDataMin(), dat.getDataMax(), out);
+	}
+	public static <T> ImageMinMax buildPrimitiveImage(
+			PrimitiveArrayData<T> dat, ColorInterpolator ci, FieldWatcher<T> w)
+	{
+		dat.setDataMinMax(null, ci);
+		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
 		
 		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
 		{
@@ -69,6 +81,8 @@ public class ImageFactory
 	{
 		ImagerData<Object> dat = new 
 				PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
+		dat.setDataMinMax(null, ci);
+		ci.updateMinMax(dat.getDataMin(), dat.getDataMax());
 		return buildPackageImage(dat, ci, null);
 	}
 
@@ -87,6 +101,8 @@ public class ImageFactory
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
 		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
+		dat.setDataMinMax(null, ci);
+//		ci.updateMinMax(dat.getDataMin(), dat.getDataMax());
 		return buildPackageImage(dat, ci, null);
 	}
 
@@ -105,6 +121,7 @@ public class ImageFactory
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
 		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
+		ci.updateMinMax(dat.getDataMin(), dat.getDataMax());
 		return buildPackageImage(dat, ci, null);
 	}
 
@@ -127,6 +144,7 @@ public class ImageFactory
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
 		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
+		ci.updateMinMax(dat.getDataMin(), dat.getDataMax());
 		return buildPackageImage(dat, ci, null);
 	}
 
@@ -141,36 +159,22 @@ public class ImageFactory
 	 * @param transpose
 	 * @return
 	 */
-	public static ImageMinMax buildPrimitiveImage(Boolean[][] data, ColorInterpolator ci, boolean flipAxisX, boolean flipAxisY, boolean transpose)
+	public static ImageMinMax buildPrimitiveImage(
+			Boolean[][] data, ColorInterpolator ci)
 	{
 		int
 		startX = 0, startY = 0,
 		endX = data.length, endY = data[0].length, 
 		incrementX = 1, incrementY = 1;
 
-		if (flipAxisX) {int t = startX; endX = startX; startX = t; incrementX = -1; }
-		if (flipAxisY) {int t = startY; endY = startY; startY = t; incrementY = -1; }
-
 		BufferedImage img;
 
-		if (!transpose)
-		{
 			img = new BufferedImage(data.length, data[0].length, ObjectImageFactory.RGB_TYPE);
 			for (int i = startX; i != endX; i += incrementX) {
 				for (int j = startY; j != endY; j += incrementY) {
 					img.setRGB(i, j, ci.getBoxedColor(data[i][j]));
 				}
 			}
-		}
-		else
-		{
-			img = new BufferedImage(data[0].length, data.length, ObjectImageFactory.RGB_TYPE);
-			for (int i = startX; i != endX; i += incrementX) {
-				for (int j = startY; j != endY; j += incrementY) {
-					img.setRGB(j, i, ci.getBoxedColor(data[i][j]));
-				}
-			}
-		}
 		return new ImageMinMax(0, 1, img);
 	}
 	

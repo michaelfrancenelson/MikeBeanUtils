@@ -21,19 +21,16 @@ import swing.stretchAndClick.ObjectArrayPanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
 import utils.ColorUtils;
 
-public class RiverDemo
+public class RiverDemo extends DemoConsts
 {
 
-	static Font font = new Font("times", 2, 45);
-	static Color[] bCol = new Color[] {Color.gray, Color.green};
-	//	static Color[] bCol = new Color[] {Color.white, Color.black};
 
-	public static void main(String[] args) {
+	public static void main(String[] args) 
+	{
 
 		pointLabelDemo();
 		
 		arrayPanelDemo();
-
 	}
 
 	public static void pointLabelDemo()
@@ -56,7 +53,7 @@ public class RiverDemo
 				TerrainBean.class, 
 				ParsedField.class,
 				null, cells1, "age", 
-				ColorUtils.HEAT_COLORS, bCol,
+				ColorUtils.HEAT_COLORS, boolCols,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				"%.2d", null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
@@ -89,25 +86,21 @@ public class RiverDemo
 		double streamVertical = 0.5;
 		double roadVertical = 0.5;
 		
+		dblFmt = "%.2f";
+		terrainArray = TerrainBean.factory(150, 230, 1.5, 13);
+		TerrainBean.randomPath(terrainArray, road, !stream, roadRight, roadDown, roadVertical, 0.5, roadCorr, 10);
 		
-		String dblFmt = "%.2f";
-		
-		TerrainBean[][] cells1 = TerrainBean.factory(150, 230, 1.5, 13);
-		
-		TerrainBean.randomPath(cells1, road, !stream, roadRight, roadDown, roadVertical, 0.5, roadCorr, 10);
-		
-		TerrainBean.randomPath(cells1, !road, stream, streamRight, streamDown, streamVertical, 0.5, riverCorr, 1);
+		TerrainBean.randomPath(terrainArray, !road, stream, streamRight, streamDown, streamVertical, 0.5, riverCorr, 1);
 		
 		ObjectImagePanel<TerrainBean> pan1, pan2, pan3, pan4;
+		ptSize = 0.15;
 		
-		double ptSize = 0.15;
-		
-		JFrame f1 = SwingUtils.frameFactory(800, 1500);
+		f1 = SwingUtils.frameFactory(800, 1500);
 
 		pan1 = ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, ParsedField.class,
-				null, cells1, "stream", 
-				ColorUtils.HEAT_COLORS, bCol,
+				null, terrainArray, "stream", 
+				ColorUtils.HEAT_COLORS, boolCols,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				dblFmt, null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
@@ -116,22 +109,22 @@ public class RiverDemo
 				
 				ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, ParsedField.class,
-				null, cells1, "elevation", 
-				ColorUtils.HEAT_COLORS, bCol,
+				null, terrainArray, "elevation", 
+				ColorUtils.HEAT_COLORS, boolCols,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				dblFmt, null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
 		pan3 = ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, ParsedField.class,
-				null, cells1, "age", 
-				ColorUtils.HEAT_COLORS, bCol,
+				null, terrainArray, "age", 
+				ColorUtils.HEAT_COLORS, boolCols,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				dblFmt, null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
 		pan4 = ObjectArrayPanelFactory.buildPanel(
 				TerrainBean.class, ParsedField.class,
-				null, cells1, "elevation", 
-				ColorUtils.HEAT_COLORS, bCol,
+				null, terrainArray, "elevation", 
+				ColorUtils.HEAT_COLORS, boolCols,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				dblFmt, null, true, false, false, false,
 				100, true, true, true, 0, 0, ptSize);
@@ -220,7 +213,7 @@ public class RiverDemo
 				null, cells, 100,
 				true, false,
 				"stream", TerrainBean.class, 
-				ColorUtils.HEAT_COLORS, bCol);
+				ColorUtils.HEAT_COLORS, boolCols);
 
 		p1 = ObjectArrayPanelFactory.buildPanel(imager1, "stream", true, 0, 0, 0.1);
 		f1.setLayout(new GridLayout(1, 1));

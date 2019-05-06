@@ -13,10 +13,6 @@ import imaging.colorInterpolator.ColorInterpolator;
 import imaging.imageFactories.ImageFactory;
 import imaging.imageFactories.ImageFactory.ImageMinMax;
 import imaging.imagers.ArrayData.ListData;
-import utils.ArrayUtils.ByteArrayMinMax;
-import utils.ArrayUtils.DblArrayMinMax;
-import utils.ArrayUtils.IntArrayMinMax;
-import utils.Sequences;
 
 public class ObjectImager<T> implements BeanImager<T>
 {
@@ -24,14 +20,14 @@ public class ObjectImager<T> implements BeanImager<T>
 	private String dblFmt;
 	private boolean transposeImg, showBoolNA, flipAxisX, flipAxisY, horizLeg, legLoToHi;
 	private int nLegendSteps;
-	
+
 	Class<T> clazz;
 	Class<? extends Annotation> annClass;
 
-//	IntArrayMinMax legDatInt;
-//	DblArrayMinMax legDatDbl;
-//	ByteArrayMinMax legDatByte;
-//	Boolean[][] legDatBool = null;
+	//	IntArrayMinMax legDatInt;
+	//	DblArrayMinMax legDatDbl;
+	//	ByteArrayMinMax legDatByte;
+	//	Boolean[][] legDatBool = null;
 
 	double datMin, datMax;
 
@@ -43,7 +39,9 @@ public class ObjectImager<T> implements BeanImager<T>
 	Map<String, Boolean> parsedBooleanFieldNames;
 
 	private ImagerData<T> objectData;
-	private ImagerData<Object> legendData;
+	//	private ImagerData<Object> legendData;
+	private Boolean[][] booleanLegendData;
+	private PrimitiveArrayData<Object> legendData;
 
 	protected void buildWatchers()
 	{
@@ -72,26 +70,28 @@ public class ObjectImager<T> implements BeanImager<T>
 		buildWatchers();
 	}
 
-//	void clearLegendData()
-//	{
-////		legDatInt = null;
-////		legDatDbl = null;
-////		legDatByte = null;
-////		legDatBool = null;
-//	}
+	@Override public void setDblFmt(String fmt) 
+	{
+		this.dblFmt = fmt; 
+		for (String key : watchers.keySet())
+		{
+			FieldWatcher<T> w = watchers.get(key);
+			w.setDblFmt(fmt);
+			((SimpleFieldWatcher<T>) w).buildGetters();
+		}
+	}
 
 	void buildImage()
 	{
 		ColorInterpolator interp;
 		if ((parsedBooleanFieldNames != null) && 
-				(parsedBooleanFieldNames.containsKey(currentWatcher.getFieldName())))
+				(parsedBooleanFieldNames.containsKey(
+						currentWatcher.getFieldName().toLowerCase())))
 			interp = booleanCI;
 		else interp = ci;
 
 		String type = currentWatcher.getField().getType().getSimpleName();
-		
-		//		System.out.println("ObjectImager.buildImage() type = " + type);
-//		clearLegendData();
+
 		img = ImageFactory.buildPackageImage(objectData, interp, currentWatcher);
 		switch (type.toLowerCase())
 		{
@@ -99,30 +99,29 @@ public class ObjectImager<T> implements BeanImager<T>
 		case("string"): case("integer"):
 		{
 			legendData = objectData.getIntLegend(nLegendSteps, legLoToHi, horizLeg);
-//			legDatInt = objectData.intLegendData(nLegendSteps, legLoToHi, horizLeg); 
-//			legendImg = ImageFactory.buildImage(legDatInt.getDat(), interp, flipAxisX, flipAxisY, transposeImg).getImg();
 			break;
 		}
 		case("double"): case("float"):
 		{
-			legendData = objectData.getDoubleLegend(nLegendSteps, legLoToHi, horizLeg);
-//			legDatDbl = objectData.dblLegendData(nLegendSteps, legLoToHi, horizLeg); 
-//			legendImg = ImageFactory.buildImage(legDatDbl.getDat(), interp, flipAxisX, flipAxisY, transposeImg).getImg();
+			legendData = (PrimitiveArrayData<Object>)objectData.getDoubleLegend(nLegendSteps, legLoToHi, horizLeg);
 			break;
 		}
 		case("byte"):
 		{
-			legendData = objectData.getByteLegend(nLegendSteps, legLoToHi, horizLeg);
-//			legDatByte = objectData.byteLegendData(nLegendSteps, legLoToHi, horizLeg); 
-//			legendImg = ImageFactory.buildImage(legDatByte.getDat(), interp, flipAxisX, flipAxisY, transposeImg).getImg();
+			legendData = (PrimitiveArrayData<Object>) objectData.getByteLegend(nLegendSteps, legLoToHi, horizLeg);
 			break;
 		}
 		case("boolean"): 
 		{
-			legendData = objectData.getBooleanLegend(showBoolNA, horizLeg);
+			booleanLegendData = objectData.getBooleanLegendData(showBoolNA, horizLeg);
 			break;
-//			legDatWidth = legDatBool.length; legDatHeight = legDatBool[0].length;
 		}
+		}
+		switch (type.toLowerCase())
+		{
+		case("boolean"): legendImg = ImageFactory.buildPrimitiveImage(
+				booleanLegendData, interp).getImg(); break;
+		default: legendImg = ImageFactory.buildPrimitiveImage(legendData, interp, null).getImg();
 		}
 	}
 
@@ -131,15 +130,14 @@ public class ObjectImager<T> implements BeanImager<T>
 	@Override public String getCurrentFieldName() { return getCurrentField().getName(); }
 	@Override public Field getCurrentField() { return currentWatcher.getField(); }
 	@Override public void setColors(Color[] colors) { ci.updateColors(colors); }
-	@Override public void setField(String fieldName) { this.currentWatcher = watchers.get(fieldName); refresh(); } 
+	@Override public void setField(String fieldName) { 
+		this.currentWatcher = watchers.get(fieldName.toLowerCase()); refresh(); } 
 	@Override public void refresh() { buildImage(); }
-
-
 
 	@Override
 	public String queryLegendAt(double relativeI, double relativeJ) 
 	{
-		
+
 		//		int[] xy = BeanImager.getObjArrayCoords(relativeI, relativeJ, legDatWidth, legDatHeight);
 		//
 		//		if (legDatInt != null)

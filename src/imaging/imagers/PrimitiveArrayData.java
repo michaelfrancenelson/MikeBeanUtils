@@ -21,11 +21,11 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		case("lng"): minmax =  ArrayUtils.getArrMinMax(lngDat); break;
 		case("chr"): minmax =  ArrayUtils.getArrMinMax(chrDat); break;
 		case("boo"): minmax =  ArrayUtils.getArrMinMax(booDat); break;
-		default: dataMin = 0; dataMax = 0;
+		default: minmax = new double[] {0, 0};
 		}
 		dataMin = minmax[0];
-		dataMin = minmax[1];
-		ci.updateMinMax(minmax[0], minmax[1]);
+		dataMax = minmax[1];
+		ci.updateMinMax(dataMin, dataMax);
 	}
 	
 	@Override protected void setCurrentObj() {}
@@ -45,8 +45,8 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		case("lng"): val = ArrayUtils.doubleCaster(lngDat[dataX][dataY]); break;
 		case("chr"): val = ArrayUtils.doubleCaster(chrDat[dataX][dataY]); break;
 		case("boo"): val = ArrayUtils.doubleCaster(booDat[dataX][dataY]); break;
+		default: val = Double.MIN_VALUE;
 		}
-		val = Double.MIN_VALUE;
 		
 		return ci.getColor(val);
 	}

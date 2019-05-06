@@ -16,13 +16,13 @@ public class RotationDemo extends DemoConsts
 
 	static void arrayDemo(int nRow, int nCol, int fWidth, int fHeight, boolean show)
 	{
-		arrayDat = new AllFlavorBean[nRow][nCol];
+		objArray = new AllFlavorBean[nRow][nCol];
 
 		for (int row = 0; row < nRow; row++) for (int col = 0; col < nCol; col++)
 		{
 			AllFlavorBean a = new AllFlavorBean();
 			a.setIntPrim(row + col);
-			arrayDat[row][col] = a;
+			objArray[row][col] = a;
 
 		}
 
@@ -37,7 +37,7 @@ public class RotationDemo extends DemoConsts
 
 			ObjectImagePanel<AllFlavorBean> pan = ObjectArrayPanelFactory.buildPanel(
 					ImagerFactory.quickFactory(
-							null, arrayDat, 100,
+							null, objArray, 100,
 							trueFalse[flipX], trueFalse[flipY], trueFalse[trans],
 							true, true, field, AllFlavorBean.class,
 							DemoConsts.gradCols, DemoConsts.boolCols),

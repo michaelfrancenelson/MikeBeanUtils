@@ -64,6 +64,7 @@ public interface BeanImager<T>
 	public ColorInterpolator getBooleanInterpolator();
 	void setInterpolator(ColorInterpolator ci);
 	void setBooleanInterpolator(ColorInterpolator ci);
+	void setDblFmt(String fmt);
 }
 
 

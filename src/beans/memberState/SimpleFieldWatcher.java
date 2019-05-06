@@ -98,7 +98,7 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 		//		bw.annClass = annClass;
 		bw.fieldName = fieldName; 
 		bw.initField();
-		if (dblFmt == null) dblFmt = "%.4f";
+		if (dblFmt == null) dblFmt = "%.2f";
 		bw.dblFmt = dblFmt;
 		bw.buildGetters();
 		return bw;
@@ -113,7 +113,7 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	/**
 	 * 
 	 */
-	private void buildGetters()
+	public void buildGetters()
 	{
 		stringGetter = GetterGetterGetter.toStringGetterGetter(getClazz(), field, dblFmt);
 		charGetter = GetterGetterGetter.charGetterGetter(getClazz(), field);
@@ -152,6 +152,7 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 
 	@Override public Field getField() { return field; }
 	@Override public String getDblFmt() { return dblFmt; }
+	@Override public void setDblFmt(String fmt) { dblFmt = fmt; }
 }
 //public static <T, A extends Annotation> Map<String, FieldWatcher<T>> getWatcherMap(
 //Class<T> clazz, Class<A> annClazz, String dblFmt)

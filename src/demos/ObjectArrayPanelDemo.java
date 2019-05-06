@@ -1,7 +1,5 @@
 package demos;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,33 +10,21 @@ import imaging.imagers.BeanImager;
 import swing.SwingUtils;
 import swing.stretchAndClick.ObjectArrayPanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
-import utils.ColorUtils;
 
-public class ObjectArrayPanelDemo
+public class ObjectArrayPanelDemo extends DemoConsts
 {
-	static List<ObjectImagePanel<?>> panelList;
-	static TerrainBean[][] cells;
-	static JFrame f1, f2;
-	static ObjectImagePanel<TerrainBean> objPan, objPan2;
+	static List<ObjectImagePanel<?>> panels1;
 	static BeanImager<TerrainBean> imagerAge, imagerElev;
-	static Color[] gradCols = ColorUtils.TOPO_COLORS;
-	static Color[] boolCols = ColorUtils.YELLOWS;
-
-	static Font font = new Font("times", 4, 60);
 	
-	static int constX, constY, nLegendSteps;
-	static boolean horz, lToH, aspRat;
-	static Double naDouble;
-	static Integer naInt;
-	static Color naCol;
-	static double annPtSize;
+	static int constX, constY;
+	static boolean aspRat;
 
 	public static void setup(int width, int height, double elevGradient, int ageMod)
 	{
-		cells = TerrainBean.factory(width, height, elevGradient, ageMod);
+		terrainArray = TerrainBean.factory(width, height, elevGradient, ageMod);
 		constX = -1; constY = -1; nLegendSteps = 100;
-		horz = true; lToH = true; aspRat = false;
-		annPtSize = 1.2;
+		horiz = true; loToHi = true; aspRat = false;
+		ptSize = 1.2;
 		nLegendSteps = 10;
 	}
 
@@ -66,17 +52,17 @@ public class ObjectArrayPanelDemo
 				TerrainBean.class,
 //				ParsedField.class,
 				null,
-				null, cells, "elevation",
+				null, terrainArray, "elevation",
 				gradCols, boolCols,
 				null, null, null, 
 				null, null,
 				true,
 				false, false, false,
 				nLegendSteps,
-				lToH, horz,
+				loToHi, horiz,
 				aspRat, 
 				constX, constY,
-				annPtSize));
+				ptSize));
 		panels.add(panels.get(0).getLegendPanel());
 //		panels.add(panels.get(1).getLegendPanel());
 

@@ -113,7 +113,8 @@ public class ObjectImagePanel<T> extends JPanel
 											ArrayUtils.absToRelCoord(mouseX - imgCornerX, imgDisplayWidth),
 											ArrayUtils.absToRelCoord(mouseY - imgCornerY, imgDisplayHeight)
 									};
-					currentClickValue = imager.queryDataAt(imgRelCoords[0], imgRelCoords[1]); 					logger.debug(String.format("Value of %s: %s", 
+					currentClickValue = imager.queryDataAt(imgRelCoords[0], imgRelCoords[1]); 					
+					logger.debug(String.format("Value of %s: %s", 
 							imager.getCurrentFieldName(), currentClickValue));
 				}
 				@Override public void mouseEntered(MouseEvent arg0) {}
@@ -237,6 +238,7 @@ public class ObjectImagePanel<T> extends JPanel
 	{
 		int datWidth  = imager.getImgData().getWidth();
 		int datHeight = imager.getImgData().getHeight();
+		logger.trace(String.format("Data width: %d, data height: %d", datWidth, datHeight));
 		Insets insets = getInsets();
 		Graphics2D g2d = (Graphics2D) g.create();
 		int fixedX = this.imgDisplayWidth, fixedY = this.imgDisplayHeight;
@@ -280,20 +282,33 @@ public class ObjectImagePanel<T> extends JPanel
 
 		g2d.drawImage(image, imgCornerX, imgCornerY, imgDisplayWidth, imgDisplayHeight, null);
 
-		int cellWidth  = (int) ((double) datWidth  / (double) imgDisplayWidth);
-		int cellHeight = (int) ((double) datHeight / (double) imgDisplayHeight);
+		int cellWidth  = (int) ((double) imgDisplayWidth / (double) datWidth);
+		int cellHeight = (int) ((double) imgDisplayHeight / (double) datHeight);
 
+		if (fixedAspectRatio)
+		{
+			cellWidth = Math.min(cellWidth, cellHeight);
+			cellHeight = cellWidth;
+		}
+		
+		
 		if (decorate)
 		{
+			logger.trace("Adding labels and points.");
 			for (PanelLabel p : labels)
-				p.draw(g2d, imgDisplayWidth, imgDisplayHeight, 
-						cellWidth, cellHeight, imgCornerX, imgCornerY);
+				p.draw(
+						g,
+						imgDisplayWidth, imgDisplayHeight, 
+						cellWidth, cellHeight, 
+						imgCornerX, imgCornerY);
 
 			for (PanelLabel p : valueLabels)
-				p.draw(g2d, imgDisplayWidth, imgDisplayHeight, 
-						cellWidth, cellHeight, imgCornerX, imgCornerY);
+				p.draw(g,
+						imgDisplayWidth, imgDisplayHeight, 
+						cellWidth, cellHeight,
+						imgCornerX, imgCornerY);
 			for (PanelLabel p : points)
-				p.draw(g2d, imgDisplayWidth, imgDisplayHeight, 
+				p.draw(g, imgDisplayWidth, imgDisplayHeight, 
 						cellWidth, cellHeight, imgCornerX, imgCornerY);
 		}
 
@@ -323,16 +338,17 @@ public class ObjectImagePanel<T> extends JPanel
 	private void labelFromImageRelCoords(
 			double relI, double relJ,
 			String label, Font font, Color color, 
-			int pointSize, String type)
+			double pointSize, String type)
 	{
 		if (color == null) color = Color.black;
 		PanelLabel p = PanelLabel.fromRelImgCoords(
 				relI, relJ, pointSize,
 				font, color, label);
+		logger.trace(String.format("Adding label of type: %s", type));
 		switch(type)
 		{
 		case("label"): labels.add(p); break;
-		case("valueLabel"): valueLabels.add(p); break;
+		case("value label"): valueLabels.add(p); break;
 		case("point"): points.add(p); break;
 		}
 	}
@@ -351,6 +367,11 @@ public class ObjectImagePanel<T> extends JPanel
 		String label = imager.getImgData().queryData(relI, relJ, imager.getWatcher());
 		labelFromImageRelCoords(
 				relI, relJ, label, font, color, -9999, "value label");
+	
+		logger.trace(String.format("Adding value "
+				+ "label %s at coords (%.0f%%, %.0f%%)",
+				label, 100 * relI, 100 * relJ));
+		
 		//		addLabel(dataX, dataY, label, font, Color.black, true, -1);
 
 		//		int[] coords = new int[] {
@@ -365,7 +386,7 @@ public class ObjectImagePanel<T> extends JPanel
 	/**
 	 * 
 	 */
-	public void addPoint(double relI, double relJ, int size, Color color)
+	public void addPoint(double relI, double relJ, double size, Color color)
 	{
 		labelFromImageRelCoords(relI, relJ, null, null, color, size, "point");
 		//		addLabel(relI, relJ, null, null, color, true, size);

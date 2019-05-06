@@ -21,14 +21,15 @@ public interface ImagerData <T>
 	
 //	public int[][] relativeToDataCoords(double relI, double relJ);
 
-	public ImagerData<Object> getIntLegend(int nSteps, boolean loToHi, boolean horiz);
-	public ImagerData<Object> getByteLegend(int nSteps, boolean loToHi, boolean horiz);
-	public ImagerData<Object> getDoubleLegend(int nSteps, boolean loToHi, boolean horiz);
-	public ImagerData<Object> getBooleanLegend(boolean includeNA, boolean horiz);
+	public PrimitiveArrayData<Object> getIntLegend(int nSteps, boolean loToHi, boolean horiz);
+	public PrimitiveArrayData<Object> getByteLegend(int nSteps, boolean loToHi, boolean horiz);
+	public PrimitiveArrayData<Object> getDoubleLegend(int nSteps, boolean loToHi, boolean horiz);
+//	public ImagerData<Boolean> getBooleanLegend(boolean includeNA, boolean horiz);
 	
 //	public IntArrayMinMax  intLegendData(int nSteps, boolean loToHi, boolean horiz);
 //	public DblArrayMinMax  dblLegendData(int nSteps, boolean loToHi, boolean horiz);
 //	public ByteArrayMinMax byteLegendData(int nSteps, boolean loToHi, boolean horiz);
 	void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci);
+	Boolean[][] getBooleanLegendData(boolean includeNA, boolean horizontal);
 	
 }

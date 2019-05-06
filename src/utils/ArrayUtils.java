@@ -135,17 +135,18 @@ public class ArrayUtils
 	
 	public static double[] getArrMinMax(double[][] dat)
 	{
-		double dataMin = Double.MAX_VALUE; double dataMax = Double.MIN_VALUE;
+		double dataMin = Double.MAX_VALUE; double dataMax = -dataMin;
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++)
 		{
 			double val = dat[i][j];
-			if (val < dataMin) dataMin = val; if (val > dataMax) dataMax = val;
+			if (val < dataMin) dataMin = val; 
+			if (val > dataMax) dataMax = val;
 		}
 		return new double[] { dataMin, dataMax };
 	}
 	public static double[] getArrMinMax(int[][] dat)
 	{
-		double dataMin = Double.MAX_VALUE; double dataMax = Double.MIN_VALUE;
+		double dataMin = Double.MAX_VALUE; double dataMax = -dataMin;
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++)
 		{
 			double val = doubleCaster(dat[i][j]);
@@ -155,7 +156,7 @@ public class ArrayUtils
 	}
 	public static double[] getArrMinMax(char[][] dat)
 	{
-		double dataMin = Double.MAX_VALUE; double dataMax = Double.MIN_VALUE;
+		double dataMin = Double.MAX_VALUE; double dataMax = -
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++)
 		{
 			double val = doubleCaster(dat[i][j]);
@@ -165,7 +166,7 @@ public class ArrayUtils
 	}
 	public static double[] getArrMinMax(byte[][] dat)
 	{
-		double dataMin = Double.MAX_VALUE; double dataMax = Double.MIN_VALUE;
+		double dataMin = Double.MAX_VALUE; double dataMax = -dataMin;
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++)
 		{
 			double val = doubleCaster(dat[i][j]);
@@ -175,7 +176,7 @@ public class ArrayUtils
 	}
 	public static double[] getArrMinMax(short[][] dat)
 	{
-		double dataMin = Double.MAX_VALUE; double dataMax = Double.MIN_VALUE;
+		double dataMin = Double.MAX_VALUE; double dataMax = -dataMin;
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++)
 		{
 			double val = doubleCaster(dat[i][j]);
@@ -185,7 +186,7 @@ public class ArrayUtils
 	}
 	public static double[] getArrMinMax(long[][] dat)
 	{
-		double dataMin = Double.MAX_VALUE; double dataMax = Double.MIN_VALUE;
+		double dataMin = Double.MAX_VALUE; double dataMax = -dataMin;
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++)
 		{
 			double val = doubleCaster(dat[i][j]);
@@ -195,7 +196,7 @@ public class ArrayUtils
 	}
 	public static double[] getArrMinMax(float[][] dat)
 	{
-		double dataMin = Double.MAX_VALUE; double dataMax = Double.MIN_VALUE;
+		double dataMin = Double.MAX_VALUE; double dataMax = -dataMin;
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++)
 		{
 			double val = doubleCaster(dat[i][j]);

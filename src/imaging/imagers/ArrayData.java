@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
+import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import utils.ArrayUtils;
 import utils.Sequences;
 
@@ -41,6 +42,7 @@ public class ArrayData<T> implements ImagerData<T>
 
 		if (this.transpose) { outputWidth = dataWidth; outputHeight = dataWidth; }
 		else { outputWidth = dataWidth; outputHeight = dataHeight; }
+
 	}
 
 	@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
@@ -48,6 +50,14 @@ public class ArrayData<T> implements ImagerData<T>
 		dataMin = Double.MAX_VALUE;
 		dataMax = Double.MIN_VALUE;
 
+//		if (ci instanceof SimpleBooleanColorInterpolator)
+			if (arrayData[0][0].getClass().equals(Boolean.class))
+		{
+			dataMin = 0; dataMax = 1;
+			
+		}
+		else {
+			
 		for (int i = 0; i < dataWidth; i++)
 			for (int j = 0; j < dataHeight; j++)
 			{
@@ -56,7 +66,8 @@ public class ArrayData<T> implements ImagerData<T>
 				if (val > dataMax) dataMax = val;
 			}
 		ci.updateMinMax(dataMin, dataMax);
-		logger.debug(String.format("Data min/max = (%.2f, %.2f)", dataMin, dataMax));
+		}
+		logger.trace(String.format("Data min/max = (%.2f, %.2f)", dataMin, dataMax));
 		
 	}
 
@@ -112,7 +123,7 @@ public class ArrayData<T> implements ImagerData<T>
 	public String queryData(double relativeX, double relativeY, FieldWatcher<T> w) {
 		setDataCoords(relativeX, relativeY);
 		String out =  w.getStringVal(currentObj);
-		logger.info(String.format("Querying object at relative coords: %.2f, %.2f "
+		logger.trace(String.format("Querying object at relative coords: %.2f, %.2f "
 				+ "field %s with value %s", relativeX, relativeY, w.getFieldName(), out));
 		return out;
 	}
@@ -158,7 +169,8 @@ public class ArrayData<T> implements ImagerData<T>
 	}
 
 	@Override
-	public ImagerData<Object> getIntLegend(
+	public PrimitiveArrayData<Object> getIntLegend(
+//			public ImagerData<Object> getIntLegend(
 			int nSteps, boolean loToHi, boolean horiz) 
 	{
 		int dataWidth = (int)Math.abs(dataMax - dataMin);
@@ -173,7 +185,8 @@ public class ArrayData<T> implements ImagerData<T>
 	}
 	
 	@Override
-	public ImagerData<Object> getDoubleLegend(
+	public PrimitiveArrayData<Object> getDoubleLegend(
+//			public ImagerData<Object> getDoubleLegend(
 			int nSteps, boolean loToHi, boolean horiz)
 	{
 		double legMax, legMin;
@@ -185,7 +198,8 @@ return new PrimitiveArrayData<Object>(data, false, false, false);
 	}
 
 	@Override
-	public ImagerData<Object> getByteLegend(
+	public PrimitiveArrayData<Object> getByteLegend(
+//			public ImagerData<Object> getByteLegend(
 			int nSteps, boolean loToHi, boolean horiz) 
 	{
 
@@ -202,10 +216,14 @@ return new PrimitiveArrayData<Object>(data, false, false, false);
 	}
 	
 	@Override
-	public ImagerData<Object> getBooleanLegend(boolean includeNA, boolean horizontal)
+//	public PrimitiveArrayData<Object> getBooleanLegend(boolean includeNA, boolean horizontal)
+	public Boolean[][] getBooleanLegendData(boolean includeNA, boolean horizontal)
+//	public ImagerData<Boolean> getBooleanLegend(boolean includeNA, boolean horizontal)
 	{
 		Boolean[][] data = Sequences.booleanGradient2D(includeNA, horizontal);
-		return new ArrayData<Object>(data, false, false, false);
+//		return new PrimitiveArrayData<Object>(data, false, false, false);
+//		return new ArrayData<Boolean>(data, false, false, false);
+		return data;
 	}
 	
 	

@@ -42,15 +42,19 @@ public class GradientImageFactory
 	 * @return
 	 */
 	public static Image buildGradientImage(
-			int start, int end, int nSteps, ColorInterpolator ci,
+			int min, int max, int nSteps, ColorInterpolator ci,
 			boolean lowToHigh, boolean horizontal)
 	{
+		
+		int low = Math.min(min, max);
+		int hi  = Math.max(min, max);
+		
+		
 		if (nSteps == 1) nSteps++;
-		if (lowToHigh && start > end)
-		{
-			int t = start; end = start; start = t;
-		}
-		int[][] data = Sequences.spacedIntervals2D(start, end, nSteps, horizontal);
+		if (lowToHigh) { min = low; max = hi; }
+		else { min = hi; max = low; }
+
+		int[][] data = Sequences.spacedIntervals2D(min, max, nSteps, horizontal);
 		return ImageFactory.buildPrimitiveImage(data, ci, false, false, false).getImg();
 	}
 

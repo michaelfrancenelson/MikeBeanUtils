@@ -4,16 +4,12 @@ import java.awt.Color;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
-import imaging.colorInterpolator.ColorInterpolator;
 import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.colorInterpolator.SimpleColorInterpolator;
 import imaging.imageFactories.ImageFactory;
@@ -22,23 +18,16 @@ import swing.SwingUtils;
 import utils.ColorUtils;
 import utils.Sequences;
 
-public class PrimitiveImageFactoryDemo 
+public class PrimitiveImageFactoryDemo extends DemoConsts 
 {
 	static double[][] datDbl;
 	static int[][] datInt;
 	static boolean[][] datBool;
 	static byte[][] datByte;
 
-	static Random r;
-	static ColorInterpolator c1;
-	static boolean[] trueFalse = new boolean[] { true, false };
-	static JFrame f, fTranspose;
-
-	static List<JPanel> p, pTranspose;
-
 	static void setup()
 	{
-		r = new Random();
+	
 	}
 
 	public static void main(String[] args) 
@@ -63,27 +52,27 @@ public class PrimitiveImageFactoryDemo
 		bytes[1][i][j] = val;
 		}
 
-		c1 = SimpleColorInterpolator.factory(ColorUtils.RAINBOW, 0, (int) maxB,
+		c = SimpleColorInterpolator.factory(ColorUtils.RAINBOW, 0, (int) maxB,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, "%0.4f");
-		f = SwingUtils.frameFactory((int)(width * size), (int)(height * size), "Byte array demo", 2, 2);
-		fTranspose = SwingUtils.frameFactory((int)(height * size), (int)(width * size), " Transposed byte array demo", 2, 2);
+		f1 = SwingUtils.frameFactory((int)(width * size), (int)(height * size), "Byte array demo", 2, 2);
+		f2 = SwingUtils.frameFactory((int)(height * size), (int)(width * size), " Transposed byte array demo", 2, 2);
 
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
 		{
-			f.add(new SimpleImagePanel(ImageFactory.buildImage(
-					bytes[i * j], c1, trueFalse[j], trueFalse[i], false)));
-			fTranspose.add(new SimpleImagePanel(ImageFactory.buildImage(
-					bytes[j], c1, trueFalse[j], trueFalse[i], true)));
+			f1.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
+					bytes[i * j], c, trueFalse[j], trueFalse[i], false)));
+			f2.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
+					bytes[j], c, trueFalse[j], trueFalse[i], true)));
 		}
 
-		f.setVisible(show);
-		fTranspose.setVisible(show);
-		fTranspose.setLocation(f.getX() + f.getWidth(), f.getY());
+		f1.setVisible(show);
+		f2.setVisible(show);
+		f2.setLocation(f1.getX() + f1.getWidth(), f1.getY());
 		if (saveFile)
 		{
 			File imgFile = new File("sampleOutput/" + "primitive_demo_byte.png");
 			try {
-				ImageIO.write((RenderedImage) ImageFactory.buildImage(datByte, c1, false, false, false), "png", imgFile);
+				ImageIO.write((RenderedImage) ImageFactory.buildPrimitiveImage(datByte, c, false, false, false), "png", imgFile);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -107,23 +96,23 @@ public class PrimitiveImageFactoryDemo
 			else datByte[i][j] = Byte.MIN_VALUE;
 		}
 
-		c1 = SimpleBooleanColorInterpolator.factory(ColorUtils.BLUES, Color.gray);
-		f = SwingUtils.frameFactory((int)(2 * width * size), (int)(height * size), "Boolean array demos", 1, 2);
+		c = SimpleBooleanColorInterpolator.factory(ColorUtils.BLUES, Color.gray);
+		f1 = SwingUtils.frameFactory((int)(2 * width * size), (int)(height * size), "Boolean array demos", 1, 2);
 
-		JPanel pp = new SimpleImagePanel(ImageFactory.buildImage(datBool, c1, false, false, false));
+		JPanel pp = new SimpleImagePanel(ImageFactory.buildPrimitiveImage(datBool, c, false, false, false));
 		pp.setBorder(b);
-		f.add(pp);
-		pp = new SimpleImagePanel(ImageFactory.buildImage(datByte, c1, false, false, false));
+		f1.add(pp);
+		pp = new SimpleImagePanel(ImageFactory.buildPrimitiveImage(datByte, c, false, false, false));
 		pp.setBorder(b);
-		f.add(pp);
-		f.setVisible(show);
+		f1.add(pp);
+		f1.setVisible(show);
 		if (saveFile)
 		{
 			File imgFile = new File("sampleOutput/" + "primitive_demo_boolean.png");
 			File imgFile2 = new File("sampleOutput/" + "primitive_demo_boolean_from_byte.png");
 			try {
-				ImageIO.write((RenderedImage) ImageFactory.buildImage(datBool, c1, false, false, false), "png", imgFile);
-				ImageIO.write((RenderedImage) ImageFactory.buildImage(datByte, c1, false, false, false), "png", imgFile2);
+				ImageIO.write((RenderedImage) ImageFactory.buildPrimitiveImage(datBool, c, false, false, false), "png", imgFile);
+				ImageIO.write((RenderedImage) ImageFactory.buildPrimitiveImage(datByte, c, false, false, false), "png", imgFile2);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -150,31 +139,31 @@ public class PrimitiveImageFactoryDemo
 			{	dists = dist(i, j, x, y); ints[iii][i][j] = nearest(dists, vals); }
 		}
 
-		c1 = SimpleColorInterpolator.factory(ColorUtils.TOPO_COLORS, min, max,
+		c = SimpleColorInterpolator.factory(ColorUtils.TOPO_COLORS, min, max,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, "%0.4f");
 
-		f = SwingUtils.frameFactory((int)(nCol * size), (int) (nRow * size), "Int value array demo", 2, 2);
-		fTranspose = SwingUtils.frameFactory((int) (nRow * size), (int)(nCol * size), "Transposed int value array demo", 2, 2);
+		f1 = SwingUtils.frameFactory((int)(nCol * size), (int) (nRow * size), "Int value array demo", 2, 2);
+		f2 = SwingUtils.frameFactory((int) (nRow * size), (int)(nCol * size), "Transposed int value array demo", 2, 2);
 
 		int z = 0;
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
 		{
-			f.add(new SimpleImagePanel(ImageFactory.buildImage(
-					ints[z], c1, trueFalse[j], trueFalse[i], false)));
-			fTranspose.add(new SimpleImagePanel(ImageFactory.buildImage(
-					ints[z], c1, trueFalse[j], trueFalse[i], true)));
+			f1.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
+					ints[z], c, trueFalse[j], trueFalse[i], false)));
+			f2.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
+					ints[z], c, trueFalse[j], trueFalse[i], true)));
 			z++;
 		}
 
-		f.setLocation((int)(nCol * size), 0);
-		f.setVisible(show);
-		fTranspose.setVisible(show);
+		f1.setLocation((int)(nCol * size), 0);
+		f1.setVisible(show);
+		f2.setVisible(show);
 
 		if (saveFile)
 		{
 			File imgFile = new File("sampleOutput/" + "primitive_demo_int.png");
 			try { ImageIO.write((RenderedImage) 
-					ImageFactory.buildImage(datInt, c1, false, false, false), "png", imgFile);
+					ImageFactory.buildPrimitiveImage(datInt, c, false, false, false), "png", imgFile);
 			} catch (IOException e) {e.printStackTrace();}
 		}
 	}
@@ -203,20 +192,19 @@ public class PrimitiveImageFactoryDemo
 		datDbl[i][j] = dd;
 		if (dd < minVal) minVal = dd; if (dd > maxVal) maxVal = dd;
 		}
-		c1 = SimpleColorInterpolator.factory(
+		c = SimpleColorInterpolator.factory(
 				ColorUtils.TOPO_COLORS,	minVal, maxVal,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, "%0.4f");
 
-		f = SwingUtils.frameFactory((int)(width * size), (int) (height * size), "Double value array demo");
-		f.add(new SimpleImagePanel(ImageFactory.buildImage(datDbl, c1, false, false, false)));
-		f.setVisible(show);
+		f1 = SwingUtils.frameFactory((int)(width * size), (int) (height * size), "Double value array demo");
+		f1.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(datDbl, c, false, false, false)));
+		f1.setVisible(show);
 
 		if (saveFile)
 		{
-			try { ImageIO.write((RenderedImage) ImageFactory.buildImage(datDbl, c1, false, false, false), "png", imgFile);
+			try { ImageIO.write((RenderedImage) ImageFactory.buildPrimitiveImage(datDbl, c, false, false, false), "png", imgFile);
 			} catch (IOException e) { e.printStackTrace(); }
 		}
-
 	}
 
 	static double weightedNearest(double[] dists, double[] vals)

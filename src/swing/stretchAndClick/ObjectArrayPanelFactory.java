@@ -125,13 +125,14 @@ public class ObjectArrayPanelFactory
 	public static <T> ObjectImagePanel<T> buildLegendPanel(
 			BeanImager<T> imager, String fieldName,
 			boolean keepAspectRatio,
-			int fixedWidth, int fixedHeight, double decoratorRelPointSize)
+			int fixedWidth, int fixedHeight, 
+			double decoratorRelPointSize)
 	{
 		ObjectImagePanel<T> out = new ObjectImagePanel<T>();
 		out.setLabelVisibility(true);
 		out.setPtRelSize(decoratorRelPointSize);
 		out.init(imager, fixedWidth, fixedHeight, keepAspectRatio, true);
-		imager.setField(fieldName);
+		imager.setField(fieldName.toLowerCase());
 		return out;
 	}
 }
