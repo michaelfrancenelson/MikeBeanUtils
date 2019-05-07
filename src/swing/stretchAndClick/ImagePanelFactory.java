@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import imaging.colorInterpolator.ColorInterpolator;
+import imaging.imagers.ImagerData;
 import imaging.imagers.ImagerFactory;
 import imaging.imagers.ObjectImager;
 import imaging.imagers.PrimitiveArrayData;
@@ -24,39 +25,41 @@ import imaging.imagers.PrimitiveImager;
  */
 public class ImagePanelFactory 
 {
-	
 	public static <T> ObjectImagePanel<T> buildPanel(
-			Class<T> clazz, 
-			Class<? extends Annotation> annClass,
-			List<List<T>> objList, T[][] objArray, String fieldName,
-			Color[] gradientColors, Color[] booleanColors,
-			Double naDouble, Integer naInt, Color naColor, 
-			String dblFmt, List<String> parsedBooleanFields,
-			boolean showNABoolean,
-			boolean transpose, boolean flipX, boolean flipY,
-			int nLegendSteps, 
-			boolean legLoToHi, boolean horizLegend,	
+			ImagerData<T> dat,
+			Class<T> clazz,	Class<? extends Annotation> annClass,
+			String fieldName, ObjectImager<T> imager,
 			boolean keepAspectRatio, 
 			int fixedWidth, int fixedHeight,
 			double decoratorRelPointSize)
 	{
-		if (naColor == null) naColor = Color.gray;
-		if (naDouble == null) naDouble = Double.MIN_VALUE;
+		return buildPanel(
+				imager, fieldName,
+				keepAspectRatio, 
+				fixedWidth, fixedHeight, decoratorRelPointSize,
+				clazz, annClass);
+	}
+
+	public static <T> ObjectImagePanel<T> buildPanel(
+			ImagerData<T> dat, Class<T> clazz,	Class<? extends Annotation> annClass,
+			String fieldName,
+			Color[] gradientColors, Color[] booleanColors,
+			Double naDouble, Integer naInt, Color naColor, 
+			String dblFmt, List<String> parsedBooleanFields,
+			boolean keepAspectRatio, 
+			int fixedWidth, int fixedHeight, double decoratorRelPointSize)
+	{
+		if (naDouble == null) naDouble = -Double.MAX_VALUE;
 		if (naInt == null) naInt = Integer.MIN_VALUE;
+		if (naColor == null) naColor = Color.gray;
 		if (dblFmt == null) dblFmt = "%.2f";
 		if (parsedBooleanFields == null) parsedBooleanFields = new ArrayList<String>();
 		ObjectImager<T> imager = ImagerFactory.factory(
-				clazz,
-				annClass,
-				objList, objArray, fieldName, 
+				dat, fieldName, 
+				clazz, annClass,
 				gradientColors, booleanColors,
 				naDouble, naInt, naColor, 
-				dblFmt, parsedBooleanFields,
-				showNABoolean,
-				transpose, flipX, flipY,
-				nLegendSteps, legLoToHi, horizLegend
-				);
-		
+				dblFmt, parsedBooleanFields);
 		
 		return buildPanel(
 				imager, fieldName,
@@ -72,34 +75,19 @@ public class ImagePanelFactory
 			String dblFmt,
 			boolean keepAspectRatio, 
 			int fixedWidth, int fixedHeight,
-			double decoratorRelPointSize)
-//			Double naDouble, Integer naInt, Color naColor, 
-//			boolean showNABoolean, 
-//			boolean transpose, boolean flipX, boolean flipY,
-//			int nLegendSteps, 
-//			boolean legLoToHi, boolean horizLegend,	
+			double decoratorRelPointSize,
+			boolean asBoolean)
 	{
-//		if (naColor == null) naColor = Color.gray;
-//		if (naDouble == null) naDouble = Double.MIN_VALUE;
-//		if (naInt == null) naInt = Integer.MIN_VALUE;
 		if (dblFmt == null) dblFmt = "%.2f";
-		
-		PrimitiveImager imager = ImagerFactory.primitiveFactory(
-				dat, ci,
-//				naDouble, naInt, naColor, 
-				dblFmt
-//				showNABoolean,
-//				transpose, flipX, flipY,
-//				nLegendSteps, legLoToHi, horizLegend
-				);
-
-		return primitivePanel(
+		dat.setAsBoolean(asBoolean);
+		PrimitiveImager imager = ImagerFactory.primitiveFactory(dat, ci, dblFmt);
+		return buildPanel(
 				imager, fieldName,
 				keepAspectRatio, 
 				fixedWidth, fixedHeight, decoratorRelPointSize);
 	}
 	
-	public static <T> PrimitiveImagePanel<T> primitivePanel(
+	public static <T> PrimitiveImagePanel<T> buildPanel(
 			PrimitiveImager imager, 
 			String fieldName,
 			boolean keepAspectRatio, 

@@ -14,6 +14,35 @@ public class ArrayData<T> implements ImagerData<T>
 {
 	static Logger logger = LoggerFactory.getLogger(ArrayData.class);
 
+	public static class ListData<T> extends ArrayData<T>
+	{
+		private List<List<T>> listData;
+		public ListData(List<List<T>> dat, boolean flipX, boolean flipY, boolean transpose)
+		{ 
+			this.listData = dat; 
+			setDims(listData.size(), listData.get(0).size(), flipX, flipY, transpose);
+		}
+
+		@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
+		{
+			dataMin = Double.MAX_VALUE;
+			dataMax = Double.MIN_VALUE;
+
+			for (int i = 0; i < dataWidth; i++)
+				for (int j = 0; j < dataHeight; j++)
+				{
+					double val = w.getDoubleVal(listData.get(i).get(j));
+					if (val < dataMin) dataMin = val;
+					if (val > dataMax) dataMax = val;
+				}
+			ci.updateMinMax(dataMin, dataMax);
+			logger.trace(String.format("Data min/max = (%.2f, %.2f)", dataMin, dataMax));
+		}
+
+		@Override protected void setCurrentObj() { currentObj = listData.get(dataX).get(dataY); }
+	}
+	
+	
 	private T[][] arrayData;
 	protected T currentObj;
 	protected int outputWidth, outputHeight;
@@ -22,6 +51,8 @@ public class ArrayData<T> implements ImagerData<T>
 	protected int dataX, dataY;
 	protected double dataMin, dataMax;
 
+
+	
 	public ArrayData() {}
 
 	public ArrayData(T[][] dat, boolean flipX, boolean flipY, boolean transpose)
@@ -39,7 +70,7 @@ public class ArrayData<T> implements ImagerData<T>
 		this.invertY = flipY;
 		this.transpose = transpose;
 
-		if (this.transpose) { outputWidth = dataWidth; outputHeight = dataWidth; }
+		if (this.transpose) { outputWidth = dataWidth; outputHeight = dataHeight; }
 		else { outputWidth = dataWidth; outputHeight = dataHeight; }
 
 	}
@@ -78,15 +109,31 @@ public class ArrayData<T> implements ImagerData<T>
 
 	protected void setDataCoords(int inputX, int inputY)
 	{
-		if (invertX) dataX = outputWidth - inputX - 1;
-		else dataX = inputX;
-		if (invertY) dataY = outputHeight - inputY - 1;
-		else dataY = inputY;
-
+	
+		
 		if (transpose)
 		{
-			int t = dataX; dataX = dataY; dataY = t;
+			int t = inputX; inputX = inputY; inputY = t;
+			
 		}
+		
+		
+		if (invertX) dataX = outputWidth - inputX - 1;
+		else dataX = inputX;
+	
+		if (invertY) dataY = outputHeight - inputY - 1;
+		else dataY = inputY;
+//
+//		if (transpose)
+//		{
+//			if (invertX) dataX = outputHeight - inputX - 1;
+//			else dataX = inputX;
+//		
+//			if (invertY) dataY = outputWidth - inputY - 1;
+//			else dataY = inputY;
+//
+////			int t = dataX; dataX = dataY; dataY = t;
+//		}
 
 		logger.trace(String.format("Input coords: (%d, %d) data coords: (%d, %d)",
 				inputX, inputY, dataX, dataY));
@@ -135,34 +182,7 @@ public class ArrayData<T> implements ImagerData<T>
 	@Override public int getWidth() { return outputWidth; }
 	@Override public int getHeight() { return outputHeight; }
 
-	public static class ListData<T> extends ArrayData<T>
-	{
-		private List<List<T>> listData;
-		public ListData(List<List<T>> dat, boolean flipX, boolean flipY, boolean transpose)
-		{ 
-			this.listData = dat; 
-			setDims(dat.size(), dat.get(0).size(), flipX, flipY, transpose);
-		}
-
-		@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
-		{
-			dataMin = Double.MAX_VALUE;
-			dataMax = Double.MIN_VALUE;
-
-			for (int i = 0; i < dataWidth; i++)
-				for (int j = 0; j < dataHeight; j++)
-				{
-					double val = w.getDoubleVal(listData.get(i).get(j));
-					if (val < dataMin) dataMin = val;
-					if (val > dataMax) dataMax = val;
-				}
-			ci.updateMinMax(dataMin, dataMax);
-			logger.debug(String.format("Data min/max = (%.2f, %.2f)", dataMin, dataMax));
-		}
-
-		@Override protected void setCurrentObj() { currentObj = listData.get(dataX).get(dataY); }
-
-	}
+	
 
 	@Override
 	public PrimitiveArrayData<Object> getIntLegend(

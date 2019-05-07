@@ -52,7 +52,7 @@ public class GradientImageDemo extends DemoConsts
 		int[] mins = new int[] {0, -1, -2, -1, 1, -50, -78};
 		int[] maxs = new int[] {0, -2, -1, -3, 4, -60, 555};
 		boolean[] test = new boolean[] {true, false};
-
+		
 		simplePanels = new ArrayList<>();
 			for(int dir = 0; dir < 2; dir++) for (int orient = 0; orient < 2; orient++)
 			for (int i = 0; i < mins.length; i++)
@@ -60,6 +60,9 @@ public class GradientImageDemo extends DemoConsts
 				c = SimpleColorInterpolator.factory(
 						ColorUtils.TERRAIN_COLORS, mins[i], maxs[i],
 						Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null);
+				
+				
+				
 				simplePan = new SimpleImagePanel(GradientImageFactory.buildGradientImage(
 						mins[i], maxs[i], nBreaks, c, test[dir], test[orient]));
 				simplePan.setBorder(border);

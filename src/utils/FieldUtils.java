@@ -255,124 +255,30 @@ public class FieldUtils
 					fieldName +	typString(clazz));
 		return out;
 	}
+	
+	
+	public static String toBoolean(String val)
+	{
+		try
+		{
+			Double val2 = Double.parseDouble(val); 
+			if (val2 < 0) return "NA";
+			else if (val2 >= 1) return "true";
+			return "false";
+		} catch(Exception e) { return stringToBoolean(val); }
+	}
+	
+	public static String stringToBoolean(String val)
+	{
+		String test = val.toLowerCase().trim();
+		
+		switch(test)
+		{
+		case("f"): case("false"): case("-1"): return "false";
+		case("t"): case("true"): case("1"): return "true";
+		}
+		return "NA";
+	}
+	
 }
 
-
-
-
-
-
-
-
-
-
-
-
-//	
-//
-//	/**
-//	 * 
-//	 * @param clazz
-//	 * @return
-//	 */
-//	@Deprecated
-//	public static <T> String[] getInstanceFieldNames(Class<T> clazz) 
-//	{
-//		//		System.out.println("FieldUtils: getting instance field names from class " + clazz.getName());
-//		return getInstanceFieldNames(Arrays.asList(getInstanceFields(clazz)));
-//	}
-//
-//
-//	/**
-//	 * Retrieve all the instance fields, even if not annotated.
-//	 * @param clazz
-//	 * @return
-//	 */
-//	@Deprecated
-//	public static <T> Field[] getInstanceFields(Class<T> clazz)
-//	{
-//		Field[] fields = clazz.getDeclaredFields();
-//		List<Field> ff = new ArrayList<>();
-//
-//		for (Field f: fields)
-//		{
-//			f.setAccessible(true);
-//			if (!Modifier.isStatic(f.getModifiers()))
-//			{
-//				ff.add(f);
-//				//				System.out.println("FieldUtils: field name is " + f.getName());
-//			}
-//		}
-//		Field[] fff = new Field[ff.size()];
-//		for (int i = 0; i < fff.length; i++) { fff[i] = ff.get(i); }
-//		return fff;
-//	}
-//
-//	/**
-//	 * Retrieve all the instance fields, even if not annotated.
-//	 * @param clazz
-//	 * @return
-//	 */
-//	@Deprecated
-//	public static <T> List<Field> getAllInstanceFields(Class<T> clazz)
-//	{
-//		Field[] fields = clazz.getDeclaredFields();
-//		List<Field> ff = new ArrayList<>();
-//
-//		for (Field f: fields)
-//		{
-//			f.setAccessible(true);
-//			if (!Modifier.isStatic(f.getModifiers()))
-//				ff.add(f);
-//		}
-//		Field[] fff = new Field[ff.size()];
-//		for (int i = 0; i < fff.length; i++) { fff[i] = ff.get(i); }
-//		return ff;
-//	}
-//	@Deprecated
-//	public static <T> String[] getInstanceFieldNames(Iterable<Field> fields)
-//	{
-//		//		System.out.println("FieldUtils: getting instance field names" );
-//		List<String> fNames = new ArrayList<>();
-//
-//		for (Field f: fields)
-//		{
-//			f.setAccessible(true);
-//			if ( 
-//					(!Modifier.isStatic(f.getModifiers())) &&
-//					(!Modifier.isFinal(f.getModifiers()))
-//					)
-//				fNames.add(f.getName());
-//			//				System.out.println("FieldUtils: field name is " + f.getName());
-//		}
-//
-//		String[] out = new String[fNames.size()];
-//		for (int i = 0; i < out.length; i++) { out[i] = fNames.get(i); }
-//		return out;
-//	}
-//
-//	/**
-//	 * 
-//	 * @param clazz    bean class
-//	 * @param annClazz annotation class
-//	 * @param          <T> bean type
-//	 * @return
-//	 */
-//	@Deprecated
-//	public static <T, A extends Annotation> List<Field>	getAnnotatedFields(
-//			Class<T> clazz, 
-//			Class<A> annClazz) 
-//	{
-//		List<Field> ll = new ArrayList<>();
-//		for (Field f : clazz.getDeclaredFields()) 
-//		{
-//			f.setAccessible(true);
-//			if (!Modifier.isFinal(f.getModifiers()))
-//			{
-//				if (f.isAnnotationPresent(annClazz)) ll.add(f);
-//			}
-//		}
-//		return ll;
-//	}
-//	
-//}

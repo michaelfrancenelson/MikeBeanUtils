@@ -18,10 +18,25 @@ public class RandomBeanBuilder extends AnnotatedBeanReader
 	 * @param <T> bean type
 	 * @return list of beans
 	 */
-	public static <T> List<T> randomFactory(Class<T> clazz, int n)
+	public static <T> List<List<T>> randomFactory(Class<T> clazz, int nRow, int nCol, int min, int max)
+	{
+		List<List<T>> l = new ArrayList<>();
+		for (int i = 0; i < nCol; i++) l.add(randomFactory(clazz, nRow, min, max));
+		return l;
+	}
+	
+	
+	/** Build a bean instance with randomized values for the annotated fields. 
+	 * 
+	 * @param clazz bean class
+	 * @param n number of beans to make
+	 * @param <T> bean type
+	 * @return list of beans
+	 */
+	public static <T> List<T> randomFactory(Class<T> clazz, int n, int min, int max)
 	{
 		List<T> l = new ArrayList<>();
-		for (int i = 0; i < n; i++) l.add(randomFactory(clazz));
+		for (int i = 0; i < n; i++) l.add(randomFactory(clazz, min, max));
 		return l;
 	}
 
@@ -31,7 +46,7 @@ public class RandomBeanBuilder extends AnnotatedBeanReader
 	 * @param <T> bean type
 	 * @return list of beans
 	 */
-	public static <T> T randomFactory(Class<T> clazz)
+	public static <T> T randomFactory(Class<T> clazz, int min, int max)
 	{
 		List<Field> ff = FieldUtils.getFields(clazz, ParsedField.class, true, true);
 		T o = null;
@@ -43,7 +58,7 @@ public class RandomBeanBuilder extends AnnotatedBeanReader
 			{
 				Field f = ff.get(i);
 				String shortName = f.getType().getSimpleName();
-				String val = randomString(shortName);
+				String val = randomString(shortName, min, max);
 				setVal(f, val, o);
 			}
 		}
@@ -86,21 +101,21 @@ public class RandomBeanBuilder extends AnnotatedBeanReader
 	 * @param shortName short name of type
 	 * @return String representation of the random data. 
 	 */
-	public static String randomString(String shortName)
+	public static String randomString(String shortName, int min, int max)
 	{
 		String val = "";
 		switch (shortName.toLowerCase()) {
-		case("int"):     val = String.format("%d", randInt(-100, 100)); break;
-		case("byte"):     val = String.format("%d", randInt(-100, 100)); break;
-		case("short"):     val = String.format("%d", randInt(-100, 100)); break;
-		case("long"):     val = String.format("%d", randInt(-100, 100)); break;
-		case("double"):  val = String.format("%f", randDouble(-100, 100)); break;
-		case("float"):  val = String.format("%f", randDouble(-100, 100)); break;
+		case("int"):     val = String.format("%d", randInt(min, max)); break;
+		case("byte"):     val = String.format("%d", randInt(min, max)); break;
+		case("short"):     val = String.format("%d", randInt(min, max)); break;
+		case("long"):     val = String.format("%d", randInt(min, max)); break;
+		case("double"):  val = String.format("%f", randDouble(min, max)); break;
+		case("float"):  val = String.format("%f", randDouble(min, max)); break;
 		case("boolean"): val = Boolean.toString(randBool(0.5)); break;
 		case("string"):	 val = randomString(r.nextInt(12) + 1, '9', 'Z'); break; 
 		case("char"):	 val =  String.format("%s", randomString(r.nextInt(12) + 1, '9', 'Z').charAt(0)); break; 
 		case("character"):	 val =  String.format("%s", randomString(r.nextInt(12) + 1, '9', 'Z').charAt(0)); break; 
-		case("integer"): val = String.format("%d", randInt(-100, 100)); break;
+		case("integer"): val = String.format("%d", randInt(min, max)); break;
 
 		default: throw new IllegalArgumentException("Input value for field of type " 
 				+ shortName + " could not be parsed");

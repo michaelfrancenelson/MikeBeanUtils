@@ -7,7 +7,8 @@ import javax.swing.JPanel;
 
 import beans.builder.NetCDFObjBuilder;
 import beans.sampleBeans.AllFlavorBean;
-import beans.sampleBeans.TerrainBean;
+import beans.sampleBeans.Terrain;
+import imaging.imagers.ImagerData;
 import imaging.imagers.ImagerFactory;
 import imaging.imagers.ObjectImager;
 import swing.SwingUtils;
@@ -16,13 +17,11 @@ import swing.stretchAndClick.ObjectImagePanel;
 
 public class ImagePanelDemo extends DemoConsts
 {
-	static String inputNCDF = "testData/AllFlavorBean.nc";
-
 	public static void setup(int width, int height, double elevGradient, int ageMod)
 	{
 		nRows = height; nCols = width;
 		ptSize = 1.0 / ((double) Math.max(nRows, nCols));
-		terrainArray = TerrainBean.factory(nCols, nRows, elevGradient, ageMod);
+		terrainArray = Terrain.factory(nCols, nRows, elevGradient, ageMod);
 		panels1 = new ArrayList<>();
 	}
 
@@ -32,9 +31,9 @@ public class ImagePanelDemo extends DemoConsts
 		show = true;
 		boolean save = false;
 		netcdfDemo(1600, 1475, true, save);
-//		objectImagePanelDemo(12, 13, 150, show, save);
-//		objectArrayImageMultiPanelDemo(100, 117, true, save);
-//		franceDemo(1000, 1200, true);
+		objectImagePanelDemo(12, 13, 150, show, save);
+		objectArrayImageMultiPanelDemo(100, 117, true, save);
+		franceDemo(1000, 1200, true);
 	}
 
 	static void franceDemo(int width, int height, boolean show)
@@ -47,20 +46,16 @@ public class ImagePanelDemo extends DemoConsts
 		f1.setVisible(show);
 	}
 	
-	
 	static void netcdfDemo(int width, int height, boolean show, boolean save)
 	{
 		allFlavList = NetCDFObjBuilder.factory2D(AllFlavorBean.class, inputNCDF);
 
 		List<ObjectImager<AllFlavorBean>> imagers = new ArrayList<>();
-		imagers.add(ImagerFactory.quickFactory(
-				allFlavList, null, 100, true, true, "intPrim", AllFlavorBean.class, gradCols, boolCols));
-		imagers.add(ImagerFactory.quickFactory(
-				allFlavList, null, 100, true, true, "boolPrim", AllFlavorBean.class, gradCols, boolCols));
-		imagers.add(ImagerFactory.quickFactory(
-				allFlavList, null, 100, true, true, "floatBox", AllFlavorBean.class, gradCols, boolCols));
-		imagers.add(ImagerFactory.quickFactory(
-				allFlavList, null, 100, true, true, "strng", AllFlavorBean.class, gradCols, boolCols));
+		ImagerData<AllFlavorBean> dat = ImagerData.build(allFlavList, false, false, false);
+		imagers.add(ImagerFactory.factory(dat, "intPrim", AllFlavorBean.class, gradCols, boolCols));
+		imagers.add(ImagerFactory.factory(dat, "intPrim", AllFlavorBean.class, gradCols, boolCols));
+		imagers.add(ImagerFactory.factory(dat, "intPrim", AllFlavorBean.class, gradCols, boolCols));
+		imagers.add(ImagerFactory.factory(dat, "intPrim", AllFlavorBean.class, gradCols, boolCols));
 
 		panels1 = new ArrayList<>();
 		panels1.add(ImagePanelFactory.buildPanel(
@@ -68,7 +63,7 @@ public class ImagePanelDemo extends DemoConsts
 				true, 0, 0, ptSize, 
 				AllFlavorBean.class, null));
 		panels1.add(ImagePanelFactory.buildPanel(
-				imagers.get(1), "boolPrim", 
+				imagers.get(1), "boolBox", 
 				false, 0, 0, ptSize, 
 				AllFlavorBean.class, null));
 		panels1.add(ImagePanelFactory.buildPanel(
@@ -92,10 +87,10 @@ public class ImagePanelDemo extends DemoConsts
 		for (int i = 0; i < (int) nPtsX; i++) 
 			for (int j = 0; j < (int) nPtsY; j++)
 		{
-			panels1.get(1).addPoint(
+			panels1.get(1).addPointRelative(
 					(double) i / (nPtsX) + 0.5/nPtsX,
 					(double) j / (nPtsY) + 0.5/nPtsY, ptSize, color);
-			panels1.get(2).addPoint(
+			panels1.get(2).addPointRelative(
 					(double) i / (nPtsX) + 0.5/nPtsX,
 					(double) j / (nPtsY) + 0.5/nPtsY, ptSize, color);
 		}
@@ -115,22 +110,25 @@ public class ImagePanelDemo extends DemoConsts
 	{
 		setup(width, height, 1.57, 7);
 
+		ImagerData<Terrain> dat = ImagerData.build(terrainArray, false, false, false);
+		
 		for (int i = 0; i < 2; i++)
 		{
 			for (int j = 0; j < 3; j++)
 			{
-				TerrainBean.perturbElevations(terrainArray, i * 10);
-				TerrainBean.perturbAges(terrainArray, (int) (j * 2.75));
-				imT1 = ImagerFactory.quickFactory(null, terrainArray, 100, true, true, "age", TerrainBean.class, gradCols, boolCols);
-				imT2 = ImagerFactory.quickFactory(null, terrainArray, 100, true, true, "elevation", TerrainBean.class, gradCols, boolCols);
+				Terrain.perturbElevations(terrainArray, i * 10);
+				Terrain.perturbAges(terrainArray, (int) (j * 2.75));
+				
+				imT1 = ImagerFactory.factory(dat, "age", Terrain.class, gradCols, boolCols);
+				imT2 = ImagerFactory.factory(dat, "elevation", Terrain.class, gradCols, boolCols);
 
 				objPan = ImagePanelFactory.buildPanel(
-						imT2, "elevation", true, 0, 0, ptSize, TerrainBean.class, null);
-				objPan.addValueLabel(0.2, 0.4, font, color);
+						imT2, "elevation", true, 0, 0, ptSize, Terrain.class, null);
+				objPan.addValueLabelRelative(0.2, 0.4, font, color);
 				panels1.add(objPan);
 				objPan = ImagePanelFactory.buildPanel(
-						imT1, "age", true, 0, 0, ptSize, TerrainBean.class, null);
-				objPan.addValueLabel(0.1 , 0.7, font, color);
+						imT1, "age", true, 0, 0, ptSize, Terrain.class, null);
+				objPan.addValueLabelRelative(0.1 , 0.7, font, color);
 				panels1.add(objPan);
 			}
 		}
@@ -156,8 +154,8 @@ public class ImagePanelDemo extends DemoConsts
 		for (int i = 0; i < width ; i++) for (int j = 0; j < height; j++) terrainArray[i][j].age = i + j;
 
 		
-		ObjectImager<TerrainBean> im1 = ImagerFactory.quickFactory(
-				null, terrainArray, 100, true, true, "age", TerrainBean.class,
+		ObjectImager<Terrain> im1 = ImagerFactory.factory(
+				ImagerData.build(terrainArray, false, false, false), "age", Terrain.class,
 				gradCols, boolCols);
 		im1.setDblFmt("%.1f");
 		panels1 = new ArrayList<>();
@@ -167,19 +165,19 @@ public class ImagePanelDemo extends DemoConsts
 		panels1.add(ImagePanelFactory.buildPanel(
 				im1, "elevation", 
 				true, 0, 0, ptSize, 
-				TerrainBean.class, null));
+				Terrain.class, null));
 		panels1.add(ImagePanelFactory.buildPanel(
 				im1, "elevation", 
 				false, 0, 0, ptSize, 
-				TerrainBean.class, null));
+				Terrain.class, null));
 		panels1.add(ImagePanelFactory.buildPanel(
 				im1, "elevation", 
 				false, 100, 0, ptSize, 
-				TerrainBean.class, null));
+				Terrain.class, null));
 		panels1.add(ImagePanelFactory.buildPanel(
 				im1, "elevation", 
 				true, 400, 700, ptSize, 
-				TerrainBean.class, null));
+				Terrain.class, null));
 
 		panels1.get(0).labelPixels(font, color);
 		panels1.get(1).labelPixels(font, color);

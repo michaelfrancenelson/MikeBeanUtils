@@ -6,13 +6,16 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.CSVHelper;
 import io.XLSXHelper;
 import utils.FieldUtils;
 
 public class AnnotatedBeanReader 
 {
-	//	static Logger logger = LoggerFactory.getLogger(AnnotatedBeanBuilder.class);
+		static Logger logger = LoggerFactory.getLogger(AnnotatedBeanReader.class);
 
 	/**
 	 * Marker to show which fields to read and/or reported
@@ -173,8 +176,6 @@ public class AnnotatedBeanReader
 		}
 		catch(Exception e) { return false; }
 
-//		throw new IllegalArgumentException("Input: " + s + " "
-//				+ "could not be parsed to a boolean value");
 	}
 
 	/**
@@ -316,7 +317,7 @@ public class AnnotatedBeanReader
 					throw new IllegalArgumentException(
 							"Input value for field of type " + shortName + " could not be parsed");
 				}
-				//				logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
+								logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
 			} catch (
 					NumberFormatException |	IllegalAccessException e) {
 				throw new IllegalArgumentException("Could not parse the input " + val +
@@ -364,7 +365,7 @@ public class AnnotatedBeanReader
 					throw new IllegalArgumentException(
 							"Input value for field of type " + shortName + " could not be parsed");
 				}
-				//				logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
+								logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
 			} catch (
 					NumberFormatException |	IllegalAccessException e) {
 				throw new IllegalArgumentException("Could not parse the input " + val +
@@ -412,7 +413,7 @@ public class AnnotatedBeanReader
 					throw new IllegalArgumentException(
 							"Input value for field of type " + shortName + " could not be parsed");
 				}
-				//				logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
+								logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
 			} catch (
 					NumberFormatException |	IllegalAccessException e) {
 				throw new IllegalArgumentException("Could not parse the input " + val +
@@ -443,37 +444,3 @@ public class AnnotatedBeanReader
 		return true;
 	}
 }
-
-
-///**
-//* Build list of beans from an input csv or xlsx file with individual bean data
-//* arranged in rows. Incomplete rows/columns will result in an error
-//* 
-//* @param clazz    class of bean
-//* @param filename name of input file
-//* @param          <T> bean type
-//* @return list of bean objects
-//*/
-//public static <T> List<T> factory(
-//		Class<T> clazz,
-//		String filename) 
-//{
-//	return factory(clazz, filename, false);
-//}
-
-//
-///**
-// * Create annotated bean instances, don't check for incomplete data.
-// * 
-// * @param clazz class of bean
-// * @param       <T> bean type
-// * @param data  data for the beans, the first row must contain the headers.
-// * @return list of bean objects
-// */
-//public static <T> List<T> factory(
-//		Class<T> clazz,
-//		List<List<String>> data, 
-//		boolean transposed) 
-//{
-//	return factory(clazz, data, transposed, false);
-//}

@@ -29,9 +29,9 @@ public class SimpleBooleanColorInterpolator implements ColorInterpolator
 	@Override
 	public int getColor(int... val)
 	{
-		if (val[0] == 0) return naRGB;
+		if (val[0] == 0) return falseRGB;
 		if (val[0] > 0) return trueRGB;
-		return falseRGB; 
+		return naRGB; 
 	}
 	
 	/**
@@ -40,8 +40,8 @@ public class SimpleBooleanColorInterpolator implements ColorInterpolator
 	@Override
 	public int getColor(double... val)
 	{
-		if (val[0] == 0) return naRGB;
-		if (val[0] > 0) return trueRGB;
+		if (val[0] < 0) return naRGB;
+		if (val[0] >= 1) return trueRGB;
 		return falseRGB; 
 	}
 
@@ -63,8 +63,8 @@ public class SimpleBooleanColorInterpolator implements ColorInterpolator
 	@Override
 	public int getColor(byte... val)
 	{
-		if (val[0] == 0) return naRGB;
-		if (val[0] > 0) return trueRGB;
+		if (val[0] < 0) return naRGB;
+		if (val[0] >= 1) return trueRGB;
 		return falseRGB; 
 	}
 

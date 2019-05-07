@@ -17,7 +17,12 @@ public class ArrayUtils
 	
 	public static double absToRelCoord(int point, int length)
 	{
-		return  Math.min(1.0, Math.max(0.0, ((double) point) / ((double) length)));
+		return absToRelCoord((double) point, length);
+	}
+	
+	public static double absToRelCoord(double point, int length)
+	{
+		return  Math.min(1.0, Math.max(0.0,  point / ((double) length)));
 	}
 	
 	

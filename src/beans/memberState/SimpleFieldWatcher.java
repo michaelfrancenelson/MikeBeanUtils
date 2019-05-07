@@ -19,7 +19,6 @@ import beans.builder.GetterGetterGetter.StringValGetter;
 import utils.FieldUtils;
 
 public class SimpleFieldWatcher <T> implements FieldWatcher<T>
-//public class SimpleFieldWatcher <T, A extends Annotation> implements FieldWatcher<T>
 {
 	@Retention(RetentionPolicy.RUNTIME)
 	public static @interface DisplayName{ public String name(); }
@@ -45,7 +44,6 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	 * @return
 	 */
 	public static <T> Map<String, FieldWatcher<T>> getWatcherMap(
-			//			public static <T, A extends Annotation> Map<String, FieldWatcher<T>> getWatcherMap(
 			Class<T> clazz,
 			Class<? extends Annotation> annClazz, 
 			String dblFmt, 
@@ -85,17 +83,10 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	 * @param clazz Bean type to watch
 	 * @return
 	 */
-	public static <T> SimpleFieldWatcher<T> factory(
-			//					public static <T, A extends Annotation> SimpleFieldWatcher<T, A> factory(
-			Class<T> clazz,
-			//			Class<? extends Annotation> annClass,
-			String fieldName, String dblFmt
-			) 
+	public static <T> SimpleFieldWatcher<T> factory(Class<T> clazz, String fieldName, String dblFmt) 
 	{ 
 		SimpleFieldWatcher<T> bw = new SimpleFieldWatcher<T>();
-		//		SimpleFieldWatcher<T, A> bw = new SimpleFieldWatcher<T, A>();
 		bw.setClazz(clazz);
-		//		bw.annClass = annClass;
 		bw.fieldName = fieldName; 
 		bw.initField();
 		if (dblFmt == null) dblFmt = "%.2f";

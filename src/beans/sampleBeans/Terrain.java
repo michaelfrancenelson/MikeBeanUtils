@@ -9,7 +9,7 @@ import beans.builder.AnnotatedBeanReader.ParsedField;
  * @author michaelfrancenelson
  *
  */
-public class TerrainBean 
+public class Terrain 
 {
 	static Random r = new Random();
 
@@ -18,7 +18,7 @@ public class TerrainBean
 	@ParsedField double elevation;
 	@ParsedField byte road = 0;
 
-	public TerrainBean(double elevation, int age) { this.elevation = elevation; this.age = age; }
+	public Terrain(double elevation, int age) { this.elevation = elevation; this.age = age; }
 
 	/**
 	 * 
@@ -30,7 +30,7 @@ public class TerrainBean
 	 * @param nPath
 	 */
 	public static void randomPath(
-			TerrainBean[][] cells,
+			Terrain[][] cells,
 			boolean road, boolean river,
 			double probRight, double probDown, 
 			double probVertical, double probDiagonal, double correlation, 
@@ -100,29 +100,29 @@ public class TerrainBean
 	 * @param array input array
 	 * @param range amount by which the age may be perturbed up or down
 	 */
-	public static void perturbAges(TerrainBean[][] array, int range)
+	public static void perturbAges(Terrain[][] array, int range)
 	{
 		for (int i = 0; i < array.length; i++) 
 			for (int j = 0; j < array[0].length; j++) 
 				array[i][j].perturbAge(range);
 	}
 
-	public static void perturbElevations(TerrainBean[][] array, double range)
+	public static void perturbElevations(Terrain[][] array, double range)
 	{
 		for (int i = 0; i < array.length; i++) 
 			for (int j = 0; j < array[0].length; j++) 
 				array[i][j].perturbElevation(range);
 	}
 
-	public static TerrainBean[][] factory(int width, int height, double elevGradient, int ageMod)
+	public static Terrain[][] factory(int width, int height, double elevGradient, int ageMod)
 	{
-		TerrainBean[][] out = new TerrainBean[width][height];
+		Terrain[][] out = new Terrain[width][height];
 		for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 			{
 				int age = ((int)Math.pow((int) Math.log(i * j), 2.4)  + j + i / 2 + (i / (1 + j))) % ageMod;
 				double elev = (double) i + (elevGradient * (double) j); 
-				out[i][j] = new TerrainBean(elev, age);
+				out[i][j] = new Terrain(elev, age);
 			}
 		return out;
 	}

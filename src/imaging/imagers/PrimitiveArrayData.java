@@ -3,6 +3,7 @@ package imaging.imagers;
 import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
 import utils.ArrayUtils;
+import utils.FieldUtils;
 
 public class PrimitiveArrayData<T> extends ArrayData<T>
 {
@@ -48,7 +49,6 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		case("boo"): val = ArrayUtils.doubleCaster(booDat[dataX][dataY]); break;
 		default: val = Double.MIN_VALUE;
 		}
-		if (asBoolean) val = 
 		return ci.getColor(val);
 	}
 	
@@ -68,9 +68,14 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		case("boo"): val = ArrayUtils.stringCaster(booDat[dataX][dataY], dblFmt); break;
 		default: val = null;
 		}
-		
-		logger.debug(String.format("Querying object at relative coords: %.2f, %.2f "
-				+ " %s with value %s", relativeX, relativeY, type, val));
+		if (asBoolean) {
+			String val2 = FieldUtils.toBoolean(val);
+			logger.debug(String.format("Querying boolean value (from %s = %s) at relative coords: (%.2f, %.2f): %s",
+					type, val, 100 * relativeX, 100 * relativeY, val2));
+			return val2;
+		}
+		logger.debug(String.format("Querying %s value at relative coords: (%.0f, %.0f): %s ",
+				type, 100 * relativeX, 100 * relativeY, val));
 		return val;
 	}
 	
@@ -124,37 +129,6 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 	private char[][] chrDat;
 	private boolean[][] booDat;
 
-
+	public void setAsBoolean(boolean b) { this.asBoolean = b; }
 
 }
-
-//	@Override public T getObjectAt(int x, int y) { return null; }
-//@Override
-//public IntArrayMinMax intMinMax() {
-//	// TODO Auto-generated method stub
-//	return null;
-//}
-//
-//@Override
-//public DblArrayMinMax dblMinMax() {
-//	// TODO Auto-generated method stub
-//	return null;
-//}
-//
-//@Override
-//public ByteArrayMinMax byteMinMax() {
-//	// TODO Auto-generated method stub
-//	return null;
-//}
-//
-//@Override
-//public boolean[][] boolVal() {
-//	// TODO Auto-generated method stub
-//	return null;
-//}
-//
-//@Override
-//public boolean[][] parsedBoolVal() {
-//	// TODO Auto-generated method stub
-//	return null;
-//}

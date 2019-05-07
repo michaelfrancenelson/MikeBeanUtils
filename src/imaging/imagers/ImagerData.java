@@ -1,10 +1,10 @@
 package imaging.imagers;
 
+import java.util.List;
+
 import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
-import utils.ArrayUtils.ByteArrayMinMax;
-import utils.ArrayUtils.DblArrayMinMax;
-import utils.ArrayUtils.IntArrayMinMax;
+import imaging.imagers.ArrayData.ListData;
 
 public interface ImagerData <T>  
 {
@@ -17,19 +17,21 @@ public interface ImagerData <T>
 	public double getDataMax();
 	public int getWidth();
 	public int getHeight();
-//	public void setDataMinMax(FieldWatcher<T> w);
-	
-//	public int[][] relativeToDataCoords(double relI, double relJ);
 
 	public PrimitiveArrayData<Object> getIntLegend(int nSteps, boolean loToHi, boolean horiz);
 	public PrimitiveArrayData<Object> getByteLegend(int nSteps, boolean loToHi, boolean horiz);
 	public PrimitiveArrayData<Object> getDoubleLegend(int nSteps, boolean loToHi, boolean horiz);
-//	public ImagerData<Boolean> getBooleanLegend(boolean includeNA, boolean horiz);
-	
-//	public IntArrayMinMax  intLegendData(int nSteps, boolean loToHi, boolean horiz);
-//	public DblArrayMinMax  dblLegendData(int nSteps, boolean loToHi, boolean horiz);
-//	public ByteArrayMinMax byteLegendData(int nSteps, boolean loToHi, boolean horiz);
+
 	void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci);
 	Boolean[][] getBooleanLegendData(boolean includeNA, boolean horizontal);
 	
+	public static <T> ImagerData<T> build(T[][] arrayDat, boolean invertX, boolean invertY, boolean transpose)
+	{
+		return new ArrayData<T>(arrayDat, invertX, invertY, transpose);
+	}
+	
+	public static <T> ImagerData<T> build(List<List<T>> listDat, boolean invertX, boolean invertY, boolean transpose)
+	{
+		return new ListData<T>(listDat, invertX, invertY, transpose);
+	}
 }

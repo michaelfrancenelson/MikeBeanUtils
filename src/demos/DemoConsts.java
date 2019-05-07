@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.border.Border;
 
 import beans.sampleBeans.AllFlavorBean;
-import beans.sampleBeans.TerrainBean;
+import beans.sampleBeans.Terrain;
 import imaging.colorInterpolator.ColorInterpolator;
 import imaging.imageFactories.ImageFactory.SimpleImagePanel;
 import imaging.imagers.ObjectImager;
@@ -40,18 +40,19 @@ public class DemoConsts
 	static Random r;
 	
 	static ObjectImager<AllFlavorBean> imA1, imA2;
-	static ObjectImager<TerrainBean> imT1, imT2;
+	static ObjectImager<Terrain> imT1, imT2;
 
 	static String france = "testImages" + File.separator + "france.jpg";
-	
+	static String inputNCDF = "testData/AllFlavorBean.nc";
+
 	static SimpleImagePanel simplePan;
 	static ImagePanel imgPan;
 	static ObjectImagePanel<?> objPan;
 	
 	static int nLegendSteps;
-	static TerrainBean[][] terrainArray;
+	static Terrain[][] terrainArray;
 	static AllFlavorBean[][] flavorArray;
-	static List<List<TerrainBean>> terrainList;
+	static List<List<Terrain>> terrainList;
 	static List<List<AllFlavorBean>> allFlavList;
 
 	static ColorInterpolator c;

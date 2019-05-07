@@ -30,13 +30,12 @@ public class WatchersTest {
 		
 		AllFlavorBean[][] bArray = new AllFlavorBean[20][20];
 		for (int i = 0; i < bArray.length; i++) for (int j = 0; j < bArray[0].length; j++) {
-			bArray[i][j] = RandomBeanBuilder.randomFactory(AllFlavorBean.class);
+			bArray[i][j] = RandomBeanBuilder.randomFactory(AllFlavorBean.class, -100, 100);
 		}
 		
 		/* Passes if no exceptions are thrown. */		
 		for (String st : watcherMap.keySet())
 		{
-//			System.out.println("WatchersTest.test() field = " + st);
 			watcherMap.get(st).getStringVal(beans.get(0).get(0));
 			watcherMap.get(st).getDoubleVal(beans.get(0).get(0));
 			watcherMap.get(st).getCharVal(beans.get(0).get(0));
@@ -52,18 +51,6 @@ public class WatchersTest {
 			watcherMap.get(st).getByteVal(bArray[0][1]);
 			watcherMap.get(st).getBoolVal(bArray[0][1]);
 			watcherMap.get(st).getParsedBoolVal(bArray[0][1]);
-
-//			watcherMap.get(st).getDoubleVal(beans);
-//			watcherMap.get(st).getIntVal(beans);
-//			watcherMap.get(st).getByteVal(beans);
-//			watcherMap.get(st).getBoolVal(beans);
-//			watcherMap.get(st).getParsedBoolVal(beans);
-//
-//			watcherMap.get(st).getDoubleVal(bArray);
-//			watcherMap.get(st).getIntVal(bArray);
-//			watcherMap.get(st).getByteVal(bArray);
-//			watcherMap.get(st).getBoolVal(bArray);
-//			watcherMap.get(st).getParsedBoolVal(bArray);
 		}
 	}
 }

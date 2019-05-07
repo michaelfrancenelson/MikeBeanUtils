@@ -37,6 +37,21 @@ public class PanelLabel
 				size, font, color, label);
 	}
 
+	
+	public static PanelLabel fromDataAbsoluteCoords(
+			int dataX, int dataY, int dataWidth, int dataHeight, 
+			double size, Font font, Color color, String label)
+	{
+		double coords[] = new double[] 
+				{
+						ArrayUtils.absToRelCoord(dataX, dataWidth),
+						ArrayUtils.absToRelCoord(dataY, dataHeight)
+				};						
+		return fromRelImgCoords(
+				coords[0], coords[1],
+				size, font, color, label);
+	}
+	
 	public static PanelLabel fromDataAbsoluteCoords(
 			int dataX, int dataY, ArrayData<?> dat, 
 			int size, Font font, Color color, String label)

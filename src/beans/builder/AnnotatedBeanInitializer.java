@@ -34,8 +34,6 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 	public static <T> void initializeInstanceFieldsToNA(Class<T> clazz, T t)
 	{ initializeInstanceFieldsToNA(clazz, t, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR); }
 
-
-
 	/* Instance checkers. */
 	public static <T> boolean checkInstanceInitialized(Class<T> clazz, T t)
 	{ return isInstanceInitialized(clazz, t, noEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR); }
@@ -236,5 +234,4 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 		}
 		return true;
 	}
-
 }

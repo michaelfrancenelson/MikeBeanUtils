@@ -58,7 +58,6 @@ public class GradientImageFactory
 		int[][] data = Sequences.spacedIntervals2D(min, max, nSteps, horizontal);
 		return ImageFactory.buildPrimitiveImage(data, ci, false, false, false).getImg();
 	}
-
 	
 	public static Image buildBooleanGradient(
 		ColorInterpolator ci, boolean horizontal, boolean includeNA)

@@ -17,7 +17,6 @@ import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.colorInterpolator.SimpleColorInterpolator;
 import imaging.imageFactories.ImageFactory;
 import imaging.imageFactories.ImageFactory.SimpleImagePanel;
-import imaging.imagers.ImagerFactory;
 import imaging.imagers.PrimitiveArrayData;
 import swing.SwingUtils;
 import swing.stretchAndClick.ImagePanelFactory;
@@ -41,10 +40,10 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 	{
 		boolean show = true, save = false;
 
-		//		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
-		//		intDemo(500, 700, 10, 20, 1.3, show, save);
-						booleanDemo(500, 600, 1.5, show, save);
-//		byteDemo(200, 300, 4, show, save);
+		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
+		intDemo(500, 700, 10, 20, 1.3, show, save);
+		booleanDemo(500, 600, 1.5, show, save);
+		byteDemo(200, 300, 4, show, save);
 	}
 
 	static void byteDemo(int width, int height, double size, boolean show, boolean saveFile)
@@ -55,12 +54,12 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 
 		//		byte[][][] bytes = new byte[2][width][height];
 		byte[][] bytes1 = new byte[width][height];
-//		byte maxB = Byte.MAX_VALUE; byte maxB2 = Byte.MAX_VALUE - 37; 
+		//		byte maxB = Byte.MAX_VALUE; byte maxB2 = Byte.MAX_VALUE - 37; 
 
 		int maxb = (int) Byte.MAX_VALUE;
 		byte maxB = 0;
-		
-		
+
+
 		for (int ii = 0; ii < 2; ii++) for (int jj = 0; jj < 2; jj++)
 		{
 			maxB = (byte) (maxb - 50 - r.nextInt(60)); 
@@ -81,12 +80,12 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
 		{
 			f1.add(ImagePanelFactory.buildPanel(
-					data1.get(z), c, "byte", null, false, 0, 0, ptSize));
-//			f2.add(ImagePanelFactory.buildPanel(
-//					data2.get(z), c, "byte", null, false, 0, 0, ptSize));
-					
-//			f1.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
-//					data1.get(z), c)));
+					data1.get(z), c, "byte", null, false, 0, 0, ptSize, false));
+			//			f2.add(ImagePanelFactory.buildPanel(
+			//					data2.get(z), c, "byte", null, false, 0, 0, ptSize, true));
+
+			//			f1.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
+			//					data1.get(z), c)));
 			f2.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
 					data1.get(z), c )));
 			z++;
@@ -130,9 +129,7 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		pp.setBorder(b);
 		f1.add(pp);
 		pp = ImagePanelFactory.buildPanel(new PrimitiveArrayData<Object>(
-				datByte, false, false, false), c, "bool", null, true, 0, 0, ptSize);
-				
-//				SimpleImagePanel(ImageFactory.buildPrimitiveImage(datByte, c, false, false, false));
+				datByte, false, false, false), c, "bool", null, true, 0, 0, ptSize, true);
 		pp.setBorder(b);
 		f1.add(pp);
 		f1.setVisible(show);
@@ -197,33 +194,10 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		{
 			PrimitiveImagePanel<Object> pan = 
 					ImagePanelFactory.buildPanel(
-							arrDat1.get(z),
-							c, 
-							"int", 
-//							null, null, null,
-							"%.0d", 
-							true, 
-//							false, false, false,
-//							100,
-//							trueFalse[j], trueFalse[i],
-//							false,
-							-1, -1,
-							0.01);
+							arrDat1.get(z),	c, "int", "%.0d", true, -1, -1, 0.01, false);
 			f1.add(pan);
 
-			pan = ImagePanelFactory.buildPanel(
-					arrDat2.get(z),
-					c, 
-					"int", 
-//					null, null, null,
-					"%.0d", 
-					true, 
-//					false, false, false,
-//					100,
-//					trueFalse[j], trueFalse[i],
-//					true,
-					-1, -1,
-					0.01);
+			pan = ImagePanelFactory.buildPanel(arrDat2.get(z), c, "int", null, true, -1, -1, 0.01, false);
 			f2.add(pan);
 
 

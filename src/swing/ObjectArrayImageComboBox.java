@@ -4,7 +4,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -19,55 +19,62 @@ import utils.FieldUtils;
  */
 public class ObjectArrayImageComboBox
 {
-
-	public static <T> JComboBox<String> comboBoxFactory(ObjectImagePanel<T> panel)
-	{ return comboBoxFactory(
-			panel, 
-			panel.getAnnClass(), 
-			null, 
-			null, null); }
-
-	public static <T> JComboBox<String> comboBoxFactory(
-			ObjectImagePanel<T> panel,
-			Class<? extends Annotation> annClass,
-			List<Field> fields, 
-			List<String> dispNames,
-			Font font
-			)
+	public static class BeanComboBox<T> extends JComboBox<String>
 	{
-		final List<Field> f2;
-		
-		if (fields == null) f2 = FieldUtils.getFields(
-				panel.getObjClass(), annClass, true, true);
-		else f2 = fields;
+		/** */
+		private static final long serialVersionUID = 2409820165770045768L;
+		List<String> fieldNames;
+		String[] displayNames;
 
-		
-		
-		
-		if (dispNames == null)
-			dispNames = FieldUtils.getFieldNames(
-					f2, panel.getObjClass(), annClass, false);
+		ObjectImagePanel<T> panel;
 
-		/* Verify that there are the same number of display names and fields: */
-		if (f2.size() != dispNames.size()) 
-			throw new IllegalArgumentException("Number of fields must be equal to the number of display names");
-		JComboBox<String> out;
-		
-		String[] dNames = new String[dispNames.size()];
-		for (int i = 0; i < dNames.length; i++) {dNames[i] = dispNames.get(i); }
-		out = new JComboBox<>(dNames);
+		public static <T> BeanComboBox<T> build(
+				ObjectImagePanel<T> panel, List<String> fields, List<String> menuNames, Font font, String initialField)
+		{
+			int n = fields.size();
+			int i = 0;
+			String[] displayNames = new String[n];
 
-		out.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e)
+			/* Set up the field and menu names. */
+			if (menuNames == null)
 			{
-				panel.setField(f2.get(out.getSelectedIndex()));
+				i = 0;
+				displayNames = new String[n];
+				for (String st : fields) { displayNames[i] = st; i++; }
+				i = 0;
+				displayNames = new String[n];
+				for (String st : fields) { displayNames[i] = st; i++; }
 			}
-		});
+			else if (menuNames.size() != n)
+				throw new IllegalArgumentException("Length of menu names does not match the number of fields");
+			else 
+			{
+				i = 0;
+				displayNames = new String[n];
+				for (String st : menuNames) { displayNames[i] = st; i++; }
+			}
+			BeanComboBox<T> out = new BeanComboBox<T>();
+			out.fieldNames = fields;
+			out.panel = panel;
 
-		if (font != null) out.setFont(font);
-		return out;
+			for (String st : displayNames) out.addItem(st);
+			out.setFont(font);
+			out.setSelectedIndex(fields.indexOf(initialField.toLowerCase()));
+			out.buildActionListener();
+			
+			return out;
+		}
+		void buildActionListener()
+		{
+			addActionListener(new ActionListener()
+			{
+				@Override public void actionPerformed(ActionEvent e)
+				{
+					String item = getSelectedItem().toString();
+					System.out.println("ComboBox item = " + item.toString());
+					panel.setField(fieldNames.get(fieldNames.indexOf(item)));
+				}
+			});
+		}
 	}
-
 }

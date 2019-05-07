@@ -51,8 +51,4 @@ public class PrimitiveImager
 	public void setData(PrimitiveArrayData<?> dat) { this.data = dat; }
 	
 	public String getCurrentFieldName() { return currentFieldName; }
-
-	
-//	void setBooleanInterpolator(ColorInterpolator ci) { this.booleanCI = ci; }
-//	public ColorInterpolator getBooleanInterpolator() { return booleanCI; }
 }
