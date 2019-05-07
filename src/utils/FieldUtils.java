@@ -183,7 +183,6 @@ public class FieldUtils
 		{
 			throw new IllegalArgumentException("Could not retrieve the field " +
 					fieldName + annString(annClass) + typString(clazz));
-
 		}
 		return out;
 	}
@@ -279,6 +278,5 @@ public class FieldUtils
 		}
 		return "NA";
 	}
-	
 }
 

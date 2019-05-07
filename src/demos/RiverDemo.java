@@ -20,13 +20,9 @@ import utils.ColorUtils;
 
 public class RiverDemo extends DemoConsts
 {
-
-
 	public static void main(String[] args) 
 	{
-
-		//		pointLabelDemo();
-
+		pointLabelDemo();
 		arrayPanelDemo();
 	}
 
@@ -36,9 +32,8 @@ public class RiverDemo extends DemoConsts
 		int nRow = 8, nCol = 8;
 
 		Terrain[][] cells1 = Terrain.factory(nRow, nCol, 1.5, 13);
-		Terrain.randomPath(cells1, false, true, 0.32, 0.528, 0.5, 0.5, 0.9, 1);
-		Terrain.randomPath(cells1, true, false, 0.32, 0.528, 0.5, 0.5, 0.1, 1);
-		//		TerrainBean.randomRivers(cells1, 0.52, 0.628, 0.5, 0.5, 2);
+		Terrain.randomPath(cells1, false, true, 0.32, 0.528, 0.5, 0.5, 0.9, 4);
+		Terrain.randomPath(cells1, true, false, 0.32, 0.528, 0.5, 0.5, 0.1, 3);
 		ObjectImagePanel<Terrain> pan1;
 
 		ImagerData<Terrain> imDat = ImagerData.build(cells1, false, false, false);
@@ -51,35 +46,26 @@ public class RiverDemo extends DemoConsts
 				imDat,
 				Terrain.class, 
 				ParsedField.class,
-				"age", 
+				"stream", 
 				ColorUtils.HEAT_COLORS, boolCols,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
 				"%.2f", null, 
 				true,
 				0, 0, ptSize);
-		//		pan1.setField("elevation");
 
 		JComboBox<String> cbox = pan1.getControlComboBox(font);
 		f1.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
-		c.gridy = 0;
-		c.gridx = 0;
-		c.weightx = 1;
-		c.weighty = 1;
+		c.gridy = 0; c.gridx = 0;
+		c.weightx = 1; c.weighty = 1;
 		c.fill = GridBagConstraints.BOTH;
-		c.gridheight = 1;
-		c.gridwidth = 2;
-		c.anchor = c.CENTER;
 		f1.add(pan1, c);
 
 		c.weighty = 0;
-		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 1;
 		f1.add(cbox, c);
-
-
 
 		f1.setVisible(true);
 
@@ -88,7 +74,6 @@ public class RiverDemo extends DemoConsts
 			pan1.addPoint(i, 0, 0.05, Color.blue);
 			pan1.addPoint(i, 1, 0.08, Color.green);
 		}
-
 	}
 
 	public static void arrayPanelDemo()
@@ -112,10 +97,8 @@ public class RiverDemo extends DemoConsts
 		terrainArray = Terrain.factory(150, 230, 1.5, 13);
 
 		Terrain.randomPath(terrainArray, road, !stream, roadRight, roadDown, roadVertical, 0.5, roadCorr, 10);
-		Terrain.randomPath(terrainArray, !road, stream, streamRight, streamDown, streamVertical, 0.5, riverCorr, 1);
+		Terrain.randomPath(terrainArray, !road, stream, streamRight, streamDown, streamVertical, 0.5, riverCorr, 15);
 
-		ObjectImagePanel<Terrain> pan1, pan2, pan3, pan4;
-		ptSize = 0.15;
 
 		f1 = SwingUtils.frameFactory(800, 1500);
 		f1.setLayout(new GridBagLayout());
@@ -124,7 +107,7 @@ public class RiverDemo extends DemoConsts
 		ImagerData<Terrain> imDat = ImagerData.build(terrainArray, false, false, false);
 
 		List<JPanel> pans = new ArrayList<>();
-		List<JComboBox> combs = new ArrayList<>();
+		List<JComboBox<String>> combs = new ArrayList<>();
 
 		for (int i = 0; i < 2; i++)
 		{
@@ -132,7 +115,7 @@ public class RiverDemo extends DemoConsts
 			for (int j = 0; j < 2; j++)
 			{
 				int x = (2 * j);
-				pan1 = ImagePanelFactory.buildPanel(
+				ObjectImagePanel<Terrain> pan1 = ImagePanelFactory.buildPanel(
 						imDat,
 						Terrain.class, 
 						ParsedField.class,
@@ -143,6 +126,7 @@ public class RiverDemo extends DemoConsts
 						true,
 						0, 0, ptSize);
 				JComboBox<String> jcb = pan1.getControlComboBox(font);
+				pan1.setBorder(border);
 				pans.add(pan1);
 				combs.add(jcb);
 				c.fill = GridBagConstraints.BOTH;
@@ -159,88 +143,9 @@ public class RiverDemo extends DemoConsts
 		}
 
 		f1.setVisible(true);
+		f1.setLocation(1200, 0);
 
 	}
-	//		pan2 = ImagePanelFactory.buildPanel(
-	//				imDat,
-	//				Terrain.class, 
-	//				ParsedField.class,
-	//				"elevation", 
-	//				ColorUtils.HEAT_COLORS, boolCols,
-	//				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-	//				null, null, 
-	//				true,
-	//				0, 0, ptSize);
-	//		pan3 = ImagePanelFactory.buildPanel(
-	//				imDat,
-	//				Terrain.class, 
-	//				ParsedField.class,
-	//				"age", 
-	//				ColorUtils.HEAT_COLORS, boolCols,
-	//				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-	//					null, null, 
-	//				true,
-	//				0, 0, ptSize);
-	//		pan4 = ImagePanelFactory.buildPanel(
-	//				imDat,
-	//				Terrain.class, 
-	//				ParsedField.class,
-	//				"elevation", 
-	//				ColorUtils.HEAT_COLORS, boolCols,
-	//				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray,
-	//				"%.2f", null, 
-	//				true,
-	//				0, 0, ptSize);
-	//
-	//		f1.setLayout(new GridLayout(2, 2));
-	//		f1.setPreferredSize(f1.getSize());
-	//		f1.add(pan1);
-	//		f1.add(pan2);
-	//		f1.add(pan3);
-	//		f1.add(pan4);
-	//		
-	//		f1.pack();
-	//		f1.setVisible(true);
-	//
-	//		pan1.setField("elevation");
-	//
-	////		pan1.addTextLabel("label", 0.5, 0.5, font);
-	////		pan1.addValueLabel(0.1, 0.1, font);
-	////
-	////		pan2.addTextLabel("center", 0.5, 0.5, font);
-	////		pan2.addValueLabel(0.1, 0.1, font);
-	////		
-	////		pan3.addTextLabel("right", 1.1, 0.5, font);
-	////		pan3.addPoint(0.51, 0.2, 0, Color.black);
-	////		pan3.addPoint(20, 10, 0, Color.black);
-	////
-	////		pan1.addValueLabel(0.1, 0.5, font);
-	////		pan2.addValueLabel(0.1, 0.5, font);
-	////		pan3.addValueLabel(0.1, 0.5, font);
-	////		pan4.addValueLabel(0.01, 0.6, font);
-	////		pan4.addValueLabel(0.2, 0.5, font);
-	//		
-	//		pan1.addPointRelative(0.1, 0.25, 49, Color.blue);
-	//		pan1.addPointRelative(0.1, 0.35, 0, Color.blue);
-	//		pan4.addPointRelative(0.1, 0.75, 48, Color.white);
-	//		
-	//		pan2.addPointRelative(0.1, 0.25, 46, Color.blue);
-	//		pan2.addPointRelative(0.2, 0.25, 40, Color.blue);
-	//
-	//		JFrame f2 = SwingUtils.frameFactory(800, 800);
-	//		f2.setLayout(new GridLayout(2, 2));
-	//
-	//		JComboBox<String> jcb = pan1.getControlComboBox(font);
-	//		JComboBox<String> jcb2 =pan2.getControlComboBox(font);
-	//		JComboBox<String> jcb3 = pan3.getControlComboBox(font);
-	//		JComboBox<String> jcb4 = pan4.getControlComboBox(font);
-	//
-	//		f2.add(jcb);
-	//		f2.add(jcb2);
-	//		f2.add(jcb3);
-	//		f2.add(jcb4);
-	//		f1.setVisible(true);
-	//	}
 
 	//	public static void demo1()
 	//	{

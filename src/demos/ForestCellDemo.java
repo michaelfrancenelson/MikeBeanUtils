@@ -15,27 +15,23 @@ import utils.ColorUtils;
 
 public class ForestCellDemo extends DemoConsts
 {
-
 	static List<List<ForestCell>> forest;
 	static String filename = "testData" + File.separator + "blackHills1000m.nc";
 
 	public static void main(String[] args) 
 	{
-
-		forestDemo(800, 1100, true);
+		forestDemo(1800, 1100, true);
 	}
 
 
 	static void forestDemo(int width, int height, boolean show)
 	{
-
 		forest = NetCDFObjBuilder.factory2D(ForestCell.class, filename);
-//		f1 = SwingUtils.frameFactory(width, height, "Forest Cell Demo", 2, 4);
-		f1 = SwingUtils.frameFactory(width, height, "Forest Cell Demo", 2, 2);
+		f1 = SwingUtils.frameFactory(width, height, "Forest Cell Demo", 2, 4);
 
-		for (int i = 0; i < 1; i++)
-			for (int j = 1; j < 2; j++)
-				for (int k = 1; k < 2; k++)
+		for (int i = 0; i < 2; i++)
+			for (int j = 0; j < 2; j++)
+				for (int k = 0; k < 2; k++)
 				{
 					JPanel pan = ImagePanelFactory.buildPanel(
 							ImagerData.build(forest, trueFalse[k], trueFalse[j], trueFalse[i]),

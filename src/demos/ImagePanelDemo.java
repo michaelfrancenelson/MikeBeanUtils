@@ -189,6 +189,4 @@ public class ImagePanelDemo extends DemoConsts
 		if (show && save) SwingUtils.saveFrameImage(f1, 
 				"sampleOutput/array_image_multi_panel_demo.png");
 	}
-
-
 }

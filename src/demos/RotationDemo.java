@@ -1,8 +1,7 @@
 package demos;
 
 import beans.sampleBeans.AllFlavorBean;
-import imaging.imagers.ImagerFactory;
-import imaging.imagers.PrimitiveImager;
+import imaging.imagers.ArrayData;
 import swing.SwingUtils;
 import swing.stretchAndClick.ImagePanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
@@ -12,7 +11,7 @@ public class RotationDemo extends DemoConsts
 
 	public static void main(String[] args) 
 	{
-		arrayDemo(6, 4, 1900, 1700, true);
+		arrayDemo(21, 14, 1900, 1700, true);
 	}
 
 	static void arrayDemo(int nRow, int nCol, int fWidth, int fHeight, boolean show)
@@ -27,39 +26,40 @@ public class RotationDemo extends DemoConsts
 		}
 
 		String field = "intPriM";
+		trueFalse = new boolean[] {false, true};
 
 		f1 = SwingUtils.frameFactory(
-				fWidth, fHeight, "Array Data Rotation Demo", 1, 2);
-		for (int trans = 1; trans < 2; trans++)
-		for (int flipY = 0; flipY < 1; flipY++) {	
-			for (int flipX = 0; flipX < 1; flipX++)
-		{
-				PrimitiveImager imgr = ImagerFactory.quickFactory(
-						null, flavorArray, 100,
-						trueFalse[flipX], trueFalse[flipY], trueFalse[trans],
-						true, true,
-						field, AllFlavorBean.class,
-						gradCols, boolCols);
-				
-				
-			ObjectImagePanel<AllFlavorBean> pan = ImagePanelFactory.buildPanel(
-					,
-					field, true, 0, 0, 0.1);
-			pan.labelPixels(font, null);
-			f1.add(pan);
+				fWidth, fHeight, "Array Data Rotation Demo", 4, 2);
 
-		}}
+		ObjectImagePanel<AllFlavorBean> pan;
+		ArrayData<AllFlavorBean> arr;
+		
+		for (int flipY = 0; flipY < 2; flipY++) 	
+		for (int trans = 0; trans < 2; trans++)
+				for (int flipX = 0; flipX < 2; flipX++)
+				{
+					arr = new ArrayData<>(flavorArray, 
+							trueFalse[flipX], trueFalse[flipY], trueFalse[trans]);
 
+					pan = ImagePanelFactory.buildPanel(
+							arr, AllFlavorBean.class, null, field,
+							gradCols, boolCols, null, null, null,
+							null, null,
+							true, 0, 0, ptSize);
+					pan.setBorder(border);
+					pan.labelPixels(font, null);
+					f1.add(pan);
+				}
 
-
-
+		f2 = SwingUtils.frameFactory(fWidth, fHeight, "Array Data Rotation Demo - untransformed");
+		f2.add(ImagePanelFactory.buildPanel(
+				new ArrayData<>(flavorArray, false, false, false),
+				AllFlavorBean.class, null, field,
+				gradCols, boolCols, null, null, null,
+				null, null,
+				true, 0, 0, ptSize));
 		f1.setVisible(show);
-
-
-
+		f2.setLocation(fWidth, 0);
+		f2.setVisible(show);
 	}
-
-
-
-
 }

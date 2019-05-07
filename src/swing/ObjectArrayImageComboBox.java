@@ -3,14 +3,11 @@ package swing;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComboBox;
 
 import swing.stretchAndClick.ObjectImagePanel;
-import utils.FieldUtils;
 
 /**
  *  Methods to build combo boxes for choosing which field to display in an object array imager or panel.

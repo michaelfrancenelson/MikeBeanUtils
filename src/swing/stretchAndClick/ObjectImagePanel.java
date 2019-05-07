@@ -52,8 +52,6 @@ public class ObjectImagePanel<T> extends JPanel
 
 	protected Image image = null;
 
-	private JComboBox<String> controlComboBox;
-
 	protected double imageAspectRatio, compAspectRatio;
 
 	protected boolean centerInPanel = true;
@@ -336,7 +334,6 @@ public class ObjectImagePanel<T> extends JPanel
 		double relJ = ArrayUtils.absToRelCoord(dataY + 0.5, dataWidth);
 		labelFromImageRelCoords(relI, relJ, null, null, color, size, "point");
 	}
-
 	
 	public void setField(String name)  { getImager().setField(name); updateImage(); }
 	public void setField(Field f) { getImager().setField(f); updateImage(); }
@@ -350,5 +347,4 @@ public class ObjectImagePanel<T> extends JPanel
 	public String getCurrentClickValue() { return currentClickValue; }
 	public int getImgDisplayWidth() { return imgDisplayWidth;}
 	public int getImgDisplayHeight() { return imgDisplayHeight; }
-	
 }
