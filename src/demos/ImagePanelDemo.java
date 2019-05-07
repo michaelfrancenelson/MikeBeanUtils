@@ -8,8 +8,8 @@ import javax.swing.JPanel;
 import beans.builder.NetCDFObjBuilder;
 import beans.sampleBeans.AllFlavorBean;
 import beans.sampleBeans.TerrainBean;
-import imaging.imagers.BeanImager;
 import imaging.imagers.ImagerFactory;
+import imaging.imagers.ObjectImager;
 import swing.SwingUtils;
 import swing.stretchAndClick.ImagePanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
@@ -32,12 +32,12 @@ public class ImagePanelDemo extends DemoConsts
 		show = true;
 		boolean save = false;
 		netcdfDemo(1600, 1475, true, save);
-		objectImagePanelDemo(12, 13, 150, show, save);
-		objectArrayImageMultiPanelDemo(100, 117, true, save);
-		imagePanelDemo(1000, 1200, true);
+//		objectImagePanelDemo(12, 13, 150, show, save);
+//		objectArrayImageMultiPanelDemo(100, 117, true, save);
+//		franceDemo(1000, 1200, true);
 	}
 
-	static void imagePanelDemo(int width, int height, boolean show)
+	static void franceDemo(int width, int height, boolean show)
 	{
 		f1 = SwingUtils.frameFactory(width, height, "Image panel demo", 2, 2);
 		f1.add(ImagePanelFactory.imagePanel(france, false, -1, -1));
@@ -52,7 +52,7 @@ public class ImagePanelDemo extends DemoConsts
 	{
 		allFlavList = NetCDFObjBuilder.factory2D(AllFlavorBean.class, inputNCDF);
 
-		List<BeanImager<AllFlavorBean>> imagers = new ArrayList<>();
+		List<ObjectImager<AllFlavorBean>> imagers = new ArrayList<>();
 		imagers.add(ImagerFactory.quickFactory(
 				allFlavList, null, 100, true, true, "intPrim", AllFlavorBean.class, gradCols, boolCols));
 		imagers.add(ImagerFactory.quickFactory(
@@ -156,7 +156,7 @@ public class ImagePanelDemo extends DemoConsts
 		for (int i = 0; i < width ; i++) for (int j = 0; j < height; j++) terrainArray[i][j].age = i + j;
 
 		
-		BeanImager<TerrainBean> im1 = ImagerFactory.quickFactory(
+		ObjectImager<TerrainBean> im1 = ImagerFactory.quickFactory(
 				null, terrainArray, 100, true, true, "age", TerrainBean.class,
 				gradCols, boolCols);
 		im1.setDblFmt("%.1f");

@@ -63,7 +63,7 @@ public class ObjectArrayPanelDemo extends DemoConsts
 				aspRat, 
 				constX, constY,
 				ptSize));
-		panels.add(panels.get(0).getLegendPanel());
+//		panels.add(panels.get(0).getLegendPanel());
 //		panels.add(panels.get(1).getLegendPanel());
 
 		

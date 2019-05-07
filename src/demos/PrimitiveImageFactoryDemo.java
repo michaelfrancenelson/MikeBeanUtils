@@ -17,6 +17,7 @@ import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.colorInterpolator.SimpleColorInterpolator;
 import imaging.imageFactories.ImageFactory;
 import imaging.imageFactories.ImageFactory.SimpleImagePanel;
+import imaging.imagers.ImagerFactory;
 import imaging.imagers.PrimitiveArrayData;
 import swing.SwingUtils;
 import swing.stretchAndClick.ImagePanelFactory;
@@ -41,34 +42,54 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		boolean show = true, save = false;
 
 		//		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
-		intDemo(500, 700, 10, 20, 1.3, show, save);
-		//		booleanDemo(500, 600, 1.5, show, save);
-		//		byteDemo(200, 300, 4, show, save);
+		//		intDemo(500, 700, 10, 20, 1.3, show, save);
+						booleanDemo(500, 600, 1.5, show, save);
+//		byteDemo(200, 300, 4, show, save);
 	}
 
 	static void byteDemo(int width, int height, double size, boolean show, boolean saveFile)
 	{
 		setup();
-		byte[][][] bytes = new byte[2][width][height];
-		byte maxB = Byte.MAX_VALUE; byte maxB2 = Byte.MAX_VALUE - 37; 
-		for (int i = 0; i < width; i++) for (int j = 0; j < height; j++)
-		{	byte val = (byte) (r.nextInt(1 + (i + j) / 2) % maxB);
-		bytes[0][i][j] = val;
-		val = (byte) (r.nextInt(1 + (i + j) / 2) % maxB2);
-		bytes[1][i][j] = val;
-		}
+		List<PrimitiveArrayData<Object>> data2 = new ArrayList<>();
+		List<PrimitiveArrayData<Object>> data1 = new ArrayList<>();
 
-		c = SimpleColorInterpolator.factory(ColorUtils.RAINBOW, 0, (int) maxB,
+		//		byte[][][] bytes = new byte[2][width][height];
+		byte[][] bytes1 = new byte[width][height];
+//		byte maxB = Byte.MAX_VALUE; byte maxB2 = Byte.MAX_VALUE - 37; 
+
+		int maxb = (int) Byte.MAX_VALUE;
+		byte maxB = 0;
+		
+		
+		for (int ii = 0; ii < 2; ii++) for (int jj = 0; jj < 2; jj++)
+		{
+			maxB = (byte) (maxb - 50 - r.nextInt(60)); 
+			bytes1 = new byte[width][height];
+			for (int i = 0; i < width; i++) for (int j = 0; j < height; j++)
+			{	
+				byte val = (byte) (r.nextInt(1 + (i + j) / 2) % maxB);
+				bytes1[i][j] = val;
+			}
+			data2.add(new PrimitiveArrayData<Object>(bytes1, trueFalse[jj], trueFalse[ii], true));
+			data1.add(new PrimitiveArrayData<Object>(bytes1, trueFalse[jj], trueFalse[ii], false));
+		}
+		c = SimpleColorInterpolator.factory(ColorUtils.RAINBOW, 0, maxb,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, "%0.4f");
 		f1 = SwingUtils.frameFactory((int)(width * size), (int)(height * size), "Byte array demo", 2, 2);
 		f2 = SwingUtils.frameFactory((int)(height * size), (int)(width * size), " Transposed byte array demo", 2, 2);
-
+		int z = 0;
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
 		{
-			f1.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
-					bytes[i * j], c, trueFalse[j], trueFalse[i], false)));
+			f1.add(ImagePanelFactory.buildPanel(
+					data1.get(z), c, "byte", null, false, 0, 0, ptSize));
+//			f2.add(ImagePanelFactory.buildPanel(
+//					data2.get(z), c, "byte", null, false, 0, 0, ptSize));
+					
+//			f1.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
+//					data1.get(z), c)));
 			f2.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(
-					bytes[j], c, trueFalse[j], trueFalse[i], true)));
+					data1.get(z), c )));
+			z++;
 		}
 
 		f1.setVisible(show);
@@ -108,7 +129,10 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		JPanel pp = new SimpleImagePanel(ImageFactory.buildPrimitiveImage(datBool, c, false, false, false));
 		pp.setBorder(b);
 		f1.add(pp);
-		pp = new SimpleImagePanel(ImageFactory.buildPrimitiveImage(datByte, c, false, false, false));
+		pp = ImagePanelFactory.buildPanel(new PrimitiveArrayData<Object>(
+				datByte, false, false, false), c, "bool", null, true, 0, 0, ptSize);
+				
+//				SimpleImagePanel(ImageFactory.buildPrimitiveImage(datByte, c, false, false, false));
 		pp.setBorder(b);
 		f1.add(pp);
 		f1.setVisible(show);
@@ -176,13 +200,13 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 							arrDat1.get(z),
 							c, 
 							"int", 
-							null, null, null,
+//							null, null, null,
 							"%.0d", 
 							true, 
-							false, false, false,
-							100,
-							trueFalse[j], trueFalse[i],
-							false,
+//							false, false, false,
+//							100,
+//							trueFalse[j], trueFalse[i],
+//							false,
 							-1, -1,
 							0.01);
 			f1.add(pan);
@@ -191,13 +215,13 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 					arrDat2.get(z),
 					c, 
 					"int", 
-					null, null, null,
+//					null, null, null,
 					"%.0d", 
 					true, 
-					false, false, false,
-					100,
-					trueFalse[j], trueFalse[i],
-					true,
+//					false, false, false,
+//					100,
+//					trueFalse[j], trueFalse[i],
+//					true,
 					-1, -1,
 					0.01);
 			f2.add(pan);

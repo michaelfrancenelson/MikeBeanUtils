@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 
 public class SwingUtils 
 {
-
 	public static JFrame frameFactory(int width, int height) 
 	{ return frameFactory(width, height, ""); }
 	public static JFrame frameFactory(int width, int height, String title)

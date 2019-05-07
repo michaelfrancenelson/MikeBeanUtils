@@ -34,7 +34,9 @@ public class ForestCellDemo extends DemoConsts
 				forest, null, "elevation",
 				ColorUtils.TERRAIN_COLORS, ColorUtils.GREENS,
 				null, null, null, "%.4f", null,
-				true, true, false, false, 100, true, false, true, -1, -1, 0.1);
+				true, 
+				false, true, true,
+				100, true, false, true, -1, -1, 0.1);
 
 		f1.add(objPan);
 		f1.setVisible(show);

@@ -8,6 +8,7 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 {
 	private String type;
 	String dblFmt;
+	private boolean asBoolean = false;
 	@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
 	{
 		double[] minmax = null;
@@ -47,7 +48,7 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		case("boo"): val = ArrayUtils.doubleCaster(booDat[dataX][dataY]); break;
 		default: val = Double.MIN_VALUE;
 		}
-		
+		if (asBoolean) val = 
 		return ci.getColor(val);
 	}
 	

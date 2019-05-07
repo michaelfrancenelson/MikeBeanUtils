@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 import imaging.colorInterpolator.ColorInterpolator;
+import utils.ColorUtils;
 import utils.Sequences;
 
 public class GradientImageFactory 
@@ -67,14 +68,14 @@ public class GradientImageFactory
 		
 		if (horizontal)
 		{
-			img = new BufferedImage(maxDim, 1, ObjectImageFactory.RGB_TYPE);
+			img = new BufferedImage(maxDim, 1, ColorUtils.RGB_TYPE);
 			img.setRGB(0, 0, ci.getColor(true));
 			img.setRGB(1, 0, ci.getColor(false));
 			if (includeNA) img.setRGB(2, 0, ci.getNAColor());
 		}
 		else 
 		{
-			img = new BufferedImage(1, maxDim, ObjectImageFactory.RGB_TYPE);
+			img = new BufferedImage(1, maxDim, ColorUtils.RGB_TYPE);
 			img.setRGB(0, 0, ci.getColor(true));
 			img.setRGB(0, 1, ci.getColor(false));
 			if (includeNA) img.setRGB(0, 2, ci.getNAColor());

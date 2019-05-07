@@ -10,10 +10,11 @@ import beans.builder.AnnotatedBeanReader.ParsedField;
 import imaging.colorInterpolator.ColorInterpolator;
 import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.colorInterpolator.SimpleColorInterpolator;
+import imaging.imagers.ArrayData.ListData;
 
 public class ImagerFactory 
 {
-	public static <T> BeanImager<T> quickFactory(
+	public static <T> ObjectImager<T> quickFactory(
 			List<List<T>> listDat,  T[][] arrayDat, int nLegendSteps, 
 			boolean invertX, boolean invertY, boolean transpose,
 			boolean lToH, boolean horz, 
@@ -52,7 +53,7 @@ public class ImagerFactory
 	 * @param boolColors
 	 * @return
 	 */
-	public static <T> BeanImager<T> quickFactory(
+	public static <T> ObjectImager<T> quickFactory(
 			List<List<T>> listDat,  T[][] arrayDat, int nLegendSteps, 
 			boolean lToH, boolean horz, 
 			String field, Class<T> clazz, 
@@ -71,7 +72,7 @@ public class ImagerFactory
 				);
 	}
 	
-	public static <T> BeanImager<T> factory(
+	public static <T> ObjectImager<T> factory(
 			Class<T> clazz, 
 			Class<? extends Annotation> annClass, 
 			List<List<T>> lists,
@@ -102,10 +103,10 @@ public class ImagerFactory
 				if (ll.size() != len)
 					throw new IllegalArgumentException("Data rows/columns are not all the same length.");
 			}
-			out.setData(lists);
+			out.setData(new ListData(lists, flipX, flipY, transpose));
 		}
 
-		else out.setData(objArray);
+		else out.setData(new ArrayData(objArray, flipX, flipY, transpose));
 		
 		Map<String, Boolean> mp = new HashMap<>();
 		if (!(parsedBooleanFields == null)) for (String s : parsedBooleanFields) mp.put(s, true);
@@ -122,14 +123,14 @@ public class ImagerFactory
 	}
 
 	
-	public static <T> PrimitiveImager factory(
+	public static <T> PrimitiveImager primitiveFactory(
 			PrimitiveArrayData<T> dat,
 			ColorInterpolator ci,
-			double naDouble, int naInt, Color naColor,
-			String dblFmt,
-			boolean includeNABoolean,
-			boolean transpose, boolean flipX, boolean flipY,
-			int nLegendSteps, boolean legLowToHi, boolean horizLegend
+//			double naDouble, int naInt, Color naColor,
+			String dblFmt
+//			boolean includeNABoolean,
+//			boolean transpose, boolean flipX, boolean flipY,
+//			int nLegendSteps, boolean legLowToHi, boolean horizLegend
 			)
 	{
 		if (dblFmt == null)

@@ -1,6 +1,7 @@
 package utils;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
@@ -35,6 +36,8 @@ import java.util.Map;
 public class ColorUtils {
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface ColorGradient{ String name();};
+	
+	public static final int RGB_TYPE = BufferedImage.TYPE_3BYTE_BGR;
 	
 	public static enum Palettes
 	{

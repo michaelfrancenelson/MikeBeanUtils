@@ -10,10 +10,10 @@ import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
 import imaging.imagers.ImagerData;
 import imaging.imagers.PrimitiveArrayData;
+import utils.ColorUtils;
 
 public class ImageFactory 
 {
-
 	public static class ImageMinMax
 	{
 		public ImageMinMax(double min, double max, Image img)
@@ -30,7 +30,7 @@ public class ImageFactory
 			ImagerData<T> dat, ColorInterpolator ci, FieldWatcher<T> w)
 	{
 		dat.setDataMinMax(w, ci);
-		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
+		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ColorUtils.RGB_TYPE);
 		
 		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
 		{
@@ -38,11 +38,12 @@ public class ImageFactory
 		}
 		return new ImageMinMax(dat.getDataMin(), dat.getDataMax(), out);
 	}
+	
 	public static <T> ImageMinMax buildPrimitiveImage(
 			PrimitiveArrayData<T> dat, ColorInterpolator ci)
 	{
 		dat.setDataMinMax(null, ci);
-		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
+		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ColorUtils.RGB_TYPE);
 		
 		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
 		{
@@ -54,7 +55,7 @@ public class ImageFactory
 			ImagerData<T> dat, ColorInterpolator ci, FieldWatcher<T> w, double min, double max)
 	{
 		BufferedImage out = new BufferedImage(
-				dat.getWidth(), dat.getHeight(), ObjectImageFactory.RGB_TYPE);
+				dat.getWidth(), dat.getHeight(), ColorUtils.RGB_TYPE);
 		ci.updateMinMax(min, max);
 		
 		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
@@ -79,11 +80,11 @@ public class ImageFactory
 			int[][] data, ColorInterpolator ci,
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
-		ImagerData<Object> dat = new 
+		PrimitiveArrayData<Object> dat = new 
 				PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
 		dat.setDataMinMax(null, ci);
 		ci.updateMinMax(dat.getDataMin(), dat.getDataMax());
-		return buildPackageImage(dat, ci, null);
+		return buildPrimitiveImage(dat, ci);
 	}
 
 	/**
@@ -169,7 +170,7 @@ public class ImageFactory
 
 		BufferedImage img;
 
-			img = new BufferedImage(data.length, data[0].length, ObjectImageFactory.RGB_TYPE);
+			img = new BufferedImage(data.length, data[0].length, ColorUtils.RGB_TYPE);
 			for (int i = startX; i != endX; i += incrementX) {
 				for (int j = startY; j != endY; j += incrementY) {
 					img.setRGB(i, j, ci.getBoxedColor(data[i][j]));
@@ -189,7 +190,8 @@ public class ImageFactory
 
 		@Override public void paintComponent(Graphics g)
 		{
-			g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
+			int width = this.getWidth(); int height = this.getHeight();
+			g.drawImage(img, 0, 0, width, height, this);
 		}
 	}
 }

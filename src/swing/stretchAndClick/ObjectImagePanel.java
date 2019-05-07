@@ -24,7 +24,7 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import imaging.imagers.BeanImager;
+import imaging.imagers.ObjectImager;
 import imaging.imagers.PanelLabel;
 import swing.ObjectArrayImageComboBox;
 import utils.ArrayUtils;
@@ -50,7 +50,7 @@ public class ObjectImagePanel<T> extends JPanel
 
 	protected String currentClickValue;
 
-	private BeanImager<T> imager;
+	private ObjectImager<T> imager;
 	private Class<T> clazz;
 	private Class<? extends Annotation> annClass;
 
@@ -70,7 +70,7 @@ public class ObjectImagePanel<T> extends JPanel
 
 
 	void init(
-			BeanImager<T> imgr, 
+			ObjectImager<T> imgr, 
 			int width, int height, 
 			boolean keepAspectRatio, 
 			Class<T> clazz, Class<? extends Annotation> annClass)
@@ -118,7 +118,7 @@ public class ObjectImagePanel<T> extends JPanel
 								};
 				currentClickValue = imager.queryData(imgRelCoords[0], imgRelCoords[1]); 					
 				logger.debug(String.format("Value of %s: %s", 
-						imager.getCurrentFieldName(), currentClickValue));
+						imager.getFieldName(), currentClickValue));
 			}
 			@Override public void mouseEntered(MouseEvent arg0) {}
 			@Override public void mouseExited(MouseEvent arg0) {}
@@ -128,7 +128,7 @@ public class ObjectImagePanel<T> extends JPanel
 
 		if (this.image == null)
 			throw new IllegalArgumentException("Not able to create image from field " 
-					+ imgr.getCurrentFieldName() + ".");
+					+ imgr.getFieldName() + ".");
 
 		this.fixedAspectRatio = keepAspectRatio;
 		
@@ -150,7 +150,7 @@ public class ObjectImagePanel<T> extends JPanel
 	{
 		imager.refresh();
 		image = imager.getImage();
-		logger.debug("ObjectArrayImagePanel: updating array image to field " + imager.getCurrentFieldName());
+		logger.debug("ObjectArrayImagePanel: updating array image to field " + imager.getFieldName());
 		paintComponent(this.getGraphics());
 	}
 
@@ -190,7 +190,7 @@ public class ObjectImagePanel<T> extends JPanel
 //		int datHeight = imager.getDataHeight();
 		logger.trace(String.format("Data width: %d, data height: %d", dataWidth, dataHeight));
 		Insets insets = getInsets();
-		Graphics2D g2d = (Graphics2D) g.create();
+//		Graphics2D g2d = (Graphics2D) g.create();
 		int fixedX = this.imgDisplayWidth, fixedY = this.imgDisplayHeight;
 
 		this.panelWidth = getWidth() - insets.right;
@@ -230,7 +230,8 @@ public class ObjectImagePanel<T> extends JPanel
 			imgCornerY = 0;
 		}
 
-		g2d.drawImage(image, imgCornerX, imgCornerY, imgDisplayWidth, imgDisplayHeight, null);
+		g.drawImage(image, imgCornerX, imgCornerY, imgDisplayWidth, imgDisplayHeight, null);
+//		g2d.drawImage(image, imgCornerX, imgCornerY, imgDisplayWidth, imgDisplayHeight, null);
 
 		int cellWidth  = (int) ((double) imgDisplayWidth / (double) dataWidth);
 		int cellHeight = (int) ((double) imgDisplayHeight / (double) dataHeight);
@@ -263,9 +264,11 @@ public class ObjectImagePanel<T> extends JPanel
 		}
 
 
-		if (this.getBorder() != null) paintBorder(g2d);
-		g2d.dispose();
+		if (this.getBorder() != null) paintBorder(g);
+//		if (this.getBorder() != null) paintBorder(g2d);
+//		g2d.dispose();
 		g.dispose();
+//		g.dispose();
 	}
 
 	public void setField(String name)  { getImager().setField(name); updateImage(); }
@@ -353,7 +356,7 @@ public class ObjectImagePanel<T> extends JPanel
 
 	public double getPtRelSize() { return ptRelSize; }
 	public void setPtRelSize(double ptRelSize) { this.ptRelSize = ptRelSize; }
-	public BeanImager<T> getImager() { return imager; }
+	public ObjectImager<T> getImager() { return imager; }
 	public String getCurrentClickValue() { return currentClickValue; }
 	public int getImgDisplayWidth() { return imgDisplayWidth;}
 	public int getImgDisplayHeight() { return imgDisplayHeight; }

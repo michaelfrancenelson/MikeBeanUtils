@@ -1,7 +1,6 @@
 package demos;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -13,8 +12,8 @@ import javax.swing.JFrame;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.sampleBeans.TerrainBean;
-import imaging.imagers.BeanImager;
 import imaging.imagers.ImagerFactory;
+import imaging.imagers.ObjectImager;
 import swing.ObjectArrayImageComboBox;
 import swing.SwingUtils;
 import swing.stretchAndClick.ImagePanelFactory;
@@ -209,13 +208,14 @@ public class RiverDemo extends DemoConsts
 		File imgFile = new File("sampleOutput/" + filename);
 		JFrame f1 = SwingUtils.frameFactory(nRows, nCols);
 		ObjectImagePanel<TerrainBean> p1;
-		BeanImager<TerrainBean> imager1 = ImagerFactory.quickFactory(
+		ObjectImager<TerrainBean> imager1 = ImagerFactory.quickFactory(
 				null, cells, 100,
 				true, false,
 				"stream", TerrainBean.class, 
+				
 				ColorUtils.HEAT_COLORS, boolCols);
 
-		p1 = ImagePanelFactory.buildPanel(imager1, "stream", true, 0, 0, 0.1);
+		p1 = ImagePanelFactory.primitivePanel(imager1, "stream", true, 0, 0, 0.1);
 		f1.setLayout(new GridLayout(1, 1));
 		f1.add(p1);
 		f1.setVisible(true);
