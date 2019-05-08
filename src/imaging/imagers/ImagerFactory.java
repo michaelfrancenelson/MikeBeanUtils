@@ -2,8 +2,7 @@ package imaging.imagers;
 
 import java.awt.Color;
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import imaging.colorInterpolator.ColorInterpolator;
@@ -32,7 +31,7 @@ public class ImagerFactory
 	 * @param boolColors
 	 * @return
 	 */
-	public static <T> ObjectImager<T> factory(
+	public static <T> Imager<T> factory(
 			ImagerData<T> dat,
 			String field, Class<T> clazz, 
 			Color[] gradColors, Color[] boolColors)
@@ -48,13 +47,13 @@ public class ImagerFactory
 				);
 	}
 	
-	public static <T> ObjectImager<T> factory(
+	public static <T> Imager<T> factory(
 			ImagerData<T> dat,
 			String fieldName, 
 			Class<T> clazz, Class<? extends Annotation> annClass, 
 			Color[] gradientColors, Color[] booleanColors,
 			double naDouble, int naInt, Color naColor,
-			String dblFmt, Iterable<String> parsedBooleanFields
+			String dblFmt, List<String> parsedBooleanFields
 			)
 	{
 		
@@ -63,29 +62,27 @@ public class ImagerFactory
 		ObjectImager<T> out = new ObjectImager<T>();
 
 		out.setData(dat);
-		Map<String, Boolean> mp = new HashMap<>();
-		if (!(parsedBooleanFields == null)) for (String s : parsedBooleanFields) mp.put(s.toLowerCase(), true);
 		
 		out.initialize(
 				clazz, annClass, 
 				dblFmt, fieldName,
 				SimpleColorInterpolator.factory(gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt),
 				SimpleBooleanColorInterpolator.factory(booleanColors, naColor),
-				mp);
+				parsedBooleanFields);
 		return out;
 	}
 
 	
-	public static <T> PrimitiveImager primitiveFactory(
+	public static <T> Imager<T> primitiveFactory(
 			PrimitiveArrayData<T> dat,
 			ColorInterpolator ci,
-			String dblFmt
-			)
+			ColorInterpolator booleanCI,
+			String dblFmt, boolean asBoolean,
+			List<String> parsedBooleanFields)
 	{
-		if (dblFmt == null) dblFmt = "%.2f";
-		PrimitiveImager out = new PrimitiveImager();
+		PrimitiveImager<T> out = new PrimitiveImager<T>();
 		out.setData(dat);
-		out.initialize(dblFmt, ci);
+		out.initialize(dblFmt, parsedBooleanFields, ci, booleanCI, asBoolean);
 		return out;
 	}
 }

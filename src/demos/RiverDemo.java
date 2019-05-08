@@ -14,7 +14,7 @@ import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.sampleBeans.Terrain;
 import imaging.imagers.ImagerData;
 import swing.SwingUtils;
-import swing.stretchAndClick.ImagePanelFactory;
+import swing.stretchAndClick.PanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
 import utils.ColorUtils;
 
@@ -42,7 +42,7 @@ public class RiverDemo extends DemoConsts
 
 		JFrame f1 = SwingUtils.frameFactory(1100, 1100);
 
-		pan1 = ImagePanelFactory.buildPanel(
+		pan1 = PanelFactory.buildPanel(
 				imDat,
 				Terrain.class, 
 				ParsedField.class,
@@ -115,7 +115,7 @@ public class RiverDemo extends DemoConsts
 			for (int j = 0; j < 2; j++)
 			{
 				int x = (2 * j);
-				ObjectImagePanel<Terrain> pan1 = ImagePanelFactory.buildPanel(
+				ObjectImagePanel<Terrain> pan1 = PanelFactory.buildPanel(
 						imDat,
 						Terrain.class, 
 						ParsedField.class,

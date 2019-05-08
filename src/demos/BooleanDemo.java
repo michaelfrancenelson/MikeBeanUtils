@@ -15,7 +15,7 @@ import beans.sampleBeans.AllFlavorBean;
 import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.imagers.ImagerData;
 import swing.SwingUtils;
-import swing.stretchAndClick.ImagePanelFactory;
+import swing.stretchAndClick.PanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
 import utils.ColorUtils;
 import utils.FieldUtils;
@@ -25,7 +25,7 @@ public class BooleanDemo extends DemoConsts
 
 	public static void main(String[] args) 
 	{
-//		asBooleanDemo(1000, 1200, 10, 14, true, false);
+		asBooleanDemo(1000, 1200, 10, 14, true, false);
 		comboBoxDemo(500, 600, 14, 17, true, false);
 	}
 	
@@ -42,7 +42,7 @@ public class BooleanDemo extends DemoConsts
 		
 		for (String st : fNames)
 		{
-			JPanel p = ImagePanelFactory.buildPanel(
+			JPanel p = PanelFactory.buildPanel(
 					dat, AllFlavorBean.class, null, 
 					st, 
 					gradCols, boolCols, 
@@ -67,7 +67,7 @@ public class BooleanDemo extends DemoConsts
 		
 		f1 = SwingUtils.frameFactory(width, height, "Boolean combo box value demo");
 		
-		ObjectImagePanel<AllFlavorBean> p = ImagePanelFactory.buildPanel(
+		ObjectImagePanel<AllFlavorBean> p = PanelFactory.buildPanel(
 				dat, AllFlavorBean.class, null, 
 				"intPrim", 
 				gradCols, boolCols, 

@@ -10,7 +10,7 @@ import beans.builder.NetCDFObjBuilder;
 import beans.sampleBeans.ForestCell;
 import imaging.imagers.ImagerData;
 import swing.SwingUtils;
-import swing.stretchAndClick.ImagePanelFactory;
+import swing.stretchAndClick.PanelFactory;
 import utils.ColorUtils;
 
 public class ForestCellDemo extends DemoConsts
@@ -33,7 +33,7 @@ public class ForestCellDemo extends DemoConsts
 			for (int j = 0; j < 2; j++)
 				for (int k = 0; k < 2; k++)
 				{
-					JPanel pan = ImagePanelFactory.buildPanel(
+					JPanel pan = PanelFactory.buildPanel(
 							ImagerData.build(forest, trueFalse[k], trueFalse[j], trueFalse[i]),
 							ForestCell.class, ParsedField.class, 
 							"elevation",

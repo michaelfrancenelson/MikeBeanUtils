@@ -4,6 +4,7 @@ import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
 import utils.ArrayUtils;
 import utils.FieldUtils;
+import utils.Sequences;
 
 public class PrimitiveArrayData<T> extends ArrayData<T>
 {
@@ -29,9 +30,9 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		dataMax = minmax[1];
 		ci.updateMinMax(dataMin, dataMax);
 	}
-	
+
 	@Override protected void setCurrentObj() {}
-	
+
 	@Override
 	public int getRGBInt(int x, int y, ColorInterpolator ci, FieldWatcher<T> w) 
 	{
@@ -51,7 +52,7 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		}
 		return ci.getColor(val);
 	}
-	
+
 	public String queryData(double relativeX, double relativeY)
 	{
 		setDataCoords(relativeX, relativeY);
@@ -78,7 +79,7 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 				type, 100 * relativeX, 100 * relativeY, val));
 		return val;
 	}
-	
+
 	public PrimitiveArrayData(double[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{  
 		dblDat = dat;  type = "dbl";
@@ -120,6 +121,8 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
 	}
 
+	public PrimitiveArrayData() {}
+
 	private double[][]  dblDat;
 	private float[][] fltDat;
 	private byte[][]    bytDat; 
@@ -130,5 +133,36 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 	private boolean[][] booDat;
 
 	public void setAsBoolean(boolean b) { this.asBoolean = b; }
+
+	public static <T> PrimitiveArrayData<T> buildGradientData(
+			String type, double min, double max, 
+			int nSteps, boolean horizontal, boolean loToHi, boolean includeBoolNA)
+	{
+		if (min > max && loToHi) { double t = min; min = max; max = t; }
+
+		/* Integer types can all use integer data under the hood*/
+		switch(type.toLowerCase())
+		{
+		case("int"): case("integer"): case("byte"): case("short"): case("long"): case("char"): case("character"):
+		{
+			return new PrimitiveArrayData<T>(
+					Sequences.spacedIntervals2D((int) min, (int) max, nSteps, horizontal),
+					false, false, false);
+		}
+		case("double"): case("float"): 
+		{
+			return new PrimitiveArrayData<T>(
+					Sequences.spacedIntervals2D((double) min, (double) max, nSteps, horizontal), 
+					false, false, false);
+		}
+		case("boolean"):
+		{
+			return new PrimitiveArrayData<T>(
+					Sequences.spacedIntervals2D(-1, 1, 3, horizontal),
+					false, false, false);
+		}
+		}
+		throw new IllegalArgumentException("Could not build a gradient data set for data of type " + type + ".");
+	}
 
 }

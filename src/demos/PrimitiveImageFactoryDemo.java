@@ -19,7 +19,7 @@ import imaging.imageFactories.ImageFactory;
 import imaging.imageFactories.ImageFactory.SimpleImagePanel;
 import imaging.imagers.PrimitiveArrayData;
 import swing.SwingUtils;
-import swing.stretchAndClick.ImagePanelFactory;
+import swing.stretchAndClick.PanelFactory;
 import swing.stretchAndClick.PrimitiveImagePanel;
 import utils.ColorUtils;
 import utils.Sequences;
@@ -40,9 +40,9 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 	{
 		boolean show = true, save = false;
 
-		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
-		intDemo(500, 700, 10, 20, 1.3, show, save);
-		booleanDemo(500, 600, 1.5, show, save);
+//		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
+//		intDemo(500, 700, 10, 20, 1.3, show, save);
+//		booleanDemo(500, 600, 1.5, show, save);
 		byteDemo(200, 300, 4, show, save);
 	}
 
@@ -77,10 +77,17 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		f1 = SwingUtils.frameFactory((int)(width * size), (int)(height * size), "Byte array demo", 2, 2);
 		f2 = SwingUtils.frameFactory((int)(height * size), (int)(width * size), " Transposed byte array demo", 2, 2);
 		int z = 0;
-		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
+		for (int i = 0; i < 1; i++) for (int j = 0; j < 1; j++)
 		{
-			f1.add(ImagePanelFactory.buildPanel(
-					data1.get(z), c, "byte", null, false, 0, 0, ptSize, false));
+			f1.add(PanelFactory.buildPanel(
+					data1.get(z), 
+					c, c, 
+					"byte", 
+					dblFmt, 
+					null,
+					false, 0, 0, 
+					ptSize,
+					false));
 			//			f2.add(ImagePanelFactory.buildPanel(
 			//					data2.get(z), c, "byte", null, false, 0, 0, ptSize, true));
 
@@ -128,8 +135,8 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		JPanel pp = new SimpleImagePanel(ImageFactory.buildPrimitiveImage(datBool, c, false, false, false));
 		pp.setBorder(b);
 		f1.add(pp);
-		pp = ImagePanelFactory.buildPanel(new PrimitiveArrayData<Object>(
-				datByte, false, false, false), c, "bool", null, true, 0, 0, ptSize, true);
+		pp = PanelFactory.buildPanel(new PrimitiveArrayData<Object>(
+				datByte, false, false, false), c, c, "bool", null, null, true, 0, 0, ptSize, true);
 		pp.setBorder(b);
 		f1.add(pp);
 		f1.setVisible(show);
@@ -193,11 +200,11 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
 		{
 			PrimitiveImagePanel<Object> pan = 
-					ImagePanelFactory.buildPanel(
-							arrDat1.get(z),	c, "int", "%.0d", true, -1, -1, 0.01, false);
+					PanelFactory.buildPanel(
+							arrDat1.get(z),	c, c, "int", "%.0d", null, true, -1, -1, 0.01, false);
 			f1.add(pan);
 
-			pan = ImagePanelFactory.buildPanel(arrDat2.get(z), c, "int", null, true, -1, -1, 0.01, false);
+			pan = PanelFactory.buildPanel(arrDat2.get(z), c, c, "int", null, null, true, -1, -1, 0.01, false);
 			f2.add(pan);
 
 

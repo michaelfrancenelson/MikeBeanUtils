@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import imaging.imagers.Imager;
 import imaging.imagers.ObjectImager;
 import imaging.imagers.PanelLabel;
 import swing.ObjectArrayImageComboBox.BeanComboBox;
@@ -46,22 +47,45 @@ public class ObjectImagePanel<T> extends JPanel
 
 	protected String currentClickValue;
 
-	private ObjectImager<T> imager;
+	private Imager<T> imager;
+//	private ObjectImager<T> imager;
 	private Class<T> clazz;
 	private Class<? extends Annotation> annClass;
 
+	PrimitiveImagePanel<T> legend;
+	
 	protected Image image = null;
 
 	protected double imageAspectRatio, compAspectRatio;
 
 	protected boolean centerInPanel = true;
 	protected boolean fixedAspectRatio, fixedWidth, fixedHeight, decorate;
+	protected boolean 
+	verticalLegend,
+	legLoToHi,
+	legBoolNA; 
+	protected int nLegendSteps;
 	protected double ptRelSize;
 	int 
 	panelWidth, panelHeight, 
 	imgDisplayWidth, imgDisplayHeight, 
-	imgCornerX, imgCornerY, dataWidth, dataHeight;
-
+	imgCornerX, imgCornerY;
+	
+	public PrimitiveImagePanel<T> getLegendPanel(int nSteps, int legendWidth, int legendHeight)
+	{
+		
+		legend = PanelFactory.buildLegendPanel(
+				nSteps, imager.getFieldType(), imager.getFieldName(), 
+				imager.getDataMin(), imager.getDataMin(), 
+				imager.getColorInterpolator(), imager.getColorInterpolator(),
+				imager.getDblFmt(), imager.getParsedBooleanFields(), 
+				verticalLegend, legLoToHi, legBoolNA,
+				false, legendWidth, legendHeight,
+				ptRelSize, false); 
+		return legend;
+	}
+	
+	
 	void init(
 			ObjectImager<T> imgr, 
 			int width, int height, 
@@ -118,7 +142,7 @@ public class ObjectImagePanel<T> extends JPanel
 			this.imageAspectRatio = ((double) image.getWidth(null)) / ((double) image.getHeight(null));
 
 		imgDisplayWidth = image.getWidth(null); imgDisplayHeight = image.getHeight(null);
-		this.dataWidth = imager.getDataWidth();	this.dataHeight = imager.getDataHeight();
+//		this.dataWidth = imager.getDataWidth();	this.dataHeight = imager.getDataHeight();
 	}
 
 	/** 
@@ -133,18 +157,7 @@ public class ObjectImagePanel<T> extends JPanel
 		paintComponent(this.getGraphics());
 	}
 
-//	public ObjectImagePanel<T> getLegendPanel()
-//		{
-//			int w = 0, h = 0;
-//			if (fixedWidth) w = imgDisplayWidth;
-//			if (fixedHeight) h = imgDisplayHeight;
-//			legendPanel = ObjectArrayPanelFactory.buildLegendPanel(
-//					imager, watcher.getFieldName(),
-//					fixedAspectRatio, 
-//					w, h, ptRelSize
-//					);
-//			return legendPanel;
-//		}
+
 
 	public JComboBox<String> getControlComboBox(Font font)
 	{
@@ -163,7 +176,8 @@ public class ObjectImagePanel<T> extends JPanel
 
 	@Override public void paintComponent(Graphics g)
 	{
-		logger.trace(String.format("Data width: %d, data height: %d", dataWidth, dataHeight));
+		logger.trace(String.format("Data width: %d, data height: %d", 
+				imager.getDataWidth(), imager.getDataHeight()));
 		Insets insets = getInsets();
 		Graphics2D g2d = (Graphics2D) g.create();
 		int fixedX = this.imgDisplayWidth, fixedY = this.imgDisplayHeight;
@@ -207,8 +221,8 @@ public class ObjectImagePanel<T> extends JPanel
 
 		g2d.drawImage(image, imgCornerX, imgCornerY, imgDisplayWidth, imgDisplayHeight, null);
 
-		int cellWidth  = (int) ((double) imgDisplayWidth / (double) dataWidth);
-		int cellHeight = (int) ((double) imgDisplayHeight / (double) dataHeight);
+		int cellWidth  = (int) ((double) imgDisplayWidth / (double) imager.getDataWidth());
+		int cellHeight = (int) ((double) imgDisplayHeight / (double) imager.getDataHeight());
 
 		if (fixedAspectRatio)
 		{
@@ -286,8 +300,8 @@ public class ObjectImagePanel<T> extends JPanel
 			int dataX, int dataY, String label, Font font, Color color)
 	{
 		if (font == null) font = this.getFont();
-		double relI = ArrayUtils.absToRelCoord(dataX, dataWidth);
-		double relJ = ArrayUtils.absToRelCoord(dataY, dataWidth);
+		double relI = ArrayUtils.absToRelCoord(dataX, imager.getDataWidth());
+		double relJ = ArrayUtils.absToRelCoord(dataY, imager.getDataHeight());
 		labelFromImageRelCoords(relI, relJ, label, font, color, -9999, "label");
 	}
 
@@ -307,8 +321,8 @@ public class ObjectImagePanel<T> extends JPanel
 			int dataX, int dataY, Font font, Color color)
 	{
 		if (font == null) font = this.getFont();
-		double relI = ArrayUtils.absToRelCoord(dataX, dataWidth);
-		double relJ = ArrayUtils.absToRelCoord(dataY, dataWidth);
+		double relI = ArrayUtils.absToRelCoord(dataX, imager.getDataWidth());
+		double relJ = ArrayUtils.absToRelCoord(dataY, imager.getDataHeight());
 		
 		String label = imager.queryData(relI, relJ);
 		labelFromImageRelCoords(relI, relJ, label, font, color, -9999, "value label");
@@ -330,8 +344,8 @@ public class ObjectImagePanel<T> extends JPanel
 	 */
 	public void addPoint(int dataX, int dataY, double size, Color color)
 	{
-		double relI = ArrayUtils.absToRelCoord(dataX + 0.5, dataWidth);
-		double relJ = ArrayUtils.absToRelCoord(dataY + 0.5, dataWidth);
+		double relI = ArrayUtils.absToRelCoord(dataX + 0.5, imager.getDataWidth());
+		double relJ = ArrayUtils.absToRelCoord(dataY + 0.5, imager.getDataHeight());
 		labelFromImageRelCoords(relI, relJ, null, null, color, size, "point");
 	}
 	

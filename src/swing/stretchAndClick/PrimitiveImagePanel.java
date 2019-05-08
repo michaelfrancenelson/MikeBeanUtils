@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import imaging.imagers.Imager;
 import imaging.imagers.ObjectImager;
 import imaging.imagers.PrimitiveImager;
 import utils.ArrayUtils;
@@ -16,11 +17,11 @@ public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
 	/**	 */
 	private static final long serialVersionUID = -7971761341095269963L;
 	static Logger logger = LoggerFactory.getLogger(PrimitiveImagePanel.class);
-	private PrimitiveImager imager;
+	private Imager<T> imager;
 	private String currentFieldName;
 	
 	void init(
-			PrimitiveImager imgr, 
+			PrimitiveImager<T> imgr, 
 			int width, int height, 
 			boolean keepAspectRatio, 
 			boolean legend)
@@ -68,7 +69,7 @@ public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
 				@Override public void mouseReleased(MouseEvent arg0) {}
 			});
 		}
-
+		
 		if (this.image == null)
 			throw new IllegalArgumentException("Not able to create image"); 
 		this.fixedAspectRatio = keepAspectRatio;

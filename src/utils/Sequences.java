@@ -137,20 +137,37 @@ public class Sequences
 
 	public static Boolean[][] booleanGradient2D(boolean includeNA, boolean horizontal)
 	{
+		return booleanGradient2D(includeNA, horizontal, true);
+	}
+
+	public static Boolean[][] booleanGradient2D(boolean includeNA, boolean horizontal, boolean loToHi)
+	{
 		Boolean[][] out;
 		Boolean[] dat;
-		if (includeNA) dat = new Boolean[] { true, false, null };
-		else dat = new Boolean[] { true, false};
+		if (includeNA) {
+			dat = new Boolean[] { true, false, null };
+			if (!loToHi) dat = new Boolean[] { null, false, true };
+		}
+		else
+		{
+			dat = new Boolean[] { true, false};
+			if (!loToHi) dat = new Boolean[] { false, true };
+		}
+
+		int startIndex, endIndex, increment;
+		if (loToHi) { startIndex = 0; endIndex = dat.length; increment = 1; }
+		else {startIndex = dat.length - 1; endIndex = -1; increment = -1; }
 
 		if (horizontal)
 		{
+
 			out = new Boolean[dat.length][1];
-			for (int i = 0; i < dat.length; i++) out[i][0] = dat[i];
+			for (int i = startIndex; i != endIndex; i += increment) out[i][0] = dat[i];
 		}
 		else
 		{
 			out = new Boolean[1][dat.length];
-			for (int j = 0; j < dat.length; j++) out[0][j] = dat[j];
+			for (int j = startIndex; j != endIndex; j++) out[0][j] = dat[j];
 		}
 		return out;
 	}

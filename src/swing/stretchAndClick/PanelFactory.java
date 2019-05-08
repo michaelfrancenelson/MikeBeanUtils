@@ -23,7 +23,7 @@ import imaging.imagers.PrimitiveImager;
  * @author michaelfrancenelson
  *
  */
-public class ImagePanelFactory 
+public class PanelFactory 
 {
 	public static <T> ObjectImagePanel<T> buildPanel(
 			ImagerData<T> dat,
@@ -60,7 +60,7 @@ public class ImagePanelFactory
 				gradientColors, booleanColors,
 				naDouble, naInt, naColor, 
 				dblFmt, parsedBooleanFields);
-		
+
 		return buildPanel(
 				imager, fieldName,
 				keepAspectRatio, 
@@ -71,8 +71,10 @@ public class ImagePanelFactory
 	public static <T> PrimitiveImagePanel<T> buildPanel(
 			PrimitiveArrayData<?> dat,
 			ColorInterpolator ci,
+			ColorInterpolator booleanCI,
 			String fieldName,
 			String dblFmt,
+			Iterable<String> parsedBooleanFields,
 			boolean keepAspectRatio, 
 			int fixedWidth, int fixedHeight,
 			double decoratorRelPointSize,
@@ -80,13 +82,13 @@ public class ImagePanelFactory
 	{
 		if (dblFmt == null) dblFmt = "%.2f";
 		dat.setAsBoolean(asBoolean);
-		PrimitiveImager imager = ImagerFactory.primitiveFactory(dat, ci, dblFmt);
+		PrimitiveImager imager = ImagerFactory.primitiveFactory(dat, ci, booleanCI, dblFmt, asBoolean, parsedBooleanFields);
 		return buildPanel(
 				imager, fieldName,
 				keepAspectRatio, 
 				fixedWidth, fixedHeight, decoratorRelPointSize);
 	}
-	
+
 	public static <T> PrimitiveImagePanel<T> buildPanel(
 			PrimitiveImager imager, 
 			String fieldName,
@@ -100,7 +102,7 @@ public class ImagePanelFactory
 		out.init(imager, fixedWidth, fixedHeight, keepAspectRatio, false);
 		return out;
 	}
-	
+
 	/**
 	 *  Build a panel using an image file.  The panel won't return any values when clicked
 	 *  and refresh methods will have no effect.
@@ -148,37 +150,61 @@ public class ImagePanelFactory
 				clazz, annClass);
 		return out;
 	}
-	
-	
-//	/**
-//	 *  Build a panel using an already existing <code>ObjectArrayImager</code> to generate the image from the states of
-//	 *  objects in a 2D array.
-//	 * 
-//	 * @param imager 
-//	 * @param keepAspectRatio Should the aspect ratio of the image be maintained if the window is resized?
-//	 *                        If false, the image will stretch to fill the window if it is resized.
-//	 *                        If <code>fixedWidth</code> or <code>fixedHeight</code> are greater than 0, 
-//	 *                        this parameter is ignored.
-//	 * @param fixedWidth      If greater than 0, the width of the image will remain constant 
-//	 *                        if the window is resized. The image height may still adjust to resizing.
-//	 *                        Values of 0 or less are ignored.
-//	 * @param fixedHeight     If greater than 0, the height of the image will remain constant 
-//	 *                        if the window is resized. The width may still adjust to resizing.
-//	 *                        Values of 0 or less are ignored.
-//	 * @return
-//	 */
-//	public static <T> ObjectImagePanel<T> buildLegendPanel(
-//			BeanImager<T> imager, String fieldName,
-//			boolean keepAspectRatio,
-//			int fixedWidth, int fixedHeight, 
-//			double decoratorRelPointSize,
-//			Class<T> clazz, Class<? extends Annotation> annClass)
-//	{
-//		ObjectImagePanel<T> out = new ObjectImagePanel<T>();
-//		out.setLabelVisibility(true);
-//		out.setPtRelSize(decoratorRelPointSize);
-//		out.init(imager, fixedWidth, fixedHeight, keepAspectRatio, true);
-//		imager.setField(fieldName.toLowerCase());
-//		return out;
-//	}
+
+	public static <T> PrimitiveImagePanel<T> buildLegendPanel(
+			int nSteps, String fieldType, String fieldName,
+			double dataMin, double dataMax,
+			ColorInterpolator ci, ColorInterpolator booleanCI, 
+			String dblFmt, Iterable<String> parsedBooleanFields,
+			boolean horizontal, boolean loToHi, boolean booleanNA,
+			boolean keepAspectRatio, int fixedWidth, int fixedHeight,
+			double decoratorRelPointSize, boolean asBoolean)
+	{
+		PrimitiveArrayData<T> legDat = PrimitiveArrayData.buildGradientData(
+				fieldType, dataMin, dataMax, nSteps,
+				horizontal, loToHi, booleanNA);
+
+		PrimitiveImager imgr = ImagerFactory.primitiveFactory(
+				legDat, ci, booleanCI, dblFmt, asBoolean, parsedBooleanFields);
+
+		return buildPanel(
+				imgr, 
+				fieldName,
+				keepAspectRatio, 
+				fixedWidth, fixedHeight ,decoratorRelPointSize);
+	}
+
+
+
+	//	/**
+	//	 *  Build a panel using an already existing <code>ObjectArrayImager</code> to generate the image from the states of
+	//	 *  objects in a 2D array.
+	//	 * 
+	//	 * @param imager 
+	//	 * @param keepAspectRatio Should the aspect ratio of the image be maintained if the window is resized?
+	//	 *                        If false, the image will stretch to fill the window if it is resized.
+	//	 *                        If <code>fixedWidth</code> or <code>fixedHeight</code> are greater than 0, 
+	//	 *                        this parameter is ignored.
+	//	 * @param fixedWidth      If greater than 0, the width of the image will remain constant 
+	//	 *                        if the window is resized. The image height may still adjust to resizing.
+	//	 *                        Values of 0 or less are ignored.
+	//	 * @param fixedHeight     If greater than 0, the height of the image will remain constant 
+	//	 *                        if the window is resized. The width may still adjust to resizing.
+	//	 *                        Values of 0 or less are ignored.
+	//	 * @return
+	//	 */
+	//	public static <T> ObjectImagePanel<T> buildLegendPanel(
+	//			BeanImager<T> imager, String fieldName,
+	//			boolean keepAspectRatio,
+	//			int fixedWidth, int fixedHeight, 
+	//			double decoratorRelPointSize,
+	//			Class<T> clazz, Class<? extends Annotation> annClass)
+	//	{
+	//		ObjectImagePanel<T> out = new ObjectImagePanel<T>();
+	//		out.setLabelVisibility(true);
+	//		out.setPtRelSize(decoratorRelPointSize);
+	//		out.init(imager, fixedWidth, fixedHeight, keepAspectRatio, true);
+	//		imager.setField(fieldName.toLowerCase());
+	//		return out;
+	//	}
 }

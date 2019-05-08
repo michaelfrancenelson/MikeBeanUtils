@@ -3,7 +3,7 @@ package demos;
 import beans.sampleBeans.AllFlavorBean;
 import imaging.imagers.ArrayData;
 import swing.SwingUtils;
-import swing.stretchAndClick.ImagePanelFactory;
+import swing.stretchAndClick.PanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
 
 public class RotationDemo extends DemoConsts
@@ -41,7 +41,7 @@ public class RotationDemo extends DemoConsts
 					arr = new ArrayData<>(flavorArray, 
 							trueFalse[flipX], trueFalse[flipY], trueFalse[trans]);
 
-					pan = ImagePanelFactory.buildPanel(
+					pan = PanelFactory.buildPanel(
 							arr, AllFlavorBean.class, null, field,
 							gradCols, boolCols, null, null, null,
 							null, null,
@@ -52,7 +52,7 @@ public class RotationDemo extends DemoConsts
 				}
 
 		f2 = SwingUtils.frameFactory(fWidth, fHeight, "Array Data Rotation Demo - untransformed");
-		f2.add(ImagePanelFactory.buildPanel(
+		f2.add(PanelFactory.buildPanel(
 				new ArrayData<>(flavorArray, false, false, false),
 				AllFlavorBean.class, null, field,
 				gradCols, boolCols, null, null, null,
