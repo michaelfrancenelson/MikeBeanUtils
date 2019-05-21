@@ -17,7 +17,7 @@ import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.colorInterpolator.SimpleColorInterpolator;
 import imaging.imageFactories.ImageFactory;
 import imaging.imageFactories.ImageFactory.SimpleImagePanel;
-import imaging.imagers.PrimitiveArrayData;
+import imaging.imagers.imagerData.PrimitiveImagerData;
 import swing.SwingUtils;
 import swing.stretchAndClick.PanelFactory;
 import swing.stretchAndClick.PrimitiveImagePanel;
@@ -40,25 +40,20 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 	{
 		boolean show = true, save = false;
 
-//		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
-//		intDemo(500, 700, 10, 20, 1.3, show, save);
-//		booleanDemo(500, 600, 1.5, show, save);
-		byteDemo(200, 300, 4, show, save);
+		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
+//		intDemo(200, 300, 10, 20, 4.3, show, save);
+//		booleanDemo(200, 300, 3.5, show, save);
+//		byteDemo(200, 300, 4, show, save);
 	}
 
 	static void byteDemo(int width, int height, double size, boolean show, boolean saveFile)
 	{
 		setup();
-		List<PrimitiveArrayData<Object>> data2 = new ArrayList<>();
-		List<PrimitiveArrayData<Object>> data1 = new ArrayList<>();
-
-		//		byte[][][] bytes = new byte[2][width][height];
+		List<PrimitiveImagerData<Object>> data2 = new ArrayList<>();
+		List<PrimitiveImagerData<Object>> data1 = new ArrayList<>();
 		byte[][] bytes1 = new byte[width][height];
-		//		byte maxB = Byte.MAX_VALUE; byte maxB2 = Byte.MAX_VALUE - 37; 
-
 		int maxb = (int) Byte.MAX_VALUE;
 		byte maxB = 0;
-
 
 		for (int ii = 0; ii < 2; ii++) for (int jj = 0; jj < 2; jj++)
 		{
@@ -69,15 +64,15 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 				byte val = (byte) (r.nextInt(1 + (i + j) / 2) % maxB);
 				bytes1[i][j] = val;
 			}
-			data2.add(new PrimitiveArrayData<Object>(bytes1, trueFalse[jj], trueFalse[ii], true));
-			data1.add(new PrimitiveArrayData<Object>(bytes1, trueFalse[jj], trueFalse[ii], false));
+			data2.add(new PrimitiveImagerData<Object>(bytes1, trueFalse[jj], trueFalse[ii], true));
+			data1.add(new PrimitiveImagerData<Object>(bytes1, trueFalse[jj], trueFalse[ii], false));
 		}
 		c = SimpleColorInterpolator.factory(ColorUtils.RAINBOW, 0, maxb,
 				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, "%0.4f");
 		f1 = SwingUtils.frameFactory((int)(width * size), (int)(height * size), "Byte array demo", 2, 2);
 		f2 = SwingUtils.frameFactory((int)(height * size), (int)(width * size), " Transposed byte array demo", 2, 2);
 		int z = 0;
-		for (int i = 0; i < 1; i++) for (int j = 0; j < 1; j++)
+		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
 		{
 			f1.add(PanelFactory.buildPanel(
 					data1.get(z), 
@@ -135,7 +130,7 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		JPanel pp = new SimpleImagePanel(ImageFactory.buildPrimitiveImage(datBool, c, false, false, false));
 		pp.setBorder(b);
 		f1.add(pp);
-		pp = PanelFactory.buildPanel(new PrimitiveArrayData<Object>(
+		pp = PanelFactory.buildPanel(new PrimitiveImagerData<Object>(
 				datByte, false, false, false), c, c, "bool", null, null, true, 0, 0, ptSize, true);
 		pp.setBorder(b);
 		f1.add(pp);
@@ -168,11 +163,9 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		for (int i = 0; i < nPts; i++) { 
 			x2[i] = r.nextInt(nCol + 1); 
 			y2[i] = r.nextInt(nRow + 1); }
-		//		int[][][] ints = new int[4][nCol][nRow];
 
-
-		List<PrimitiveArrayData<Object>> arrDat1 = new ArrayList<>();
-		List<PrimitiveArrayData<Object>> arrDat2 = new ArrayList<>();
+		List<PrimitiveImagerData<Object>> arrDat1 = new ArrayList<>();
+		List<PrimitiveImagerData<Object>> arrDat2 = new ArrayList<>();
 
 		for (int tr = 0; tr < 2; tr++) for (int fa = 0; fa < 2; fa++)
 		{
@@ -186,8 +179,8 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 				dists = dist(i, j, x, y); 
 				dat1[i][j] = nearest(dists, vals); 
 			}
-			arrDat1.add(new PrimitiveArrayData<Object>(dat1, trueFalse[tr], trueFalse[fa], false));
-			arrDat2.add(new PrimitiveArrayData<Object>(dat1, trueFalse[tr], trueFalse[fa], true));
+			arrDat1.add(new PrimitiveImagerData<Object>(dat1, trueFalse[tr], trueFalse[fa], false));
+			arrDat2.add(new PrimitiveImagerData<Object>(dat1, trueFalse[tr], trueFalse[fa], true));
 		}
 
 		c = SimpleColorInterpolator.factory(ColorUtils.TOPO_COLORS, min, max,
@@ -244,7 +237,6 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		for (int i = 0; i < nPts; i++)
 		{	x[i] = r.nextInt(width + 1); y[i] = r.nextInt(height + 1);
 		vals[i] = range * r.nextDouble() + min;
-		System.out.println("random val = " + vals[i]);
 		}
 
 		for (int i = 0; i < width; i++) for (int j = 0; j < height; j++)
@@ -371,7 +363,6 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		double out = 0.0; 
 		for(int i = 0; i < vals.length; i++)
 		{
-			//			out += vals[i] * dists[i];
 			out += vals[i] / Math.pow((dists[i] + 1), 2.0);
 		}
 		out = out / (double) (vals.length);

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import imaging.imagers.Imager;
 import imaging.imagers.ObjectImager;
-import imaging.imagers.PanelLabel;
+import imaging.imagers.decorators.PanelLabel;
 import swing.ObjectArrayImageComboBox.BeanComboBox;
 import utils.ArrayUtils;
 import utils.FieldUtils;
@@ -47,8 +47,7 @@ public class ObjectImagePanel<T> extends JPanel
 
 	protected String currentClickValue;
 
-	private Imager<T> imager;
-//	private ObjectImager<T> imager;
+	protected Imager<T> imager;
 	private Class<T> clazz;
 	private Class<? extends Annotation> annClass;
 
@@ -71,19 +70,19 @@ public class ObjectImagePanel<T> extends JPanel
 	imgDisplayWidth, imgDisplayHeight, 
 	imgCornerX, imgCornerY;
 	
-	public PrimitiveImagePanel<T> getLegendPanel(int nSteps, int legendWidth, int legendHeight)
-	{
-		
-		legend = PanelFactory.buildLegendPanel(
-				nSteps, imager.getFieldType(), imager.getFieldName(), 
-				imager.getDataMin(), imager.getDataMin(), 
-				imager.getColorInterpolator(), imager.getColorInterpolator(),
-				imager.getDblFmt(), imager.getParsedBooleanFields(), 
-				verticalLegend, legLoToHi, legBoolNA,
-				false, legendWidth, legendHeight,
-				ptRelSize, false); 
-		return legend;
-	}
+//	public PrimitiveImagePanel<T> getLegendPanel(int nSteps, int legendWidth, int legendHeight)
+//	{
+//		
+//		legend = PanelFactory.buildLegendPanel(
+//				nSteps, imager.getFieldType(), imager.getFieldName(), 
+//				imager.getDataMin(), imager.getDataMin(), 
+//				imager.getColorInterpolator(), imager.getColorInterpolator(),
+//				imager.getDblFmt(), imager.getParsedBooleanFields(), 
+//				verticalLegend, legLoToHi, legBoolNA,
+//				false, legendWidth, legendHeight,
+//				ptRelSize, false); 
+//		return legend;
+//	}
 	
 	
 	void init(
@@ -142,7 +141,6 @@ public class ObjectImagePanel<T> extends JPanel
 			this.imageAspectRatio = ((double) image.getWidth(null)) / ((double) image.getHeight(null));
 
 		imgDisplayWidth = image.getWidth(null); imgDisplayHeight = image.getHeight(null);
-//		this.dataWidth = imager.getDataWidth();	this.dataHeight = imager.getDataHeight();
 	}
 
 	/** 
@@ -162,17 +160,14 @@ public class ObjectImagePanel<T> extends JPanel
 	public JComboBox<String> getControlComboBox(Font font)
 	{
 		List<Field> f2;
-		f2 = FieldUtils.getFields(clazz, annClass, true, true);
+		f2 = FieldUtils.getFields(clazz, annClass, true, true, true, true);
 		List<String> f3 = FieldUtils.getFieldNames(f2, clazz, annClass, true);
 		List<String> dispNames = FieldUtils.getFieldNames(f2, clazz, annClass, true); 
 		
 		return BeanComboBox.build(this, f3, dispNames, font, this.imager.getFieldName());
 	}
 
-	public String queryRelative(double relativeI, double relativeJ)
-	{
-		return imager.queryData(relativeI, relativeJ);
-	}
+	public String queryRelative(double relativeI, double relativeJ) { return imager.queryData(relativeI, relativeJ);}
 
 	@Override public void paintComponent(Graphics g)
 	{
@@ -230,7 +225,6 @@ public class ObjectImagePanel<T> extends JPanel
 			cellHeight = cellWidth;
 		}
 
-
 		if (decorate)
 		{
 			for (PanelLabel p : labels)
@@ -249,7 +243,6 @@ public class ObjectImagePanel<T> extends JPanel
 				p.draw(g, imgDisplayWidth, imgDisplayHeight, 
 						cellWidth, cellHeight, imgCornerX, imgCornerY);
 		}
-
 
 		if (this.getBorder() != null) paintBorder(g);
 		g2d.dispose();
@@ -280,7 +273,6 @@ public class ObjectImagePanel<T> extends JPanel
 		PanelLabel p = PanelLabel.fromRelImgCoords(
 				relI, relJ, pointSize,
 				font, color, label);
-		//		logger.trace(String.format("Adding label of type: %s", type));
 		switch(type)
 		{
 		case("label"): labels.add(p); break;
@@ -357,7 +349,7 @@ public class ObjectImagePanel<T> extends JPanel
 	public void setLabelVisibility(boolean b) { this.decorate = b; repaint();}
 	public double getPtRelSize() { return ptRelSize; }
 	public void setPtRelSize(double ptRelSize) { this.ptRelSize = ptRelSize; }
-	public ObjectImager<T> getImager() { return imager; }
+	public Imager<T> getImager() { return imager; }
 	public String getCurrentClickValue() { return currentClickValue; }
 	public int getImgDisplayWidth() { return imgDisplayWidth;}
 	public int getImgDisplayHeight() { return imgDisplayHeight; }

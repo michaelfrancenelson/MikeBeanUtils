@@ -7,12 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.memberState.FieldWatcher;
 import beans.memberState.SimpleFieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
 import imaging.imageFactories.ImageFactory;
 import imaging.imageFactories.ImageFactory.ImageMinMax;
+import imaging.imagers.imagerData.ImagerData;
+import imaging.imagers.imagerData.PrimitiveImagerData;
 import utils.FieldUtils;
 
 public class ObjectImager<T> implements Imager<T>
@@ -30,7 +31,7 @@ public class ObjectImager<T> implements Imager<T>
 	private List<String> parsedBooleanFieldNames = new ArrayList<>();
 	private ImagerData<T> imgData;
 
-	private void buildWatchers()
+	private void buildWatchers(String dblFmt)
 	{
 		watchers = SimpleFieldWatcher.getWatcherMap(
 				clazz, annClass, getDblFmt(), true, true);
@@ -42,14 +43,14 @@ public class ObjectImager<T> implements Imager<T>
 			ColorInterpolator ci, ColorInterpolator booleanCI,
 			List<String> parsedBooleanFields)
 	{
-		if (annClass == null) annClass = ParsedField.class;
-		if (dblFmt == null) dblFmt = "%0.2f";
+		
+		for (int i = 0; i < parsedBooleanFields.size(); i++)
+			parsedBooleanFields.set(i, parsedBooleanFields.get(i).toLowerCase());
 		this.clazz = clazz;
 		this.annClass = annClass;
-		this.setDblFmt(dblFmt);
-		this.ci = ci; this.booleanCI = booleanCI;
 		this.parsedBooleanFieldNames = parsedBooleanFields;
-		buildWatchers();
+		buildWatchers(dblFmt);
+		this.ci = ci; this.booleanCI = booleanCI;
 		setField(fieldName.toLowerCase());
 	}
 
@@ -84,7 +85,6 @@ public class ObjectImager<T> implements Imager<T>
 	@Override public String getDblFmt() { return dblFmt;}
 	@Override public ColorInterpolator getColorInterpolator() { return this.ci; }
 	@Override public ColorInterpolator getBooleanColorInterpolator() { return this.booleanCI; }
-
 	
 	@Override public String queryData(double relativeI, double relativeJ) 
 	{
@@ -98,14 +98,15 @@ public class ObjectImager<T> implements Imager<T>
 	public String getFieldType() { return currentWatcher.getField().getType().getSimpleName(); }
 	public void setField(String fieldName) { 
 		this.currentWatcher = watchers.get(fieldName.toLowerCase()); refresh(); } 
-	public void refresh() { buildImage(); }
-
+	@Override public void refresh() { buildImage(); }
 
 	public void setField(Field field) { setField(field.getName()); }
-	
 
 	public void setDataSelection(double relativeI, double relativeJ) 
-	{	
-		queryData(relativeI, relativeJ);
-	}
+	{ queryData(relativeI, relativeJ); }
+	
+	@Override
+	public ImagerData<T> getImagerData() { return imgData; }
+
+	
 }

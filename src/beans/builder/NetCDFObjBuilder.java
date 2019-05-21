@@ -1,6 +1,7 @@
 package beans.builder;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,8 +9,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+
 import beans.builder.AnnotatedBeanReader.ParsedField;
-import beans.sampleBeans.AllFlavorBean;
+import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import utils.ArrayUtils;
@@ -41,14 +43,79 @@ public class NetCDFObjBuilder
 	 */
 	public static <T> List<List<T>> factory2D(
 			Class<T> clazz,
+			Class<? extends Annotation> annClass,
+			String filename,
+			boolean transpose
+			)
+	{
+		List<Field> ff = FieldUtils.getFields(
+				clazz, annClass, true, true, true, false);
+		return factory2D(clazz, annClass, filename, ff, transpose, true);
+	}
+
+	
+	/**
+	 * Build a collection of beans from a NetCDF file. 
+	 * Will attempt to read data corresponding to all the fields with the @ParsedField
+	 *   annotation.
+	 * @param clazz Bean class type
+	 * @param filename data file
+	 * @return
+	 */
+	public static <T> List<List<T>> factory2D(
+			Class<T> clazz,
 			String filename
 			)
 	{
 		List<Field> ff = FieldUtils.getFields(
-				clazz, ParsedField.class, true, true);
+				clazz, ParsedField.class, true, true, true, false);
 		return factory2D(clazz, filename, ff);
 	}
+	
+	
+	public static <T> List<List<T>> factory2D(
+			Class<T> clazz,
+			String filename,
+			List<Field> ff)
+	{
+		return factory2D(clazz, null, filename, ff, false, true);
+	}
+	
+	
+	public static <T> void setStaticFromGlobalAttributes(NetcdfFile ncfile, Class<T> clazz)
+	{
+		List<Attribute> attList = ncfile.getGlobalAttributes();
+		
+		System.out.println("NetCDFObjBuilder setStaticFromGlobalAttribute() attempting to set static fields"
+				+ "from netCDF global attributes for class " + clazz.getName());
+		System.out.println("NetCDFObjBuilder setStaticFromGlobalAttribute() found " + attList.size() + " global attributes.");
+		
+		Map<String, Field> fMap = new HashMap<>();
+		
+		/* record the field names in all lowercase so that matches between fields
+		 * and NCDF variables are case-insensitive. */
+		
+		List<Field> ff = FieldUtils.getFields(clazz, null, false, true, true, false);
+		System.out.println("NetCDFObjBuilder setStaticFromGlobalAttribute() found " + ff.size() + " static.");
+		
+		for (Field f : ff) fMap.put(f.getName().toLowerCase(), f);
 
+		for (Attribute att : attList)
+		{
+			String attName = att.getFullName().toLowerCase();
+			System.out.println("NetCDFObjBuilder setStaticFromGlobalAttribute() atribute name: " + attName); 
+			if (fMap.containsKey(attName))
+			{
+				Field f = fMap.get(attName);
+				String val = att.getValue(0).toString(); 
+				System.out.println("NetCDFObjBuilder setStaticFromGlobalAttribute()"
+						+ " atribute name: " + att + " value: " + val);
+				
+				AnnotatedBeanReader.setVal(f, null, val, null);
+			}
+		}
+	}
+	
 	/**
 	 * Build a collection of beans from a NetCDF file. 
 	 * Will attempt to read data corresponding to all the specified fields
@@ -60,8 +127,11 @@ public class NetCDFObjBuilder
 	 */
 	public static <T> List<List<T>> factory2D(
 			Class<T> clazz,
+			Class<? extends Annotation> annClass,
 			String filename,
-			List<Field> ff)
+			List<Field> ff, 
+			boolean transpose,
+			boolean attributesAsStaticfields)
 	{
 		NetcdfFile ncfile = null; 
 		List<List<T>> out = null;
@@ -69,22 +139,23 @@ public class NetCDFObjBuilder
 		List<String> varNamesLower = new ArrayList<>();
 		List<String> varNames = new ArrayList<>();
 
+		if (ff == null)
+			ff = FieldUtils.getFields(clazz, annClass, true, true, true, true);
+		
 		/* record the field names in all lowercase so that matches between fields
 		 * and NCDF variables are case-insensitive. */
-		List<String> parsedFieldNames = FieldUtils.getFieldNames(
-				ff, AllFlavorBean.class, null, false);
-		List<String> parsedFieldNamesLC = FieldUtils.getFieldNames(
-				ff, AllFlavorBean.class, null, true);
+		List<String> parsedFieldNames = FieldUtils.getFieldNames(ff, clazz, null, false);
+		List<String> parsedFieldNamesLC = FieldUtils.getFieldNames(ff, clazz, null, true);
 		for (int i = 0; i < parsedFieldNames.size(); i++) 
 			parsedFieldNamesLC.set(i, parsedFieldNamesLC.get(i).toLowerCase());
 
-		try {ncfile = NetcdfFile.open(filename); }
+		try { ncfile = NetcdfFile.open(filename); }
 		catch (IOException e) { e.printStackTrace(); }
 
 		Map<String, Java2DArrayPackage> javaArrayMap = new HashMap<>();
 
 		List<Variable> vars = ncfile.getVariables();
-		boolean transpose = false;
+//		boolean transpose = false;
 		for (Variable v : vars)
 		{
 			Java2DArrayPackage pack;
@@ -101,26 +172,26 @@ public class NetCDFObjBuilder
 				case("int"):
 				{
 					int[][] ii = get2DIntArray(ncfile, ncVarName, transpose);
-					pack = new Java2DArrayPackage(
-							ii, ii.length, ii[0].length, ncVarName, vType);
-					javaArrayMap.put(lowCName, pack);
-					break;
+					pack = new Java2DArrayPackage(ii, ii.length, ii[0].length, ncVarName, vType);
+					javaArrayMap.put(lowCName, pack); break;
 				}
 				case("double"):
 				{
 					double[][] dd = get2DDoubleArray(ncfile, ncVarName, transpose);
-					pack = new Java2DArrayPackage(
-							dd, dd.length, dd[0].length, lowCName, vType);
-					javaArrayMap.put(lowCName, pack);
-					break;
+					pack = new Java2DArrayPackage(dd, dd.length, dd[0].length, lowCName, vType);
+					javaArrayMap.put(lowCName, pack); break;
 				}
 				case("char"):
 				{
 					char[][] cc = get2DCharArray(ncfile, ncVarName, transpose);
-					pack = new Java2DArrayPackage(
-							cc, cc.length, cc[0].length, lowCName, vType);
-					javaArrayMap.put(lowCName, pack);
-					break;
+					pack = new Java2DArrayPackage(cc, cc.length, cc[0].length, lowCName, vType);
+					javaArrayMap.put(lowCName, pack); break;
+				}
+				case("byte"):
+				{
+					byte[][] cc = get2DByteArray(ncfile, ncVarName, transpose);
+					pack = new Java2DArrayPackage(cc, cc.length, cc[0].length, lowCName, vType);
+					javaArrayMap.put(lowCName, pack); break;
 				}
 				}
 			}
@@ -167,11 +238,15 @@ public class NetCDFObjBuilder
 			}
 			out.add(l1);
 		}
+		
+		/* Read static field values from global attributes. */
+		if (attributesAsStaticfields) setStaticFromGlobalAttributes(ncfile, clazz);
+		
 		return out;
 	}
 
 	/**
-	 * Build a single bean instance 
+	 * Build a single bean instance from coordinates within a netCDF file
 	 * 
 	 * @param packs data arrays from a netCDF file
 	 * @param x array coordinate
@@ -192,7 +267,6 @@ public class NetCDFObjBuilder
 		}
 		if (t != null)
 		{
-
 			Java2DArrayPackage pack;
 			for (int i = 0; i < ff.size(); i++) {
 				Field f = ff.get(i);
@@ -213,6 +287,11 @@ public class NetCDFObjBuilder
 				case("char"):
 				{
 					AnnotatedBeanReader.setVal(f, ((char[][]) pack.array)[x][y], t);
+					break;
+				}
+				case("byte"):
+				{
+					AnnotatedBeanReader.setVal(f, ((byte[][]) pack.array)[x][y], t);
 					break;
 				}
 				default: throw new IllegalArgumentException("Trouble parsing data of type "

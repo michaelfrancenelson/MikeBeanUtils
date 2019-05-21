@@ -48,7 +48,7 @@ public class RandomBeanBuilder extends AnnotatedBeanReader
 	 */
 	public static <T> T randomFactory(Class<T> clazz, int min, int max)
 	{
-		List<Field> ff = FieldUtils.getFields(clazz, ParsedField.class, true, true);
+		List<Field> ff = FieldUtils.getFields(clazz, ParsedField.class, true, true, true, false);
 		T o = null;
 		try 
 		{

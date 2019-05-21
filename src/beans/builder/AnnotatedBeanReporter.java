@@ -98,7 +98,7 @@ public class AnnotatedBeanReporter<T>
 	public static <T> List<String> staticStringValReport(Class<T> clazz, String dblFmt)
 	{
 		List<StringValGetter<T>> getters;
-		List<Field> fields = FieldUtils.getFields(clazz, ParsedField.class, true, true);
+		List<Field> fields = FieldUtils.getFields(clazz, ParsedField.class, true, true, true, true);
 
 		List<Field> staticFields = new ArrayList<>();
 		for (Field f : fields)
@@ -241,7 +241,7 @@ public class AnnotatedBeanReporter<T>
 	{
 		AnnotatedBeanReporter<T> rep = new AnnotatedBeanReporter<>();
 		rep.clazz = clazz;
-		List<Field> fields = FieldUtils.getFields(rep.clazz, ParsedField.class, true, true);
+		List<Field> fields = FieldUtils.getFields(rep.clazz, ParsedField.class, true, true, true, true);
 		rep.dblFmt = dblFmt;
 		rep.sep = sep;
 		rep.getters = GetterGetterGetter.toStringGetterGetter(

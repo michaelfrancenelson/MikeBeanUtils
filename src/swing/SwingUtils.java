@@ -14,6 +14,8 @@ public class SwingUtils
 {
 	public static JFrame frameFactory(int width, int height) 
 	{ return frameFactory(width, height, ""); }
+	
+	
 	public static JFrame frameFactory(int width, int height, String title)
 	{
 		JFrame f = new JFrame(title);
@@ -21,6 +23,19 @@ public class SwingUtils
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		return f;
 	}
+
+
+	public static JFrame frameFactory(
+			int width, int height,
+			String title, int nRow, int nCol,
+			double sizeMultiplier)
+	{
+		int wAdj = (int)(sizeMultiplier * (double) width);
+		int hAdj = (int)(sizeMultiplier * (double) width);
+		
+		return frameFactory(wAdj, hAdj, title, nRow, nCol);
+	}
+	
 	public static JFrame frameFactory(int width, int height, String title, int nRow, int nCol)
 	{
 		JFrame f = frameFactory(width, height, title);

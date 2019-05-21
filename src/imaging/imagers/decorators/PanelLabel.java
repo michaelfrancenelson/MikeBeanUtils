@@ -1,4 +1,4 @@
-package imaging.imagers;
+package imaging.imagers.decorators;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import imaging.imagers.imagerData.ArrayData;
 import swing.stretchAndClick.ObjectImagePanel;
 import utils.ArrayUtils;
 
@@ -20,7 +21,6 @@ public class PanelLabel
 	private String label;
 
 	static Logger logger = LoggerFactory.getLogger(PanelLabel.class);
-
 
 	public static PanelLabel fromImgAbsoluteCoords(
 			int imgX, int imgY, ObjectImagePanel<?> pan,

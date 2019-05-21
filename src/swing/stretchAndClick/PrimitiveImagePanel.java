@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import imaging.imagers.Imager;
 import imaging.imagers.ObjectImager;
-import imaging.imagers.PrimitiveImager;
 import utils.ArrayUtils;
 
 public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
@@ -17,11 +16,11 @@ public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
 	/**	 */
 	private static final long serialVersionUID = -7971761341095269963L;
 	static Logger logger = LoggerFactory.getLogger(PrimitiveImagePanel.class);
-	private Imager<T> imager;
 	private String currentFieldName;
 	
 	void init(
-			PrimitiveImager<T> imgr, 
+			Imager<T> imgr, 
+//			PrimitiveImager<T> imgr, 
 			int width, int height, 
 			boolean keepAspectRatio, 
 			boolean legend)
@@ -75,8 +74,8 @@ public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
 		this.fixedAspectRatio = keepAspectRatio;
 		this.imageAspectRatio = ((double) image.getWidth(null)) / ((double) image.getHeight(null));
 
-		imgDisplayWidth = image.getWidth(null);
-		imgDisplayHeight = image.getHeight(null);
+//		imgDisplayWidth = image.getWidth(null);
+//		imgDisplayHeight = image.getHeight(null);
 	}
 
 	@Override public void setField(String name) { this.currentFieldName = name; }

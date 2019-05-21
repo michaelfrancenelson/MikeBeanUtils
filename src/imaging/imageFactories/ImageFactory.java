@@ -8,8 +8,8 @@ import javax.swing.JPanel;
 
 import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
-import imaging.imagers.ImagerData;
-import imaging.imagers.PrimitiveArrayData;
+import imaging.imagers.imagerData.ImagerData;
+import imaging.imagers.imagerData.PrimitiveImagerData;
 import utils.ColorUtils;
 
 public class ImageFactory 
@@ -40,14 +40,16 @@ public class ImageFactory
 	}
 	
 	public static <T> ImageMinMax buildPrimitiveImage(
-			PrimitiveArrayData<T> dat, ColorInterpolator ci)
+			PrimitiveImagerData<T> dat, ColorInterpolator ci)
 	{
 		dat.setDataMinMax(null, ci);
 		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ColorUtils.RGB_TYPE);
 		
 		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
 		{
-			out.setRGB(i, j, dat.getRGBInt(i, j, ci, null));
+			int rgb = dat.getRGBInt(i, j, ci, null);
+			out.setRGB(i, j, rgb);
+//			out.setRGB(i, j, dat.getRGBInt(i, j, ci, null));
 		}
 		return new ImageMinMax(dat.getDataMin(), dat.getDataMax(), out);
 	}
@@ -80,8 +82,8 @@ public class ImageFactory
 			int[][] data, ColorInterpolator ci,
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
-		PrimitiveArrayData<Object> dat = new 
-				PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
+		PrimitiveImagerData<Object> dat = new 
+				PrimitiveImagerData<Object>(data, flipAxisX, flipAxisY, transpose);
 		dat.setDataMinMax(null, ci);
 		ci.updateMinMax(dat.getDataMin(), dat.getDataMax());
 		return buildPrimitiveImage(dat, ci);
@@ -101,7 +103,7 @@ public class ImageFactory
 			double[][] data, ColorInterpolator ci,
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
-		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
+		ImagerData<Object> dat = new PrimitiveImagerData<Object>(data, flipAxisX, flipAxisY, transpose);
 		dat.setDataMinMax(null, ci);
 		return buildPackageImage(dat, ci, null);
 	}
@@ -120,7 +122,7 @@ public class ImageFactory
 			byte[][] data, ColorInterpolator ci,
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
-		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
+		ImagerData<Object> dat = new PrimitiveImagerData<Object>(data, flipAxisX, flipAxisY, transpose);
 		ci.updateMinMax(dat.getDataMin(), dat.getDataMax());
 		return buildPackageImage(dat, ci, null);
 	}
@@ -139,7 +141,7 @@ public class ImageFactory
 			boolean[][] data, ColorInterpolator ci,
 			boolean flipAxisX, boolean flipAxisY, boolean transpose)
 	{
-		ImagerData<Object> dat = new PrimitiveArrayData<Object>(data, flipAxisX, flipAxisY, transpose);
+		ImagerData<Object> dat = new PrimitiveImagerData<Object>(data, flipAxisX, flipAxisY, transpose);
 		ci.updateMinMax(dat.getDataMin(), dat.getDataMax());
 		return buildPackageImage(dat, ci, null);
 	}

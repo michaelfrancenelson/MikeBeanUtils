@@ -23,10 +23,7 @@ public class FieldUtils
 		return "";
 	}
 
-	private static <T> String typString(Class<T> c)
-	{
-		return "in type " + c.getSimpleName();
-	}
+	private static <T> String typString(Class<T> c) { return "in type " + c.getSimpleName(); }
 
 	private static <T> String modString(Class<T> clazz, boolean getInstance, boolean getStatic)
 	{
@@ -46,12 +43,25 @@ public class FieldUtils
 	 */
 	public static <T, A extends Annotation> List<Field> getFields(
 			Class<T> clazz, Class<A> annClazz, 
-			boolean getInstance, boolean getStatic) throws IllegalArgumentException
+			boolean getInstance, boolean getStatic,
+			boolean getSuperclassFields, boolean errorIfNone) throws IllegalArgumentException
 	{
 		if (!getInstance && !getStatic)
 			throw new IllegalArgumentException("At least one of the "
 					+ "'getInstance' or 'getStatic' parameters must be true.");
 		Field[] fields = clazz.getDeclaredFields();
+		if (getSuperclassFields) 
+		{
+			Field[] superFields = clazz.getSuperclass().getDeclaredFields();
+			Field[] tmp = new Field[superFields.length + fields.length];
+		
+			int index = 0;
+			for (int i = 0; i < fields.length; i++) { tmp[index] = fields[i]; index++; }
+
+			for (int i = 0; i < superFields.length; i++) { tmp[index] = superFields[i]; index++;	}
+			fields = tmp;
+		}
+
 		List<Field> ff = new ArrayList<>();
 		boolean okStatic = false;
 		boolean isStatic = false;
@@ -71,7 +81,7 @@ public class FieldUtils
 		}
 
 		/* Throw exception in case no suitable fields were found. */
-		if (ff.size() == 0)
+		if (errorIfNone && ff.size() == 0)
 		{
 			throw new IllegalArgumentException("Could not find any" + 
 					modString(clazz, getInstance, getStatic) + "fields" +
@@ -97,10 +107,13 @@ public class FieldUtils
 			Class<? extends Annotation> annClass,
 			boolean getInstance, 
 			boolean getStatic,
-			boolean toLowerCase) throws IllegalArgumentException
+			boolean getSuperclassFields,
+			boolean errorIfNone,
+			boolean toLowerCase
+			) throws IllegalArgumentException
 	{
 		//		System.out.println("FieldUtils: getting instance field names from class " + clazz.getName());
-		List<Field> ff = getFields(clazz, annClass, getInstance, getStatic);
+		List<Field> ff = getFields(clazz, annClass, getInstance, getStatic, getSuperclassFields, errorIfNone);
 		return getFieldNames(ff, clazz, annClass, toLowerCase);
 	}
 
@@ -157,7 +170,7 @@ public class FieldUtils
 			String fieldName, boolean matchCase) 
 					throws IllegalArgumentException
 	{
-		List<Field> ll = getFields(clazz, annClass, true, true);
+		List<Field> ll = getFields(clazz, annClass, true, true, true, true);
 		if (matchCase) fieldName = fieldName.toLowerCase();
 		String nameTemp;
 		Field out = null;
@@ -210,7 +223,7 @@ public class FieldUtils
 		String matchDisplayName = "";
 		String matchFieldName = "";
 
-		List<Field> fields = getFields(clazz, DisplayName.class, true, true);
+		List<Field> fields = getFields(clazz, DisplayName.class, true, true, true, true);
 
 		/* Get field names converted to lower case. */
 		List<String> fieldNames = getFieldNames(
@@ -221,7 +234,7 @@ public class FieldUtils
 		{
 			int index = fieldNames.indexOf(matchFieldName);
 			out = fields.get(index);
-			
+
 		}
 		/* Otherwise try to match the display name in the WatchField annotation. */
 		else if (displayName != null)
@@ -254,8 +267,8 @@ public class FieldUtils
 					fieldName +	typString(clazz));
 		return out;
 	}
-	
-	
+
+
 	public static String toBoolean(String val)
 	{
 		try
@@ -266,11 +279,11 @@ public class FieldUtils
 			return "false";
 		} catch(Exception e) { return stringToBoolean(val); }
 	}
-	
+
 	public static String stringToBoolean(String val)
 	{
 		String test = val.toLowerCase().trim();
-		
+
 		switch(test)
 		{
 		case("f"): case("false"): case("-1"): return "false";

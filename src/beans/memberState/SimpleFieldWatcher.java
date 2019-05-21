@@ -51,8 +51,10 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	{
 		Map<String, FieldWatcher<T>> out = new HashMap<>();
 		List<Field> fields = FieldUtils.getFields(
-				clazz, annClazz, getInstance, getStatic);
-
+				clazz, annClazz, getInstance, getStatic, true, false);
+		
+		if (fields.size() == 0) throw new IllegalArgumentException("No fields to watch.");
+		
 		for (Field f : fields)
 		{
 			f.setAccessible(true);

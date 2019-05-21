@@ -7,12 +7,15 @@ import java.awt.Insets;
 
 import javax.swing.JPanel;
 
+/**
+ *  Panel with resizeable image.
+ * @author michaelfrancenelson
+ *
+ */
 public class ImagePanel extends JPanel
 {
 
-	/**
-	 * 
-	 */
+	/** */
 	private static final long serialVersionUID = -5720171621052728282L;
 
 	protected Image image = null;

@@ -2,16 +2,21 @@ package imaging.imagers;
 
 import java.awt.Color;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import imaging.colorInterpolator.ColorInterpolator;
 import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.colorInterpolator.SimpleColorInterpolator;
+import imaging.imagers.imagerData.ImagerData;
+import imaging.imagers.imagerData.PrimitiveImagerData;
 
 public class ImagerFactory 
 {
-	
+	public static final String defaultDblFmt = "%.2f";
+	public static final Class<ParsedField> defaultAnnClass = ParsedField.class;
+
 	/**
 	 * Build an imager with some default options:
 	 * <li> axes not inverted
@@ -31,23 +36,22 @@ public class ImagerFactory
 	 * @param boolColors
 	 * @return
 	 */
-	public static <T> Imager<T> factory(
+	public static <T> ObjectImager<T> factory(
 			ImagerData<T> dat,
 			String field, Class<T> clazz, 
 			Color[] gradColors, Color[] boolColors)
 	{
-		String dblFmt = "%.2f";
 		return  ImagerFactory.factory(
 				dat,
 				field,
 				clazz, null, 
 				gradColors, boolColors,
 				-Double.MAX_VALUE, Integer.MIN_VALUE, Color.gray,
-				dblFmt,  null
+				defaultDblFmt,  null
 				);
 	}
 	
-	public static <T> Imager<T> factory(
+	public static <T> ObjectImager<T> factory(
 			ImagerData<T> dat,
 			String fieldName, 
 			Class<T> clazz, Class<? extends Annotation> annClass, 
@@ -57,8 +61,9 @@ public class ImagerFactory
 			)
 	{
 		
-		if (dblFmt == null) dblFmt = "%.2f";
-		if (annClass == null) annClass = ParsedField.class;
+		if (parsedBooleanFields == null) parsedBooleanFields = new ArrayList<String>();
+		if (dblFmt == null) dblFmt = defaultDblFmt;
+		if (annClass == null) annClass = defaultAnnClass;
 		ObjectImager<T> out = new ObjectImager<T>();
 
 		out.setData(dat);
@@ -72,17 +77,21 @@ public class ImagerFactory
 		return out;
 	}
 
-	
-	public static <T> Imager<T> primitiveFactory(
-			PrimitiveArrayData<T> dat,
+	public static <T> PrimitiveImager<T> primitiveFactory(
+			PrimitiveImagerData<T> dat,
 			ColorInterpolator ci,
 			ColorInterpolator booleanCI,
-			String dblFmt, boolean asBoolean,
+			String dblFmt,
+			String fieldName,
+//			boolean asBoolean,
 			List<String> parsedBooleanFields)
 	{
+		if (parsedBooleanFields == null) parsedBooleanFields = new ArrayList<String>();
+		if (dblFmt == null) dblFmt = defaultDblFmt;
 		PrimitiveImager<T> out = new PrimitiveImager<T>();
 		out.setData(dat);
-		out.initialize(dblFmt, parsedBooleanFields, ci, booleanCI, asBoolean);
+		out.initialize(dblFmt, parsedBooleanFields, ci, booleanCI, fieldName);
+//		out.initialize(dblFmt, parsedBooleanFields, ci, booleanCI, asBoolean);
 		return out;
 	}
 }

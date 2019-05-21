@@ -10,21 +10,27 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import imaging.colorInterpolator.ColorInterpolator;
-import imaging.imagers.ImagerData;
+import imaging.imagers.Imager;
 import imaging.imagers.ImagerFactory;
 import imaging.imagers.ObjectImager;
-import imaging.imagers.PrimitiveArrayData;
 import imaging.imagers.PrimitiveImager;
+import imaging.imagers.imagerData.ImagerData;
+import imaging.imagers.imagerData.PrimitiveImagerData;
 
 /**
- * 
+ *  
  * @author michaelfrancenelson
  *
  */
 public class PanelFactory 
 {
+	public static Logger logger = LoggerFactory.getLogger(PanelFactory.class);
+	
 	public static <T> ObjectImagePanel<T> buildPanel(
 			ImagerData<T> dat,
 			Class<T> clazz,	Class<? extends Annotation> annClass,
@@ -69,28 +75,34 @@ public class PanelFactory
 	}
 
 	public static <T> PrimitiveImagePanel<T> buildPanel(
-			PrimitiveArrayData<?> dat,
+			PrimitiveImagerData<T> dat,
 			ColorInterpolator ci,
 			ColorInterpolator booleanCI,
 			String fieldName,
 			String dblFmt,
-			Iterable<String> parsedBooleanFields,
+			List<String> parsedBooleanFields,
 			boolean keepAspectRatio, 
 			int fixedWidth, int fixedHeight,
 			double decoratorRelPointSize,
 			boolean asBoolean)
 	{
-		if (dblFmt == null) dblFmt = "%.2f";
 		dat.setAsBoolean(asBoolean);
-		PrimitiveImager imager = ImagerFactory.primitiveFactory(dat, ci, booleanCI, dblFmt, asBoolean, parsedBooleanFields);
-		return buildPanel(
+		PrimitiveImager<T> imager = ImagerFactory.primitiveFactory(
+				dat,
+				ci,
+				booleanCI,
+				dblFmt, 
+				fieldName,
+				parsedBooleanFields);
+		return buildPrimitivePanel(
 				imager, fieldName,
 				keepAspectRatio, 
 				fixedWidth, fixedHeight, decoratorRelPointSize);
 	}
 
-	public static <T> PrimitiveImagePanel<T> buildPanel(
-			PrimitiveImager imager, 
+	public static <T> PrimitiveImagePanel<T> buildPrimitivePanel(
+			Imager<T> imager, 
+//			PrimitiveImager<T> imager, 
 			String fieldName,
 			boolean keepAspectRatio, 
 			int fixedWidth, int fixedHeight, double decoratorRelPointSize)
@@ -151,60 +163,73 @@ public class PanelFactory
 		return out;
 	}
 
+	
+	
+	
+	
+	public static <T> PrimitiveImagePanel<T> buildLegendPanel(
+			int nSteps, double min, double max, String type,
+			String dblFmt,
+			ColorInterpolator ci, ColorInterpolator bi,
+			boolean horizontal, boolean loToHi, boolean booleanNA,
+			boolean keepAspectRatio, int width, int height, double ptSize)
+	{
+		
+		
+		logger.debug(String.format("build logger panel: min = %"));
+		PrimitiveImagerData<T> datArr = PrimitiveImagerData.buildGradientData(
+				type, min, max, nSteps, horizontal, loToHi, booleanNA);
+		
+		return buildPanel(
+				datArr, 
+				ci, bi,
+				type, 
+				dblFmt,
+				null, false, width, height, ptSize, false);
+		
+//		return buildPanel(
+//				legDat,
+//				imgr.getColorInterpolator(), imgr.getBooleanColorInterpolator(),
+//				imgr.getFieldType(), imgr.getDblFmt(),
+//				null, false, width, height, ptSize, false);
+				
+//		
+//		PrimitiveImager<T> imgrPrim = ImagerFactory.primitiveFactory(
+//				legDat, imgr.getColorInterpolator(), 
+//				imgr.getBooleanColorInterpolator(), imgr.getDblFmt(), 
+//				false, null);
+//
+//		return buildPanel(
+//				imgrPrim, 
+//				imgr.getFieldName(),
+//				keepAspectRatio, 
+//				width, height, ptSize);
+		
+	}
+	
 	public static <T> PrimitiveImagePanel<T> buildLegendPanel(
 			int nSteps, String fieldType, String fieldName,
 			double dataMin, double dataMax,
 			ColorInterpolator ci, ColorInterpolator booleanCI, 
-			String dblFmt, Iterable<String> parsedBooleanFields,
+			String dblFmt, List<String> parsedBooleanFields,
 			boolean horizontal, boolean loToHi, boolean booleanNA,
 			boolean keepAspectRatio, int fixedWidth, int fixedHeight,
-			double decoratorRelPointSize, boolean asBoolean)
+			double decoratorRelPointSize)
+//	, boolean asBoolean)
 	{
-		PrimitiveArrayData<T> legDat = PrimitiveArrayData.buildGradientData(
+		PrimitiveImagerData<T> legDat = PrimitiveImagerData.buildGradientData(
 				fieldType, dataMin, dataMax, nSteps,
 				horizontal, loToHi, booleanNA);
 
-		PrimitiveImager imgr = ImagerFactory.primitiveFactory(
-				legDat, ci, booleanCI, dblFmt, asBoolean, parsedBooleanFields);
+		PrimitiveImager<T> imgr = ImagerFactory.primitiveFactory(
+				legDat, ci, booleanCI, dblFmt, fieldName, parsedBooleanFields);
+//		PrimitiveImager<T> imgr = ImagerFactory.primitiveFactory(
+//				legDat, ci, booleanCI, dblFmt, asBoolean, parsedBooleanFields);
 
-		return buildPanel(
+		return buildPrimitivePanel(
 				imgr, 
 				fieldName,
 				keepAspectRatio, 
 				fixedWidth, fixedHeight ,decoratorRelPointSize);
 	}
-
-
-
-	//	/**
-	//	 *  Build a panel using an already existing <code>ObjectArrayImager</code> to generate the image from the states of
-	//	 *  objects in a 2D array.
-	//	 * 
-	//	 * @param imager 
-	//	 * @param keepAspectRatio Should the aspect ratio of the image be maintained if the window is resized?
-	//	 *                        If false, the image will stretch to fill the window if it is resized.
-	//	 *                        If <code>fixedWidth</code> or <code>fixedHeight</code> are greater than 0, 
-	//	 *                        this parameter is ignored.
-	//	 * @param fixedWidth      If greater than 0, the width of the image will remain constant 
-	//	 *                        if the window is resized. The image height may still adjust to resizing.
-	//	 *                        Values of 0 or less are ignored.
-	//	 * @param fixedHeight     If greater than 0, the height of the image will remain constant 
-	//	 *                        if the window is resized. The width may still adjust to resizing.
-	//	 *                        Values of 0 or less are ignored.
-	//	 * @return
-	//	 */
-	//	public static <T> ObjectImagePanel<T> buildLegendPanel(
-	//			BeanImager<T> imager, String fieldName,
-	//			boolean keepAspectRatio,
-	//			int fixedWidth, int fixedHeight, 
-	//			double decoratorRelPointSize,
-	//			Class<T> clazz, Class<? extends Annotation> annClass)
-	//	{
-	//		ObjectImagePanel<T> out = new ObjectImagePanel<T>();
-	//		out.setLabelVisibility(true);
-	//		out.setPtRelSize(decoratorRelPointSize);
-	//		out.init(imager, fixedWidth, fixedHeight, keepAspectRatio, true);
-	//		imager.setField(fieldName.toLowerCase());
-	//		return out;
-	//	}
 }

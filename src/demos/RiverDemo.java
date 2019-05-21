@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.sampleBeans.Terrain;
-import imaging.imagers.ImagerData;
+import imaging.imagers.imagerData.ImagerData;
 import swing.SwingUtils;
 import swing.stretchAndClick.PanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;

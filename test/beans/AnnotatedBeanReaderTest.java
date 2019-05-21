@@ -25,14 +25,14 @@ public class AnnotatedBeanReaderTest
 		NetCDFObjBuilder.factory2D(AllFlavorStaticBean.class, filename);
 
 		assertTrue(AnnotatedBeanInitializer.enforceStaticInitialized(
-				AllFlavorStaticBean.class)); 
+				AllFlavorStaticBean.class, true)); 
 
 		for (List<AllFlavorBean> l1 : beans)
 		{
 			for (AllFlavorBean b : l1)
 			{
 				assertTrue(AnnotatedBeanInitializer.enforceInstanceInitialized(
-						AllFlavorBean.class, b));  
+						AllFlavorBean.class, b, true));  
 			}
 		}
 	}

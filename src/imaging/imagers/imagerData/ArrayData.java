@@ -1,4 +1,4 @@
-package imaging.imagers;
+package imaging.imagers.imagerData;
 
 import java.util.List;
 
@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
 import utils.ArrayUtils;
-import utils.Sequences;
 
 public class ArrayData<T> implements ImagerData<T>
 {
@@ -133,53 +132,6 @@ public class ArrayData<T> implements ImagerData<T>
 	@Override public double getDataMax() { return dataMax; }
 	@Override public int getWidth() { return outputWidth; }
 	@Override public int getHeight() { return outputHeight; }
-
-	@Override
-	public PrimitiveArrayData<Object> getIntLegend(int nSteps, boolean loToHi, boolean horiz) 
-	{
-		int dataWidth = (int)Math.abs(dataMax - dataMin);
-		int legMax, legMin;
-
-		if ((dataMax > dataMin) & loToHi) {legMax = (int) dataMax; legMin = (int) dataMin; }
-		else {legMax = (int) dataMin; legMin = (int) dataMin; }
-
-		if (dataWidth < nSteps) nSteps = dataWidth;
-		int[][] data = Sequences.spacedIntervals2D(legMin, legMax, nSteps, horiz);
-		return new PrimitiveArrayData<Object>(data, false, false, false);
-	}
-
-	@Override
-	public PrimitiveArrayData<Object> getDoubleLegend(int nSteps, boolean loToHi, boolean horiz)
-	{
-		double legMax, legMin;
-
-		if ((dataMax > dataMin) & loToHi) {legMax = dataMax; legMin = dataMin; }
-		else {legMax = dataMin; legMin = dataMin; }
-		double[][] data = Sequences.spacedIntervals2D(legMin, legMax, nSteps, horiz);
-		return new PrimitiveArrayData<Object>(data, false, false, false);
-	}
-
-	@Override
-	public PrimitiveArrayData<Object> getByteLegend(int nSteps, boolean loToHi, boolean horiz) 
-	{
-		int dataWidth = (int)Math.abs(dataMax - dataMin);
-		byte legMax, legMin;
-
-		if ((dataMax > dataMin) & loToHi) {legMax = (byte) (int) dataMax; legMin = (byte) (int) dataMin; }
-		else {legMax = (byte) (int) dataMin; legMin = (byte) (int) dataMin; }
-
-		if (dataWidth < nSteps) nSteps = dataWidth;
-		byte[][] data = Sequences.spacedIntervals2D(
-				legMin, legMax, nSteps, horiz);
-		return new PrimitiveArrayData<Object>(data, false, false, false);
-	}
-
-	@Override
-	public Boolean[][] getBooleanLegendData(boolean includeNA, boolean horizontal)
-	{
-		Boolean[][] data = Sequences.booleanGradient2D(includeNA, horizontal);
-		return data;
-	}
 
 	public static class ListData<T> extends ArrayData<T>
 	{

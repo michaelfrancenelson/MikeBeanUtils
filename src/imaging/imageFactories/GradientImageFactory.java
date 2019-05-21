@@ -44,7 +44,7 @@ public class GradientImageFactory
 	 */
 	public static Image buildGradientImage(
 			int min, int max, int nSteps, ColorInterpolator ci,
-			boolean lowToHigh, boolean horizontal)
+			boolean horizontal, boolean lowToHigh)
 	{
 		
 		int low = Math.min(min, max);

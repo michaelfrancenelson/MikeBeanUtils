@@ -14,7 +14,7 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 {
 
 	public static final int     NA_INT      = Integer.MIN_VALUE;
-	public static final double  NA_DOUBLE   = Double.MIN_VALUE;
+	public static final double  NA_DOUBLE   = -Double.MAX_VALUE;
 	public static final String  NA_STRING   = "";
 	public static final char    NA_CHAR     = (char)'0';
 
@@ -29,54 +29,55 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 	 * @param clazz
 	 */
 	public static <T> void initializeStaticFieldsToNA(Class<T> clazz)
-	{ initializeStaticFieldsToNA(clazz, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR);	}
+	{ initializeStaticFieldsToNA(clazz, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR, false);	}
 
 	public static <T> void initializeInstanceFieldsToNA(Class<T> clazz, T t)
-	{ initializeInstanceFieldsToNA(clazz, t, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR); }
+	{ initializeInstanceFieldsToNA(clazz, t, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR, false); }
 
 	/* Instance checkers. */
 	public static <T> boolean checkInstanceInitialized(Class<T> clazz, T t)
-	{ return isInstanceInitialized(clazz, t, noEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR); }
+	{ return isInstanceInitialized(clazz, t, noEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR, false); }
 
 	public static <T> boolean checkInstanceInitialized( Class<T> clazz, T t, int naInt, double naDouble, String naString, char naChar)
-	{ return isInstanceInitialized(clazz, t, noEnforce, naInt, naDouble, naString, naChar); }
+	{ return isInstanceInitialized(clazz, t, noEnforce, naInt, naDouble, naString, naChar, false); }
 
 	public static <T> boolean checkInstanceInitialized(Class<T> clazz, Iterable<T> t)
-	{ return areBeansInitialized(clazz, t, noEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR); }
+	{ return areBeansInitialized(clazz, t, noEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR, false); }
 
 	public static <T> boolean checkInstanceInitialized( Class<T> clazz, Iterable<T> t, int naInt, double naDouble, String naString, char naChar)
-	{ return areBeansInitialized(clazz, t, noEnforce, naInt, naDouble, naString, naChar); }
+	{ return areBeansInitialized(clazz, t, noEnforce, naInt, naDouble, naString, naChar, false); }
 
+	
 	/* Static checkers */
 	public static <T> boolean checkStaticInitialized(Class<T> clazz)
-	{ return isStaticInitialized(clazz, noEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR); }
+	{ return isStaticInitialized(clazz, noEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR, false); }
 
 	public static <T> boolean checkStaticInitialized( Class<T> clazz, int naInt, double naDouble, String naString,char naChar)
-	{ return isStaticInitialized(clazz, noEnforce, naInt, naDouble, naString, naChar); }
+	{ return isStaticInitialized(clazz, noEnforce, naInt, naDouble, naString, naChar, false); }
 
 
-
+	
 	/* Instance enforcers. */
-	public static <T> boolean enforceInstanceInitialized(Class<T> clazz, T t)
-	{ return isInstanceInitialized(clazz, t, yesEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR); }
+	public static <T> boolean enforceInstanceInitialized(Class<T> clazz, T t, boolean errorIfNone)
+	{ return isInstanceInitialized(clazz, t, yesEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR, errorIfNone); }
 
-	public static <T> boolean enforceInstanceInitialized(Class<T> clazz, T t, int naInt, double naDouble, String naString, char naChar)
-	{ return isInstanceInitialized(clazz, t, yesEnforce, naInt, naDouble, naString, naChar); }
+	public static <T> boolean enforceInstanceInitialized(Class<T> clazz, T t, int naInt, double naDouble, String naString, char naChar, boolean errorIfNone)
+	{ return isInstanceInitialized(clazz, t, yesEnforce, naInt, naDouble, naString, naChar, errorIfNone); }
 
-	public static <T> boolean enforceInstanceInitialized(Class<T> clazz, Iterable<T> t)
-	{ return areBeansInitialized(clazz, t, yesEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR); }
+	public static <T> boolean enforceInstanceInitialized(Class<T> clazz, Iterable<T> t, boolean errorIfNone)
+	{ return areBeansInitialized(clazz, t, yesEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR, errorIfNone); }
 
-	public static <T> boolean enforceInstanceInitialized( Class<T> clazz, Iterable<T> t, int naInt, double naDouble, String naString, char naChar)
-	{ return areBeansInitialized(clazz, t, yesEnforce, naInt, naDouble, naString, naChar); }
+	public static <T> boolean enforceInstanceInitialized( Class<T> clazz, Iterable<T> t, int naInt, double naDouble, String naString, char naChar, boolean errorIfNone)
+	{ return areBeansInitialized(clazz, t, yesEnforce, naInt, naDouble, naString, naChar, errorIfNone); }
 
 
 
 	/* Static enforcers */
-	public static <T> boolean enforceStaticInitialized(Class<T> clazz)
-	{ return isStaticInitialized(clazz, yesEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR); }
+	public static <T> boolean enforceStaticInitialized(Class<T> clazz, boolean errorIfNone)
+	{ return isStaticInitialized(clazz, yesEnforce, NA_INT, NA_DOUBLE, NA_STRING, NA_CHAR, errorIfNone); }
 
-	public static <T> boolean enforceStaticInitialized(Class<T> clazz, int naInt, double naDouble, String naString, char naChar)
-	{ return isStaticInitialized(clazz, yesEnforce, naInt, naDouble, naString, naChar); }
+	public static <T> boolean enforceStaticInitialized(Class<T> clazz, int naInt, double naDouble, String naString, char naChar, boolean errorIfNone)
+	{ return isStaticInitialized(clazz, yesEnforce, naInt, naDouble, naString, naChar, errorIfNone); }
 
 	
 	
@@ -89,24 +90,24 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 	 * @param naString
 	 * @param naChar
 	 */
-	private static <T> void initializeInstanceFieldsToNA(Class<T> clazz, T t, int naInt, double naDouble, String naString, char naChar)
+	private static <T> void initializeInstanceFieldsToNA(Class<T> clazz, T t, int naInt, double naDouble, String naString, char naChar, boolean errorIfNone)
 	{
-		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, true, false))
+		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, true, false, true, errorIfNone))
 		{
 			try { if (!Modifier.isStatic(f.getModifiers())) setNA(t, f, naInt, naDouble, naString, naChar); }
 			catch (IllegalArgumentException | IllegalAccessException e) { e.printStackTrace();}
 		}
 	}
 
-	private static <T> void initializeStaticFieldsToNA(Class<T> clazz, int naInt, double naDouble, String naString, char naChar)
+	private static <T> void initializeStaticFieldsToNA(Class<T> clazz, int naInt, double naDouble, String naString, char naChar, boolean errorIfNone)
 	{
-		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, false, true))
+		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, false, true, true, errorIfNone))
 		{
 			try { if (Modifier.isStatic(f.getModifiers())) setNA(null, f, naInt, naDouble, naString, naChar); }
 			catch (IllegalArgumentException | IllegalAccessException e) { e.printStackTrace();}
 		}
 	}
-	
+
 	/**
 	 * @param t instance of T
 	 * @param f
@@ -118,7 +119,10 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	private static <T> void setNA(T t, Field f, int naInt, double naDouble, String naString, char naChar)
+	private static <T> void setNA(
+			T t, Field f, 
+			int naInt, double naDouble, 
+			String naString, char naChar)
 			throws IllegalArgumentException, IllegalAccessException
 	{
 		f.setAccessible(true);
@@ -129,8 +133,10 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 		case("int"):     { f.setInt(t, naInt); break;}
 		case("double"):  { f.setDouble(t, naDouble); break; }
 		/* It doesn't make sense to have a na value for the primitive boolean 
-		 * since true and false are both reasonable values */
-		case("boolean"): { break; } 
+		 * since true and false are both reasonable values. 
+		 * Also, ignore the less-used primitive types*/
+		case("boolean"): case("byte"): case("short"):
+		case("long"): case("float"): { break; } 
 
 		case("String"):  { f.set(t, naString); break; }
 		case("char"):    { f.setChar(t, naChar); break;}
@@ -158,12 +164,12 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 	 */
 	private static <T> boolean isInstanceInitialized(
 			Class<T> clazz, T bean, boolean enforce, 
-			int naInt, double naDouble, String naString, char naChar)
+			int naInt, double naDouble, String naString, char naChar, boolean errorIfNone)
 	{
 		String message, typeName;
 		typeName = clazz.getSimpleName();
 
-		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, true, false))
+		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, true, false, true, errorIfNone))
 		{
 			if (!Modifier.isStatic(f.getModifiers()))
 			{
@@ -184,12 +190,12 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 
 	private static <T> boolean isStaticInitialized(
 			Class<T> clazz, boolean enforce,
-			int naInt, double naDouble, String naString, char naChar)
+			int naInt, double naDouble, String naString, char naChar, boolean errorIfNone)
 	{
 		String message, typeName;
 		typeName = clazz.getSimpleName();
 
-		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, false, true))
+		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, false, true, true, errorIfNone))
 		{
 			if (Modifier.isStatic(f.getModifiers()))
 			{
@@ -209,12 +215,12 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 	
 	private static <T> boolean areBeansInitialized(
 			Class<T> clazz, Iterable<T> beans, boolean enforce, 
-			int naInt, double naDouble, String naString, char naChar)
+			int naInt, double naDouble, String naString, char naChar, boolean errorIfNone)
 	{
 		String message, typeName;
 		typeName = clazz.getSimpleName();
 
-		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, true, true))
+		for (Field f : FieldUtils.getFields(clazz, InitializedField.class, true, true, true, errorIfNone))
 		{
 			if (!Modifier.isStatic(f.getModifiers()))
 			{

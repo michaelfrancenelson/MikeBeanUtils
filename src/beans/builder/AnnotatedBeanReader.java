@@ -1,5 +1,6 @@
 package beans.builder;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
@@ -15,7 +16,7 @@ import utils.FieldUtils;
 
 public class AnnotatedBeanReader 
 {
-		static Logger logger = LoggerFactory.getLogger(AnnotatedBeanReader.class);
+	static Logger logger = LoggerFactory.getLogger(AnnotatedBeanReader.class);
 
 	/**
 	 * Marker to show which fields to read and/or reported
@@ -88,7 +89,7 @@ public class AnnotatedBeanReader
 		}
 
 
-		List<Field> ff = FieldUtils.getFields(clazz, ParsedField.class, true, true);
+		List<Field> ff = FieldUtils.getFields(clazz, ParsedField.class, true, true, true, true);
 		List<String> headers = data.get(0);
 		List<Integer> colNumbers = new ArrayList<>();
 		for (Field f : ff)
@@ -215,7 +216,7 @@ public class AnnotatedBeanReader
 		if (filename == null) filename = "input data list";
 
 		/* Fields without the annotation are ignored. */
-		List<Field> ff = FieldUtils.getFields(clazz, ParsedField.class, true, true);
+		List<Field> ff = FieldUtils.getFields(clazz, ParsedField.class, true, true, true, true);
 
 		List<String> fieldNames = new ArrayList<>();
 		for (Field f : ff) fieldNames.add(f.getName());
@@ -278,6 +279,7 @@ public class AnnotatedBeanReader
 		throw new IllegalArgumentException(message1);
 	}
 
+
 	/**
 	 * Set the value of the field to the (appropriately casted) value.
 	 * 
@@ -286,10 +288,21 @@ public class AnnotatedBeanReader
 	 * @param o   bean
 	 * @param     <T> bean type
 	 */
-	public static <T> void setVal(Field f, String val, T o) 
-	{
+	public static <T> void setVal(Field f, String val, T o)
+	{ setVal(f, ParsedField.class, val, o); }
 
-		if (f.isAnnotationPresent(ParsedField.class)) {
+	/**
+	 * Set the value of the field to the (appropriately casted) value.
+	 * 
+	 * @param f   annotated field
+	 * @param val value to set
+	 * @param o   bean
+	 * @param     <T> bean type
+	 */
+	public static <T> void setVal(Field f, Class<? extends Annotation> annClass, String val, T o) 
+	{
+		if ((annClass == null) || f.isAnnotationPresent(annClass))
+		{
 			String shortName = f.getType().getSimpleName();
 			try {
 				switch (shortName) {
@@ -317,7 +330,7 @@ public class AnnotatedBeanReader
 					throw new IllegalArgumentException(
 							"Input value for field of type " + shortName + " could not be parsed");
 				}
-								logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
+				logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
 			} catch (
 					NumberFormatException |	IllegalAccessException e) {
 				throw new IllegalArgumentException("Could not parse the input " + val +
@@ -325,7 +338,7 @@ public class AnnotatedBeanReader
 			} 
 		}
 	}
-	
+
 	/**
 	 * Set the value of the field to the (appropriately casted) value.
 	 * 
@@ -365,7 +378,7 @@ public class AnnotatedBeanReader
 					throw new IllegalArgumentException(
 							"Input value for field of type " + shortName + " could not be parsed");
 				}
-								logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
+				logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
 			} catch (
 					NumberFormatException |	IllegalAccessException e) {
 				throw new IllegalArgumentException("Could not parse the input " + val +
@@ -373,7 +386,7 @@ public class AnnotatedBeanReader
 			} 
 		}
 	}
-	
+
 	/**
 	 * Set the value of the field to the (appropriately casted) value.
 	 * 
@@ -413,7 +426,7 @@ public class AnnotatedBeanReader
 					throw new IllegalArgumentException(
 							"Input value for field of type " + shortName + " could not be parsed");
 				}
-								logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
+				logger.trace("Field " + f.getName() + "(" + shortName + ")" + " set to " + val + ".");
 			} catch (
 					NumberFormatException |	IllegalAccessException e) {
 				throw new IllegalArgumentException("Could not parse the input " + val +

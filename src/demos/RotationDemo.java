@@ -1,7 +1,7 @@
 package demos;
 
 import beans.sampleBeans.AllFlavorBean;
-import imaging.imagers.ArrayData;
+import imaging.imagers.imagerData.ArrayData;
 import swing.SwingUtils;
 import swing.stretchAndClick.PanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;

@@ -1,16 +1,23 @@
-package imaging.imagers;
+package imaging.imagers.imagerData;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
+import imaging.imagers.Imager;
 import utils.ArrayUtils;
 import utils.FieldUtils;
 import utils.Sequences;
 
-public class PrimitiveArrayData<T> extends ArrayData<T>
+public class PrimitiveImagerData<T> extends ArrayData<T>
 {
+	public static Logger logger = LoggerFactory.getLogger(PrimitiveImagerData.class);
+	
 	private String type;
-	String dblFmt;
+//	private String dblFmt;
 	private boolean asBoolean = false;
+	
 	@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
 	{
 		double[] minmax = null;
@@ -28,7 +35,7 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		}
 		dataMin = minmax[0];
 		dataMax = minmax[1];
-		ci.updateMinMax(dataMin, dataMax);
+		if (ci != null) ci.updateMinMax(dataMin, dataMax);
 	}
 
 	@Override protected void setCurrentObj() {}
@@ -53,7 +60,7 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		return ci.getColor(val);
 	}
 
-	public String queryData(double relativeX, double relativeY)
+	public String queryData(double relativeX, double relativeY, String dblFmt)
 	{
 		setDataCoords(relativeX, relativeY);
 		String val;
@@ -79,49 +86,49 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 				type, 100 * relativeX, 100 * relativeY, val));
 		return val;
 	}
-
-	public PrimitiveArrayData(double[][] dat, boolean flipX, boolean flipY, boolean transpose)
+	
+	public PrimitiveImagerData(double[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{  
 		dblDat = dat;  type = "dbl";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
 	}
-	public PrimitiveArrayData(float[][] dat, boolean flipX, boolean flipY, boolean transpose)
+	public PrimitiveImagerData(float[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{	
 		fltDat = dat;  type = "flt";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
 	}
-	public PrimitiveArrayData(byte[][] dat, boolean flipX, boolean flipY, boolean transpose)
+	public PrimitiveImagerData(byte[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{
 		bytDat = dat; type = "byt";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
 	}
-	public PrimitiveArrayData(short[][] dat, boolean flipX, boolean flipY, boolean transpose)
+	public PrimitiveImagerData(short[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
 		shtDat = dat; type = "sht";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
 	}
-	public PrimitiveArrayData(int[][] dat, boolean flipX, boolean flipY, boolean transpose)
+	public PrimitiveImagerData(int[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
 		intDat = dat; type = "int";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
 	}
-	public PrimitiveArrayData(long[][] dat, boolean flipX, boolean flipY, boolean transpose)
+	public PrimitiveImagerData(long[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
 		lngDat = dat;	type = "lng";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
 	}
-	public PrimitiveArrayData(char[][] dat, boolean flipX, boolean flipY, boolean transpose)
+	public PrimitiveImagerData(char[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
 		chrDat = dat; type = "chr";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
 	}
-	public PrimitiveArrayData(boolean[][] dat, boolean flipX, boolean flipY, boolean transpose)
+	public PrimitiveImagerData(boolean[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
 		booDat = dat; type = "boo";  
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
 	}
-
-	public PrimitiveArrayData() {}
+	
+	public PrimitiveImagerData() {}
 
 	private double[][]  dblDat;
 	private float[][] fltDat;
@@ -134,30 +141,39 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 
 	public void setAsBoolean(boolean b) { this.asBoolean = b; }
 
-	public static <T> PrimitiveArrayData<T> buildGradientData(
+	
+	public static <T> PrimitiveImagerData<T> buildGradientData(
+			Imager<?> imgr, 
+			int nSteps, boolean horizontal, boolean loToHi, boolean includeBoolNA)
+	{
+		return buildGradientData(imgr.getFieldType(), imgr.getDataMin(), imgr.getDataMax(), nSteps, horizontal, loToHi, includeBoolNA);
+	}
+	
+	public static <T> PrimitiveImagerData<T> buildGradientData(
 			String type, double min, double max, 
 			int nSteps, boolean horizontal, boolean loToHi, boolean includeBoolNA)
 	{
 		if (min > max && loToHi) { double t = min; min = max; max = t; }
+		else if (min < max && !loToHi) { double t = min; min = max; max = t; }
 
 		/* Integer types can all use integer data under the hood*/
 		switch(type.toLowerCase())
 		{
 		case("int"): case("integer"): case("byte"): case("short"): case("long"): case("char"): case("character"):
 		{
-			return new PrimitiveArrayData<T>(
+			return new PrimitiveImagerData<T>(
 					Sequences.spacedIntervals2D((int) min, (int) max, nSteps, horizontal),
 					false, false, false);
 		}
 		case("double"): case("float"): 
 		{
-			return new PrimitiveArrayData<T>(
+			return new PrimitiveImagerData<T>(
 					Sequences.spacedIntervals2D((double) min, (double) max, nSteps, horizontal), 
 					false, false, false);
 		}
 		case("boolean"):
 		{
-			return new PrimitiveArrayData<T>(
+			return new PrimitiveImagerData<T>(
 					Sequences.spacedIntervals2D(-1, 1, 3, horizontal),
 					false, false, false);
 		}
@@ -165,4 +181,6 @@ public class PrimitiveArrayData<T> extends ArrayData<T>
 		throw new IllegalArgumentException("Could not build a gradient data set for data of type " + type + ".");
 	}
 
+//	public String dblFmt() { return dblFmt; }
+//	public void setDblFmt(String dblFmt) { this.dblFmt = dblFmt; }
 }

@@ -13,7 +13,7 @@ import beans.builder.NetCDFObjBuilder;
 import beans.builder.RandomBeanBuilder;
 import beans.sampleBeans.AllFlavorBean;
 import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
-import imaging.imagers.ImagerData;
+import imaging.imagers.imagerData.ImagerData;
 import swing.SwingUtils;
 import swing.stretchAndClick.PanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
@@ -29,14 +29,13 @@ public class BooleanDemo extends DemoConsts
 		comboBoxDemo(500, 600, 14, 17, true, false);
 	}
 	
-	
 	static void asBooleanDemo(int width, int height, int nRow, int nCol, boolean show, boolean save)
 	{
 		List<List<AllFlavorBean>> listData = NetCDFObjBuilder.factory2D(AllFlavorBean.class, inputNCDF);
 		c = SimpleBooleanColorInterpolator.factory(ColorUtils.REDS, Color.white);
 		listData = RandomBeanBuilder.randomFactory(AllFlavorBean.class, nRow, nCol, -4, 4);
 		ImagerData<AllFlavorBean> dat = ImagerData.build(listData, false, false, false);
-		List<String> fNames = FieldUtils.getFieldNames(AllFlavorBean.class, ParsedField.class, true, true, false);
+		List<String> fNames = FieldUtils.getFieldNames(AllFlavorBean.class, ParsedField.class, true, true, false, true, true);
 
 		f1 = SwingUtils.frameFactory(width, height, "Boolean value demo", 6, 3);
 		
@@ -63,7 +62,7 @@ public class BooleanDemo extends DemoConsts
 		c = SimpleBooleanColorInterpolator.factory(ColorUtils.REDS, Color.white);
 		listData = RandomBeanBuilder.randomFactory(AllFlavorBean.class, nRow, nCol, -4, 4);
 		ImagerData<AllFlavorBean> dat = ImagerData.build(listData, false, false, false);
-		List<String> fNames = FieldUtils.getFieldNames(AllFlavorBean.class, ParsedField.class, true, true, false);
+		List<String> fNames = FieldUtils.getFieldNames(AllFlavorBean.class, ParsedField.class, true, true, false, true, true);
 		
 		f1 = SwingUtils.frameFactory(width, height, "Boolean combo box value demo");
 		

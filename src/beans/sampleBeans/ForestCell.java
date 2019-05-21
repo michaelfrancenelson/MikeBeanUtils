@@ -25,27 +25,27 @@ public class ForestCell
 	public @interface BooleanFeature{};
 
 	static Logger logger = LoggerFactory.getLogger(ForestCell.class);
-	private int row, col;
-	@ParsedField private double aspect;
-	@ParsedField private boolean has_stream;
-	@ParsedField private double  dist_to_stream;
-	@ParsedField private boolean has_road;
-	private int standAge;
-	private double harvest_cost, timber_value, political_cost;
+	protected int row, col;
+	@ParsedField protected double aspect;
+	@ParsedField protected boolean has_stream;
+	@ParsedField protected double  dist_to_stream;
+	@ParsedField protected boolean has_road;
+	protected int standAge;
+	protected double harvest_cost, timber_value, political_cost;
 
-	@ParsedField private double elevation;
-	@ParsedField private double slope;
-	@ParsedField private double dist_to_road;
+	@ParsedField protected double elevation;
+	@ParsedField protected double slope;
+	@ParsedField protected double dist_to_road;
 
 	/** A counter used to place cells in a temporary 'embargo' status during which they cannot be harvested. */
-	private int embargo;
+	protected int embargo;
 
-	private static Method[] methods;
-	private static Map<String, Method> methodMap;
+	protected static Method[] methods;
+	protected static Map<String, Method> methodMap;
 
 //	public ForestCell() { setMethodMap(); }
 //	public static Method getMethod(String feature) { return methodMap.get(feature);}
-//	private static void setMethodMap()
+//	protected static void setMethodMap()
 //	{
 //		methods = ForestCell.class.getDeclaredMethods();
 //		methodMap = new HashMap<String, Method>();
@@ -207,7 +207,7 @@ public class ForestCell
 //	public void setCoords(int row, int col) { this.row = row;	this.col = col; }
 //	public boolean isManaged() { return true; }
 //
-//	private int boolToInt(boolean b ) { if (b) return 1; return 0; }
+//	protected int boolToInt(boolean b ) { if (b) return 1; return 0; }
 //
 //	public void setStandAge(int standAge) { this.standAge = standAge; }
 //	public void setEmbargo(int embargo_length) { this.embargo = embargo_length; }
