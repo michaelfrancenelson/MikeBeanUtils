@@ -22,14 +22,14 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 		double[] minmax = null;
 		switch(type)
 		{
-		case("dbl"): minmax =  ArrayUtils.getArrMinMax(dblDat); break;
-		case("flt"): minmax =  ArrayUtils.getArrMinMax(fltDat); break;
-		case("byt"): minmax =  ArrayUtils.getArrMinMax(bytDat); break;
-		case("sht"): minmax =  ArrayUtils.getArrMinMax(shtDat); break;
+		case("double"): minmax =  ArrayUtils.getArrMinMax(dblDat); break;
+		case("float"): minmax =  ArrayUtils.getArrMinMax(fltDat); break;
+		case("byte"): minmax =  ArrayUtils.getArrMinMax(bytDat); break;
+		case("short"): minmax =  ArrayUtils.getArrMinMax(shtDat); break;
 		case("int"): minmax =  ArrayUtils.getArrMinMax(intDat); break;
-		case("lng"): minmax =  ArrayUtils.getArrMinMax(lngDat); break;
-		case("chr"): minmax =  ArrayUtils.getArrMinMax(chrDat); break;
-		case("boo"): minmax =  ArrayUtils.getArrMinMax(booDat); break;
+		case("long"): minmax =  ArrayUtils.getArrMinMax(lngDat); break;
+		case("char"): minmax =  ArrayUtils.getArrMinMax(chrDat); break;
+		case("boolean"): minmax =  ArrayUtils.getArrMinMax(booDat); break;
 		default: minmax = new double[] {0, 0};
 		}
 		dataMin = minmax[0];
@@ -46,33 +46,44 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 		setDataCoords(x, y);
 		switch(type)
 		{
-		case("dbl"): val = dblDat[dataX][dataY]; break;
-		case("flt"): val = ArrayUtils.doubleCaster(fltDat[dataX][dataY]); break;
-		case("byt"): val = ArrayUtils.doubleCaster(bytDat[dataX][dataY]); break;
-		case("sht"): val = ArrayUtils.doubleCaster(shtDat[dataX][dataY]); break;
+		case("double"): val = dblDat[dataX][dataY]; break;
+		case("float"): val = ArrayUtils.doubleCaster(fltDat[dataX][dataY]); break;
+		case("byte"): val = ArrayUtils.doubleCaster(bytDat[dataX][dataY]); break;
+		case("short"): val = ArrayUtils.doubleCaster(shtDat[dataX][dataY]); break;
 		case("int"): val = ArrayUtils.doubleCaster(intDat[dataX][dataY]); break;
-		case("lng"): val = ArrayUtils.doubleCaster(lngDat[dataX][dataY]); break;
-		case("chr"): val = ArrayUtils.doubleCaster(chrDat[dataX][dataY]); break;
-		case("boo"): val = ArrayUtils.doubleCaster(booDat[dataX][dataY]); break;
+		case("long"): val = ArrayUtils.doubleCaster(lngDat[dataX][dataY]); break;
+		case("char"): val = ArrayUtils.doubleCaster(chrDat[dataX][dataY]); break;
+		case("boolean"): val = ArrayUtils.doubleCaster(booDat[dataX][dataY]); break;
+		case("Boolean"): val = ArrayUtils.doubleCaster(booleanDat[dataX][dataY]); break;
 		default: val = Double.MIN_VALUE;
 		}
 		return ci.getColor(val);
 	}
 
-	public String queryData(double relativeX, double relativeY, String dblFmt)
+	public String queryData(double relativeX, double relativeY)
 	{
+		return (queryData(relativeX, relativeY, "%d", "%f", "%s"));
+	}
+	
+	public String queryData(double relativeX, double relativeY, String intFmt, String dblFmt, String strFmt)
+	{
+		if (intFmt == null) intFmt = "%d";
+		if (dblFmt == null) dblFmt = "%f";
+		if (strFmt == null) strFmt = "%s";
+
 		setDataCoords(relativeX, relativeY);
 		String val;
 		switch(type)
 		{
-		case("dbl"): val = ArrayUtils.stringCaster(dblDat[dataX][dataY], dblFmt); break;
-		case("flt"): val = ArrayUtils.stringCaster(fltDat[dataX][dataY], dblFmt); break;
-		case("byt"): val = ArrayUtils.stringCaster(bytDat[dataX][dataY], dblFmt); break;
-		case("sht"): val = ArrayUtils.stringCaster(shtDat[dataX][dataY], dblFmt); break;
-		case("int"): val = ArrayUtils.stringCaster(intDat[dataX][dataY], dblFmt); break;
-		case("lng"): val = ArrayUtils.stringCaster(lngDat[dataX][dataY], dblFmt); break;
-		case("chr"): val = ArrayUtils.stringCaster(chrDat[dataX][dataY], dblFmt); break;
-		case("boo"): val = ArrayUtils.stringCaster(booDat[dataX][dataY], dblFmt); break;
+		case("double"): val = ArrayUtils.stringCaster(dblDat[dataX][dataY], dblFmt); break;
+		case("float"): val = ArrayUtils.stringCaster(fltDat[dataX][dataY], dblFmt); break;
+		case("byte"): val = ArrayUtils.stringCaster(bytDat[dataX][dataY], intFmt); break;
+		case("short"): val = ArrayUtils.stringCaster(shtDat[dataX][dataY], intFmt); break;
+		case("int"): val = ArrayUtils.stringCaster(intDat[dataX][dataY], intFmt); break;
+		case("long"): val = ArrayUtils.stringCaster(lngDat[dataX][dataY], intFmt); break;
+		case("char"): val = ArrayUtils.stringCaster(chrDat[dataX][dataY], strFmt); break;
+		case("boolean"): val = ArrayUtils.stringCaster(booDat[dataX][dataY], strFmt); break;
+		case("Boolean"): val = ArrayUtils.stringCaster(booleanDat[dataX][dataY], strFmt); break;
 		default: val = null;
 		}
 		if (asBoolean) {
@@ -81,29 +92,28 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 					type, val, 100 * relativeX, 100 * relativeY, val2));
 			return val2;
 		}
-		logger.debug(String.format("Querying %s value at relative coords: (%.0f, %.0f): %s ",
-				type, 100 * relativeX, 100 * relativeY, val));
+		logger.trace(String.format("Querying %s value at relative coords: (%.0f%%, %.0f%%): %s ", type, 100 * relativeX, 100 * relativeY, val));
 		return val;
 	}
 	
 	public PrimitiveImagerData(double[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{  
-		dblDat = dat;  type = "dbl";
+		dblDat = dat;  type = "double";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(float[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{	
-		fltDat = dat;  type = "flt";
+		fltDat = dat;  type = "float";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(byte[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{
-		bytDat = dat; type = "byt";
+		bytDat = dat; type = "byte";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(short[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
-		shtDat = dat; type = "sht";
+		shtDat = dat; type = "short";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(int[][] dat, boolean flipX, boolean flipY, boolean transpose)
@@ -113,17 +123,23 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 	}
 	public PrimitiveImagerData(long[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
-		lngDat = dat;	type = "lng";
+		lngDat = dat;	type = "long";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(char[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
-		chrDat = dat; type = "chr";
+		chrDat = dat; type = "char";
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(boolean[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
-		booDat = dat; type = "boo";  
+		booDat = dat; type = "boolean";  
+		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
+	}
+	
+	public PrimitiveImagerData(Boolean[][] dat, boolean flipX, boolean flipY, boolean transpose)
+	{ 
+		booleanDat = dat; type = "Boolean";  
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	
@@ -137,6 +153,7 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 	private long[][] lngDat; 
 	private char[][] chrDat;
 	private boolean[][] booDat;
+	private Boolean[][] booleanDat;
 
 	public void setAsBoolean(boolean b) { this.asBoolean = b; }
 
@@ -147,6 +164,8 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 	{
 		return buildGradientData(imgr.getFieldType(), imgr.getDataMin(), imgr.getDataMax(), nSteps, horizontal, loToHi, includeBoolNA);
 	}
+	
+	
 	
 	public static <T> PrimitiveImagerData<T> buildGradientData(
 			String type, double min, double max, 
@@ -170,13 +189,15 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 					Sequences.spacedIntervals2D((double) min, (double) max, nSteps, horizontal), 
 					false, false, false);
 		}
-		case("boolean"):
+		case("Boolean"): case("boolean"):
 		{
 			return new PrimitiveImagerData<T>(
-					Sequences.spacedIntervals2D(-1, 1, 3, horizontal),
+					Sequences.booleanGradient2D(includeBoolNA, horizontal, loToHi),
 					false, false, false);
 		}
 		}
 		throw new IllegalArgumentException("Could not build a gradient data set for data of type " + type + ".");
 	}
+	@Override public String getType() { return type; }
+
 }

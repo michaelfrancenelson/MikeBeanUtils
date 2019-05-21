@@ -15,13 +15,14 @@ public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
 	/**	 */
 	private static final long serialVersionUID = -7971761341095269963L;
 	static Logger logger = LoggerFactory.getLogger(PrimitiveImagePanel.class);
-	private String currentFieldName;
+	protected String currentFieldName;
 	
 	void init(
 			Imager<T> imgr, 
 			int width, int height, 
-			boolean keepAspectRatio, 
-			boolean legend)
+			boolean keepAspectRatio)
+//	, 
+//			boolean legend)
 	{
 		fixedWidth = false; fixedHeight = false;
 		if (width > 0)  
@@ -56,7 +57,7 @@ public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
 											ArrayUtils.absToRelCoord(mouseX - imgCornerX, imgDisplayWidth),
 											ArrayUtils.absToRelCoord(mouseY - imgCornerY, imgDisplayHeight)
 									};
-					currentClickValue = imager.queryData(imgRelCoords[0], imgRelCoords[1]); 					
+					currentClickValue = imager.queryData(imgRelCoords[0], imgRelCoords[1], null, null, null); 					
 					logger.debug(String.format("Value of %s: %s", 
 							currentFieldName, currentClickValue));
 				}

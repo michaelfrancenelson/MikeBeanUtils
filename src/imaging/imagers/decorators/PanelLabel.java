@@ -16,10 +16,15 @@ public class PanelLabel
 {
 	private double relX, relY;
 	private double relSize;
+	private String dblFmt = "%.2f";
 	private Font font;
 	private Color color;
 	private String label;
 
+	
+	public void setDblFmt(String d) { dblFmt = d; } 
+	public String getDblFmt() { return dblFmt; } 
+	
 	static Logger logger = LoggerFactory.getLogger(PanelLabel.class);
 
 	public static PanelLabel fromImgAbsoluteCoords(

@@ -1,5 +1,6 @@
 package demos;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
@@ -12,6 +13,7 @@ import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.builder.NetCDFObjBuilder;
 import beans.sampleBeans.ForestSubclass;
 import imaging.imagers.imagerData.ImagerData;
+import swing.stretchAndClick.LegendPanel;
 import swing.stretchAndClick.ObjectImagePanel;
 import swing.stretchAndClick.PanelFactory;
 import utils.ColorUtils;
@@ -49,8 +51,36 @@ public class LegendDemo extends DemoConsts
 				"%.4f", null,
 				true, 
 				0, 0, ptSize);
-		ObjectImagePanel<ForestSubclass> legendPan1 =  
-				subPan.buildLegendPanel(nLegSteps, legWidth, legHeight, loToHi, horiz, legKeepAsp);
+				
+		int nLegLabels = 5;
+		double offset1 = 0.05, offset2 = 0.05;
+		double textOffset = 0.0;
+		double pointOffset = 0.85;
+		double legPtSize = 0.025;
+		
+		LegendPanel<ForestSubclass> legendPan1 =  
+				PanelFactory.buildLegendPanel(
+						subPan.getImager(),
+						nLegLabels, nLegSteps, legWidth, legHeight,
+						offset1, offset2,
+						textOffset, pointOffset,
+						loToHi, horiz, legKeepAsp,
+						legPtSize, font, Color.black,
+						null, "%.1f", null
+						);
+				
+				subPan.setLegend(legendPan1);
+//				ObjectImagePanel<ForestSubclass> legendPan1 =  
+//				subPan.buildLegendPanel(nLegSteps, legWidth, legHeight, loToHi, horiz, legKeepAsp);
+		
+		legendPan1.buildLegendLabels(
+				nLegLabels, 
+				offset1, offset2, 
+				textOffset, pointOffset,
+				font, Color.black, legPtSize, 
+				null, "%.0f", null);
+		
+		
 		
 		JComboBox<String> cbox = subPan.getControlComboBox(font);
 		

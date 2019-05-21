@@ -224,11 +224,11 @@ public class ArrayUtils
 	
 	public static String stringCaster(double f, String fmt) { return String.format(fmt, f); }
 	public static String stringCaster(float f, String fmt) { return String.format(fmt, f); }
-	public static String stringCaster(byte f, String fmt) { return String.format("%d", f); }
-	public static String stringCaster(char f, String fmt) { return String.format("%s", f); }
-	public static String stringCaster(short f, String fmt) { return String.format("%d", f); }
-	public static String stringCaster(int f, String fmt) { return String.format("%d", f); }
-	public static String stringCaster(long f, String fmt) { return String.format("%d", f); }
-	public static String stringCaster(boolean f, String fmt) { if (f) return "true" ; return "false"; }
+	public static String stringCaster(byte f, String fmt) { return String.format(fmt, f); }
+	public static String stringCaster(char f, String fmt) { return String.format(fmt, f); }
+	public static String stringCaster(short f, String fmt) { return String.format(fmt, f); }
+	public static String stringCaster(int f, String fmt) { return String.format(fmt, f); }
+	public static String stringCaster(long f, String fmt) { return String.format(fmt, f); }
+	public static String stringCaster(boolean f, String fmt) { if (f) return String.format(fmt, "true"); return String.format(fmt, "false"); }
 	
 }

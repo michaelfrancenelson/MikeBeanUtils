@@ -33,8 +33,10 @@ public class GetterGetterGetter
 	public static double doubleCaster(int f) { return (double) f; }
 	public static double doubleCaster(long f) { return (double) f; }
 	public static double doubleCaster(boolean f) { if (f) return 1; return 0; } 
+
+	@FunctionalInterface public interface StringValGetter<T> { String get(T t); };
 	
-	@FunctionalInterface public interface StringValGetter<T> { String get(T t);};
+	@FunctionalInterface public interface FormattedStringValGetter<T> { String get(T t, String intFmt, String dblFmt, String strFmt); };
 
 	@FunctionalInterface public interface IntGetter <T> { int get(T obj); }
 	@FunctionalInterface public interface ByteGetter <T> { byte get(T obj); }
@@ -73,6 +75,9 @@ public class GetterGetterGetter
 		return out;
 	}
 
+	
+	
+	
 	/** Create a getter function to return a string representation 
 	 *  of an annotated bean's field
 	 * 
@@ -169,6 +174,106 @@ public class GetterGetterGetter
 		return out;
 	}
 
+	
+	/** Create a getter function to return a string representation 
+	 *  of an annotated bean's field
+	 * 
+	 * @param t annotated bean object
+	 * @param f annotated field
+	 * @param doublePrintFmt how to print double values
+	 * @param <T> type of bean
+	 * @return a getter
+	 */
+	public static <T> FormattedStringValGetter<T>
+	toFormattedStringGetterGetter(Class<T> t, Field f)
+	{
+		
+		String type = f.getType().getSimpleName();
+		FormattedStringValGetter<T> out = null;
+
+		switch(type.toLowerCase())
+		{
+		case("int"): 
+		{
+			IntGetter<T> d = intGetterGetter(t, f);
+			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(intFmt, d.get(tt)); };	
+			break; 
+		} 
+
+		case("double"):  
+		{
+			DoubleGetter<T> d = doubleGetterGetter(t, f);
+			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(dblFmt, d.get(tt)); }; 
+			break; 
+		} 
+
+		case("byte"): 
+		{
+			ByteGetter<T> d = byteGetterGetter(t, f);
+			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(intFmt, d.get(tt)); };	
+			break; 
+		} 
+
+
+		case("short"): 
+		{
+			IntGetter<T> d = intGetterGetter(t, f);
+			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(intFmt, d.get(tt)); };	
+			break; 
+		} 
+
+		case("long"): 
+		{
+			IntGetter<T> d = intGetterGetter(t, f);
+			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(intFmt, d.get(tt)); };	
+			break; 
+		}
+
+		case("float"):  
+		{
+			DoubleGetter<T> d = doubleGetterGetter(t, f);
+			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(dblFmt, d.get(tt)); };	
+			break; 
+		}
+
+		case("boolean"): 
+		{
+			BooleanGetter<T> d = booleanGetterGetter(t, f);
+			out = (T tt, String intFmt, String dblFmt, String strFmt) -> {return Boolean.toString(d.get(tt)); };
+			break; 
+		}
+
+		case("char"): 
+		{
+			CharGetter<T> d = charGetterGetter(t, f);
+			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.valueOf(d.get(tt)); };
+		}
+
+		case("Character"): 
+		{
+			CharGetter<T> d = charGetterGetter(t, f);
+			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(strFmt, String.valueOf(d.get(tt))); };
+		}
+
+		case("String"):  
+		{
+			StringGetter<T> d = stringGetterGetter(t, f);
+			out = (T tt, String intFmt, String dblFmt, String strFmt) -> {return String.format(strFmt, d.get(tt)); };
+			break; 
+		}
+
+		default:
+		{
+			ObjGetter<T> d = objectGetterGetter(t, f);
+			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return d.get(tt).toString(); };
+			break; 
+		}
+		}
+		return out;
+	}
+
+	
+	
 	/** build a getter for int field
 	 * 
 	 * @param t annotated bean object

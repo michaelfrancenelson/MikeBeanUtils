@@ -97,4 +97,5 @@ public interface FieldWatcher<T>
 	char getCharVal(T t);
 
 	public void setDblFmt(String fmt);
+	String getFormattedStringVal(T t, String dblFmt, String intFmt, String strFmt);
 }

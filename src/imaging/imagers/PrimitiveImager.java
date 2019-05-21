@@ -10,6 +10,7 @@ import imaging.imageFactories.ImageFactory;
 import imaging.imageFactories.ImageFactory.ImageMinMax;
 import imaging.imagers.imagerData.ImagerData;
 import imaging.imagers.imagerData.PrimitiveImagerData;
+import utils.FieldUtils;
 
 public class PrimitiveImager<T> implements Imager<T>
 {
@@ -17,7 +18,7 @@ public class PrimitiveImager<T> implements Imager<T>
 	protected String currentFieldName;
 	private String currentFieldType;
 	int dataWidth, dataHeight;
-	String dblFmt;
+	String doublePrintFmt;
 
 	private PrimitiveImagerData<T> imgData;
 	ImageMinMax img;
@@ -32,7 +33,7 @@ public class PrimitiveImager<T> implements Imager<T>
 	@Override public int getDataHeight()   { return imgData.getHeight(); }
 	@Override public double getDataMin()   { return imgData.getDataMin(); }
 	@Override public double getDataMax()   { return imgData.getDataMax(); }
-	@Override public String getDblFmt()    { return dblFmt;}
+	@Override public String getDblFmt()    { return doublePrintFmt;}
 	@Override public ColorInterpolator getColorInterpolator() { return this.ci; }
 	@Override public ColorInterpolator getBooleanColorInterpolator() { return this.booleanCI; }
 
@@ -50,22 +51,46 @@ public class PrimitiveImager<T> implements Imager<T>
 		}
 	}
 
-	@Override public String queryData(double relativeI, double relativeJ) 
-	{
-		return imgData.queryData(relativeI, relativeJ, dblFmt);
-	}
+//	@Override public String queryData(double relativeI, double relativeJ) 
+//	{
+//		return queryData(relativeI, relativeJ, "%d", "%.2f", "%s");
+//	}
 
 	public void setDataSelection(double relativeI, double relativeJ) 
 	{	
-		queryData(relativeI, relativeJ);
+		queryData(relativeI, relativeJ, null, null, null);
 	}
+	
+	public String queryData(double relativeX, double relativeY, String intFmt, String dblFmt,
+			String strFmt) {
+
+		String val = imgData.queryData(relativeX, relativeY, intFmt, dblFmt, strFmt);
+		
+		if (parsedBooleanFieldNames.contains(currentFieldName.toLowerCase()))
+			val = FieldUtils.toBoolean(val);
+		
+		return val;
+	}
+
+//	public String queryData(int x, int y, FieldWatcher<T> w, String intFmt, String dblFmt, String strFmt) {
+//		if (intFmt == null) intFmt = "%d";
+//		if (dblFmt == null) dblFmt = doublePrintFmt;
+//		if (strFmt == null) strFmt = "%s";
+//
+//		String val = imgData.queryData(x, y, intFmt, dblFmt, strFmt);
+//		
+//		if (parsedBooleanFieldNames.contains(currentFieldName.toLowerCase()))
+//		val = FieldUtils.toBoolean(val);
+//		
+//		return val;
+//	}
 
 	protected void initialize(
 			String dblFmt, List<String> parsedBoolean,
 			ColorInterpolator ci, ColorInterpolator boolCi,
 			String fieldName)
 	{
-		this.dblFmt = dblFmt;
+		this.doublePrintFmt = dblFmt;
 		this.currentFieldName = fieldName;
 		this.parsedBooleanFieldNames = parsedBoolean;
 		this.ci = ci;
@@ -79,7 +104,7 @@ public class PrimitiveImager<T> implements Imager<T>
 
 	public ColorInterpolator getInterpolator() { return ci; };
 	void setInterpolator(ColorInterpolator ci) { this.ci = ci; }
-	void setDblFmt(String fmt) { this.dblFmt = fmt; }
+	void setDblFmt(String fmt) { this.doublePrintFmt = fmt; }
 
 	public PrimitiveImagerData<?> getImgData() { return imgData; }
 

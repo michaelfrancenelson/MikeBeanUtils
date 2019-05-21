@@ -12,7 +12,7 @@ import utils.ArrayUtils;
 public class ArrayImagerData<T> implements ImagerData<T>
 {
 	static Logger logger = LoggerFactory.getLogger(ArrayImagerData.class);
-
+	
 	private T[][] arrayData;
 
 	protected T currentObj;
@@ -112,26 +112,28 @@ public class ArrayImagerData<T> implements ImagerData<T>
 	}
 
 	@Override
-	public String queryData(double relativeX, double relativeY, FieldWatcher<T> w) 
-	{
-		setDataCoords(relativeX, relativeY);
-		String out =  w.getStringVal(currentObj);
-		logger.trace(String.format("Querying object at relative coords: %.2f, %.2f "
-				+ "field %s with value %s", relativeX, relativeY, w.getFieldName(), out));
-		return out;
-	}
+	public String queryData(double relativeX, double relativeY, FieldWatcher<T> w, String intFmt, String dblFmt,
+			String strFmt) {
+		if (intFmt == null) intFmt = "%d";
+		if (dblFmt == null) dblFmt = "%f";
+		if (strFmt == null) strFmt = "%s";
 
+		setDataCoords(relativeX, relativeY);
+		return w.getFormattedStringVal(currentObj, intFmt, dblFmt, strFmt);
+	}
+	
 	@Override
-	public String queryData(int x, int y, FieldWatcher<T> w) 
-	{
+	public String queryData(int x, int y, FieldWatcher<T> w, String intFmt, String dblFmt, String strFmt) {
 		setDataCoords(x, y);
-		return w.getStringVal(currentObj);
+		return w.getFormattedStringVal(currentObj, intFmt, dblFmt, strFmt);
 	}
 
 	@Override public double getDataMin() { return dataMin; }
 	@Override public double getDataMax() { return dataMax; }
 	@Override public int getWidth() { return outputWidth; }
 	@Override public int getHeight() { return outputHeight; }
+
+	@Override public String getType() { return arrayData.getClass().getComponentType().getSimpleName(); }
 
 	public static class ListImagerData<T> extends ArrayImagerData<T>
 	{
@@ -158,6 +160,8 @@ public class ArrayImagerData<T> implements ImagerData<T>
 			logger.trace(String.format("Data min/max = (%.2f, %.2f)", dataMin, dataMax));
 		}
 
+		@Override public String getType() { return  listData.get(0).get(0).getClass().getSimpleName(); }
 		@Override protected void setCurrentObj() { currentObj = listData.get(dataX).get(dataY); }
 	}
+
 }

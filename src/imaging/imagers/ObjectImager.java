@@ -17,7 +17,7 @@ import utils.FieldUtils;
 
 public class ObjectImager<T> implements Imager<T>
 {
-	private String dblFmt;
+	private String doublePrintFmt;
 	double datMin, datMax;
 	ImageMinMax img;
 
@@ -55,7 +55,7 @@ public class ObjectImager<T> implements Imager<T>
 
 	public void setDblFmt(String fmt) 
 	{
-		this.dblFmt = fmt; 
+		this.doublePrintFmt = fmt; 
 		for (String key : watchers.keySet())
 		{
 			FieldWatcher<T> w = watchers.get(key);
@@ -84,14 +84,18 @@ public class ObjectImager<T> implements Imager<T>
 	@Override public double getDataMin() { return imgData.getDataMin(); }
 	@Override public double getDataMax() { return imgData.getDataMax(); }
 	
-	@Override public String getDblFmt() { return dblFmt;}
+	@Override public String getDblFmt() { return doublePrintFmt;}
 	
 	@Override public ColorInterpolator getColorInterpolator() { return this.ci; }
 	@Override public ColorInterpolator getBooleanColorInterpolator() { return this.booleanCI; }
 	
-	@Override public String queryData(double relativeI, double relativeJ) 
+	@Override public String queryData(double relativeI, double relativeJ, String intFmt, String dblFmt, String strFmt) 
 	{
-		String val = imgData.queryData(relativeI, relativeJ, currentWatcher); 
+		if (intFmt == null) intFmt = "%d";
+		if (dblFmt == null) dblFmt = doublePrintFmt;
+		if (strFmt == null) strFmt = "%s";
+		
+		String val = imgData.queryData(relativeI, relativeJ, currentWatcher, intFmt, dblFmt, strFmt); 
 		if (parsedBooleanFieldNames.contains(currentWatcher.getFieldName().toLowerCase()))
 			val = FieldUtils.toBoolean(val);
 		return val;
@@ -105,7 +109,7 @@ public class ObjectImager<T> implements Imager<T>
 	public void setField(String fieldName) { this.currentWatcher = watchers.get(fieldName.toLowerCase()); refresh(); } 
 	@Override public void setField(Field field) { setField(field.getName()); }
 
-	public void setDataSelection(double relativeI, double relativeJ) { queryData(relativeI, relativeJ); }	
+	public void setDataSelection(double relativeI, double relativeJ) { queryData(relativeI, relativeJ, null, null, null); }	
 	
 	@Override public ImagerData<T> getImagerData() { return imgData; }
 	@Override public void setImagerData(ImagerData<T> dat) { imgData = dat; }

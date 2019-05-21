@@ -51,17 +51,13 @@ public class ObjectImagePanel<T> extends JPanel
 	private Class<T> clazz;
 	private Class<? extends Annotation> annClass;
 
-	PrimitiveImagePanel<T> legend;
+	LegendPanel<T> legend;
 	
 	protected Image image = null;
 
 	protected double imageAspectRatio, compAspectRatio;
 	protected boolean centerInPanel = true;
 	protected boolean fixedAspectRatio, fixedWidth, fixedHeight, decorate;
-	protected boolean horizontalLegend;
-	protected boolean legLoToHi;
-	protected boolean legFixedAspectRatio; 
-	protected int nLegendSteps;
 	protected double ptRelSize;
 	protected int 
 	panelWidth, panelHeight, 
@@ -69,37 +65,34 @@ public class ObjectImagePanel<T> extends JPanel
 	imgCornerX, imgCornerY;
 	
 	
-	public PrimitiveImagePanel<T> buildLegendPanel(int nSteps, int legendWidth, int legendHeight, boolean loToHi, boolean horiz, boolean keepAspectRatio)
-	{
-		PrimitiveImager<T> imgr = imager.getLegendImager(nSteps, loToHi, horiz);
-		this.legend = PanelFactory.buildPrimitivePanel(
-				imgr, 
-				imager.getFieldName(), 
-				keepAspectRatio, legendWidth, legendHeight, ptRelSize);
-		legend.nLegendSteps = nSteps;
-		legend.horizontalLegend = horiz;
-		legend.setLegLoToHi(loToHi);
-		legend.legFixedAspectRatio = fixedAspectRatio;
-		
-		logger.trace(String.format("%s", "Building legend.  Legend is null? " + (legend == null)));
-		
-		return legend;
-	}
-	
-//	public PrimitiveImagePanel<T> getLegendPanel(int nSteps, int legendWidth, int legendHeight)
+	public void setLegend(LegendPanel<T> legend) { this.legend = legend; }
+	public LegendPanel<T> getLegend() { return this.legend; }
+//
+//	
+//	public PrimitiveImagePanel<T> buildLegendPanel(int nSteps, int legendWidth, int legendHeight, boolean loToHi, boolean horiz, boolean keepAspectRatio)
 //	{
 //		
-//		legend = PanelFactory.buildLegendPanel(
-//				nSteps, imager.getFieldType(), imager.getFieldName(), 
-//				imager.getDataMin(), imager.getDataMin(), 
-//				imager.getColorInterpolator(), imager.getColorInterpolator(),
-//				imager.getDblFmt(), imager.getParsedBooleanFields(), 
-//				verticalLegend, legLoToHi, legBoolNA,
-//				false, legendWidth, legendHeight,
-//				ptRelSize, false); 
+//		
+//		
+//		
+////		PrimitiveImager<T> imgr = imager.getLegendImager(nSteps, loToHi, horiz);
+////		this.legend = PanelFactory.buildPrimitivePanel(
+////				imgr, 
+////				imager.getFieldName(), 
+////				keepAspectRatio, legendWidth, legendHeight, ptRelSize);
+////		legend.nLegendSteps = nSteps;
+////		legend.horizontalLegend = horiz;
+////		legend.setLegLoToHi(loToHi);
+////		legend.legFixedAspectRatio = fixedAspectRatio;
+////		
+////		
+////		
+//		
+//		
+//		logger.trace(String.format("%s", "Building legend.  Legend is null? " + (legend == null)));
+//		
 //		return legend;
 //	}
-	
 	
 	void init(
 			ObjectImager<T> imgr, 
@@ -137,7 +130,7 @@ public class ObjectImagePanel<T> extends JPanel
 						new double[] {
 								ArrayUtils.absToRelCoord(mouseX - imgCornerX, imgDisplayWidth),
 								ArrayUtils.absToRelCoord(mouseY - imgCornerY, imgDisplayHeight) };
-				currentClickValue = imager.queryData(imgRelCoords[0], imgRelCoords[1]); 					
+				currentClickValue = imager.queryData(imgRelCoords[0], imgRelCoords[1], null, null, null); 					
 				logger.info(String.format("Value of %s: %s", 
 						imager.getFieldName(), currentClickValue));
 			}
@@ -180,10 +173,12 @@ public class ObjectImagePanel<T> extends JPanel
 		
 		logger.trace(String.format("%s", "Building control combox.  With legend = " + (legend != null)));
 		
-		return PanelFactory.buildComboBox(this, legend, f3, dispNames, font, this.imager.getFieldName());
+		return PanelFactory.buildComboBox(this, f3, dispNames, font, this.imager.getFieldName());
+//		return PanelFactory.buildComboBox(this, legend, f3, dispNames, font, this.imager.getFieldName());
 	}
 
-	public String queryRelative(double relativeI, double relativeJ) { return imager.queryData(relativeI, relativeJ);}
+	public String queryRelative(double relativeI, double relativeJ, String intFmt, String dblFmt, String strFmt)
+	{ return imager.queryData(relativeI, relativeJ, intFmt, dblFmt, strFmt);}
 
 	@Override public void paintComponent(Graphics g)
 	{
@@ -283,11 +278,11 @@ public class ObjectImagePanel<T> extends JPanel
 			{
 				relI = ArrayUtils.absToRelCoord(col, datWidth);
 				relJ = ArrayUtils.absToRelCoord(row, datHeight);
-				addValueLabelRelative(relI, relJ, font, color);
+				addValueLabelRelative(relI, relJ, font, color, "%d", imager.getDblFmt(), "%s");
 			}
 	}
 
-	private void labelFromImageRelCoords(
+	protected void labelFromImageRelCoords(
 			double relI, double relJ,
 			String label, Font font, Color color, 
 			double pointSize, String type)
@@ -323,8 +318,13 @@ public class ObjectImagePanel<T> extends JPanel
 	public void addValueLabelRelative(
 			double relI, double relJ, Font font, Color color)
 	{
+		addValueLabelRelative(relI, relJ, font, color, "%d", imager.getDblFmt(), "%s");
+	}
+	public void addValueLabelRelative(
+			double relI, double relJ, Font font, Color color, String intFmt, String dblFmt, String strFmt)
+	{
 		if (font == null) font = this.getFont();
-		String label = imager.queryData(relI, relJ);
+		String label = imager.queryData(relI, relJ, intFmt, dblFmt, strFmt);
 		labelFromImageRelCoords(relI, relJ, label, font, color, -9999, "value label");
 
 		logger.trace(String.format("Adding value "
@@ -335,16 +335,18 @@ public class ObjectImagePanel<T> extends JPanel
 	public void addValueLabel(
 			int dataX, int dataY, Font font, Color color)
 	{
-		if (font == null) font = this.getFont();
 		double relI = ArrayUtils.absToRelCoord(dataX, imager.getDataWidth());
 		double relJ = ArrayUtils.absToRelCoord(dataY, imager.getDataHeight());
 		
-		String label = imager.queryData(relI, relJ);
-		labelFromImageRelCoords(relI, relJ, label, font, color, -9999, "value label");
+		addValueLabelRelative(relI, relJ, font, color, "%d", "%f", "%s");
 		
-		logger.trace(String.format("Adding value "
-				+ "label %s at coords (%.0f%%, %.0f%%)",
-				label, 100 * relI, 100 * relJ));
+//		if (font == null) font = this.getFont();
+//		String label = imager.queryData(relI, relJ);
+//		labelFromImageRelCoords(relI, relJ, label, font, color, -9999, "value label");
+//		
+//		logger.trace(String.format("Adding value "
+//				+ "label %s at coords (%.0f%%, %.0f%%)",
+//				label, 100 * relI, 100 * relJ));
 	}
 
 	/**
@@ -381,32 +383,4 @@ public class ObjectImagePanel<T> extends JPanel
 	
 	public int getImgDisplayWidth() { return imgDisplayWidth;}
 	public int getImgDisplayHeight() { return imgDisplayHeight; }
-
-
-
-
-	public int getnLegendSteps() {
-		return nLegendSteps;
-	}
-
-
-
-
-	public void setnLegendSteps(int nLegendSteps) {
-		this.nLegendSteps = nLegendSteps;
-	}
-
-
-
-
-	public boolean isLegLoToHi() {
-		return legLoToHi;
-	}
-
-
-
-
-	public void setLegLoToHi(boolean legLoToHi) {
-		this.legLoToHi = legLoToHi;
-	}
 }
