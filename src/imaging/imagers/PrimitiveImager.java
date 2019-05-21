@@ -24,7 +24,7 @@ public class PrimitiveImager<T> implements Imager<T>
 	private List<String> parsedBooleanFieldNames = new ArrayList<String>();
 
 	@Override public Image getImage() { return img.getImg(); }	
-	@Override public void setData(ImagerData<T> dat) { this.imgData = (PrimitiveImagerData<T>)dat; }
+	@Override public void setImagerData(ImagerData<T> dat) { this.imgData = (PrimitiveImagerData<T>)dat; }
 	@Override public List<String> getParsedBooleanFields() { return this.parsedBooleanFieldNames; }
 	@Override public String getFieldName() { return this.currentFieldName; }
 	@Override public String getFieldType() { return this.currentFieldType; }
@@ -39,8 +39,15 @@ public class PrimitiveImager<T> implements Imager<T>
 	@Override public void buildImage()
 	{
 		if (parsedBooleanFieldNames.contains(currentFieldName))
+		{
+			imgData.setDataMinMax(null, booleanCI);
 			img = ImageFactory.buildPrimitiveImage(imgData, booleanCI);
-		else img = ImageFactory.buildPrimitiveImage(imgData, ci);
+		}
+		else
+		{
+			imgData.setDataMinMax(null, ci);
+			img = ImageFactory.buildPrimitiveImage(imgData, ci);
+		}
 	}
 
 	@Override public String queryData(double relativeI, double relativeJ) 
@@ -63,6 +70,7 @@ public class PrimitiveImager<T> implements Imager<T>
 		this.parsedBooleanFieldNames = parsedBoolean;
 		this.ci = ci;
 		this.booleanCI = boolCi;
+
 		this.dataWidth = imgData.getWidth(); 
 		this.dataHeight = imgData.getHeight();
 		buildImage();
@@ -75,24 +83,22 @@ public class PrimitiveImager<T> implements Imager<T>
 
 	public PrimitiveImagerData<?> getImgData() { return imgData; }
 
-//	public void setData(PrimitiveArrayData<?> dat) { this.data = dat; }
+	public void updateImageData(PrimitiveImagerData<T> dat, String fieldName) 
+	{
+		this.imgData = dat; 
+		this.currentFieldName = fieldName;
+		this.dataWidth = imgData.getWidth(); 
+		this.dataHeight = imgData.getHeight();
+		imgData.setDataMinMax(null, booleanCI);
+		buildImage();
+	}
 
 	public String getCurrentFieldName() { return currentFieldName; }
-	@Override
-	public void refresh() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void setField(String name) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void setField(Field f) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public ImagerData<T> getImagerData() { return imgData; }
+	
+	@Override public void refresh() { buildImage(); }
+
+	@Override public void setField(String name) { this.currentFieldName = name; }
+	@Override public void setField(Field f) { this.currentFieldName = f.getName(); }
+
+	@Override public ImagerData<T> getImagerData() { return imgData; }
 }

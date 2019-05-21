@@ -13,10 +13,10 @@ import javax.swing.JPanel;
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.sampleBeans.Terrain;
 import imaging.imagers.imagerData.ImagerData;
-import swing.SwingUtils;
 import swing.stretchAndClick.PanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
 import utils.ColorUtils;
+import utils.SwingUtils;
 
 public class RiverDemo extends DemoConsts
 {

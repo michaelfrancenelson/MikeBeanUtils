@@ -66,7 +66,7 @@ public class ImagerFactory
 		if (annClass == null) annClass = defaultAnnClass;
 		ObjectImager<T> out = new ObjectImager<T>();
 
-		out.setData(dat);
+		out.setImagerData(dat);
 		
 		out.initialize(
 				clazz, annClass, 
@@ -89,7 +89,7 @@ public class ImagerFactory
 		if (parsedBooleanFields == null) parsedBooleanFields = new ArrayList<String>();
 		if (dblFmt == null) dblFmt = defaultDblFmt;
 		PrimitiveImager<T> out = new PrimitiveImager<T>();
-		out.setData(dat);
+		out.setImagerData(dat);
 		out.initialize(dblFmt, parsedBooleanFields, ci, booleanCI, fieldName);
 //		out.initialize(dblFmt, parsedBooleanFields, ci, booleanCI, asBoolean);
 		return out;

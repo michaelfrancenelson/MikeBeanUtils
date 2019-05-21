@@ -1,9 +1,9 @@
 package demos;
 
 import beans.sampleBeans.AllFlavorBean;
-import imaging.imagers.imagerData.ArrayData;
-import swing.SwingUtils;
+import imaging.imagers.imagerData.ArrayImagerData;
 import swing.stretchAndClick.PanelFactory;
+import utils.SwingUtils;
 import swing.stretchAndClick.ObjectImagePanel;
 
 public class RotationDemo extends DemoConsts
@@ -32,13 +32,13 @@ public class RotationDemo extends DemoConsts
 				fWidth, fHeight, "Array Data Rotation Demo", 4, 2);
 
 		ObjectImagePanel<AllFlavorBean> pan;
-		ArrayData<AllFlavorBean> arr;
+		ArrayImagerData<AllFlavorBean> arr;
 		
 		for (int flipY = 0; flipY < 2; flipY++) 	
 		for (int trans = 0; trans < 2; trans++)
 				for (int flipX = 0; flipX < 2; flipX++)
 				{
-					arr = new ArrayData<>(flavorArray, 
+					arr = new ArrayImagerData<>(flavorArray, 
 							trueFalse[flipX], trueFalse[flipY], trueFalse[trans]);
 
 					pan = PanelFactory.buildPanel(
@@ -53,7 +53,7 @@ public class RotationDemo extends DemoConsts
 
 		f2 = SwingUtils.frameFactory(fWidth, fHeight, "Array Data Rotation Demo - untransformed");
 		f2.add(PanelFactory.buildPanel(
-				new ArrayData<>(flavorArray, false, false, false),
+				new ArrayImagerData<>(flavorArray, false, false, false),
 				AllFlavorBean.class, null, field,
 				gradCols, boolCols, null, null, null,
 				null, null,

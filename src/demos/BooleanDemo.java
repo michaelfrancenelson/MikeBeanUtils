@@ -14,11 +14,11 @@ import beans.builder.RandomBeanBuilder;
 import beans.sampleBeans.AllFlavorBean;
 import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.imagers.imagerData.ImagerData;
-import swing.SwingUtils;
 import swing.stretchAndClick.PanelFactory;
 import swing.stretchAndClick.ObjectImagePanel;
 import utils.ColorUtils;
 import utils.FieldUtils;
+import utils.SwingUtils;
 
 public class BooleanDemo extends DemoConsts
 {

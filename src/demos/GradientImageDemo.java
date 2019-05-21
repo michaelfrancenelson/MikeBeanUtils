@@ -11,13 +11,11 @@ import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.colorInterpolator.SimpleColorInterpolator;
 import imaging.imageFactories.GradientImageFactory;
 import imaging.imageFactories.ImageFactory.SimpleImagePanel;
-import imaging.imagers.ImagerFactory;
-import imaging.imagers.PrimitiveImager;
 import imaging.imagers.imagerData.PrimitiveImagerData;
-import swing.SwingUtils;
 import swing.stretchAndClick.PanelFactory;
 import swing.stretchAndClick.PrimitiveImagePanel;
 import utils.ColorUtils;
+import utils.SwingUtils;
 
 /**
  * Demonstration cases for the gradient images.
@@ -31,10 +29,10 @@ public class GradientImageDemo extends DemoConsts
 		int nBreaks = 30;
 		cellSize = 230;
 		intGradientClickableDemo(nBreaks, 10 + 4 * cellSize, 10);
-		//		intGradientImgDemo(nBreaks, 10 + 4 * cellSize, 10);
-		//		directionOrientationDemo(nBreaks, 10, 10);
-		//		doubleGradientImgDemo(nBreaks, 10 + 4 * cellSize, 10 + 4 * cellSize);
-		//		booleanGradientImgDemo(10 + 9 * cellSize, 10 + 4 * cellSize);
+//				intGradientImgDemo(nBreaks, 10 + 4 * cellSize, 10);
+//				directionOrientationDemo(nBreaks, 10, 10);
+//				doubleGradientImgDemo(nBreaks, 10 + 4 * cellSize, 10 + 4 * cellSize);
+//				booleanGradientImgDemo(10 + 9 * cellSize, 10 + 4 * cellSize);
 	}
 
 	/** Show the vertical/horizontal and increasing/decreasing arrangements. */
@@ -113,7 +111,6 @@ public class GradientImageDemo extends DemoConsts
 	{
 		int[] mins = new int[] {0, -1, -2, -1, 1, -50, -78};
 		int[] maxs = new int[] {0, -2, -1, -3, 4, -60, 555};
-		boolean[] test = new boolean[] {true, false};
 
 		simplePanels = new ArrayList<>();
 		for(int horiz = 0; horiz < 2; horiz++) 
@@ -173,7 +170,6 @@ public class GradientImageDemo extends DemoConsts
 		border = BorderFactory.createLineBorder(Color.white, 4);
 		c = SimpleBooleanColorInterpolator.factory(ColorUtils.BLUES, Color.gray); 
 		simplePanels = new ArrayList<>();
-
 
 		boolean[] test = new boolean[] {true, false};
 

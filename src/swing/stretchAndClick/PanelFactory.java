@@ -1,7 +1,10 @@
 package swing.stretchAndClick;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -9,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.JComboBox;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +34,7 @@ import imaging.imagers.imagerData.PrimitiveImagerData;
 public class PanelFactory 
 {
 	public static Logger logger = LoggerFactory.getLogger(PanelFactory.class);
-	
+
 	public static <T> ObjectImagePanel<T> buildPanel(
 			ImagerData<T> dat,
 			Class<T> clazz,	Class<? extends Annotation> annClass,
@@ -102,16 +106,15 @@ public class PanelFactory
 
 	public static <T> PrimitiveImagePanel<T> buildPrimitivePanel(
 			Imager<T> imager, 
-//			PrimitiveImager<T> imager, 
 			String fieldName,
 			boolean keepAspectRatio, 
 			int fixedWidth, int fixedHeight, double decoratorRelPointSize)
 	{
 		PrimitiveImagePanel<T> out = new PrimitiveImagePanel<T>();
-		if (fieldName != null) out.setField(fieldName.toLowerCase());
 		out.setLabelVisibility(true);
 		out.setPtRelSize(decoratorRelPointSize);
 		out.init(imager, fixedWidth, fixedHeight, keepAspectRatio, false);
+		if (fieldName != null) out.setField(fieldName.toLowerCase());
 		return out;
 	}
 
@@ -163,10 +166,6 @@ public class PanelFactory
 		return out;
 	}
 
-	
-	
-	
-	
 	public static <T> PrimitiveImagePanel<T> buildLegendPanel(
 			int nSteps, double min, double max, String type,
 			String dblFmt,
@@ -174,39 +173,20 @@ public class PanelFactory
 			boolean horizontal, boolean loToHi, boolean booleanNA,
 			boolean keepAspectRatio, int width, int height, double ptSize)
 	{
-		
-		
+
+
 		logger.debug(String.format("build logger panel: min = %"));
 		PrimitiveImagerData<T> datArr = PrimitiveImagerData.buildGradientData(
 				type, min, max, nSteps, horizontal, loToHi, booleanNA);
-		
+
 		return buildPanel(
 				datArr, 
 				ci, bi,
 				type, 
 				dblFmt,
 				null, false, width, height, ptSize, false);
-		
-//		return buildPanel(
-//				legDat,
-//				imgr.getColorInterpolator(), imgr.getBooleanColorInterpolator(),
-//				imgr.getFieldType(), imgr.getDblFmt(),
-//				null, false, width, height, ptSize, false);
-				
-//		
-//		PrimitiveImager<T> imgrPrim = ImagerFactory.primitiveFactory(
-//				legDat, imgr.getColorInterpolator(), 
-//				imgr.getBooleanColorInterpolator(), imgr.getDblFmt(), 
-//				false, null);
-//
-//		return buildPanel(
-//				imgrPrim, 
-//				imgr.getFieldName(),
-//				keepAspectRatio, 
-//				width, height, ptSize);
-		
 	}
-	
+
 	public static <T> PrimitiveImagePanel<T> buildLegendPanel(
 			int nSteps, String fieldType, String fieldName,
 			double dataMin, double dataMax,
@@ -215,7 +195,6 @@ public class PanelFactory
 			boolean horizontal, boolean loToHi, boolean booleanNA,
 			boolean keepAspectRatio, int fixedWidth, int fixedHeight,
 			double decoratorRelPointSize)
-//	, boolean asBoolean)
 	{
 		PrimitiveImagerData<T> legDat = PrimitiveImagerData.buildGradientData(
 				fieldType, dataMin, dataMax, nSteps,
@@ -223,13 +202,94 @@ public class PanelFactory
 
 		PrimitiveImager<T> imgr = ImagerFactory.primitiveFactory(
 				legDat, ci, booleanCI, dblFmt, fieldName, parsedBooleanFields);
-//		PrimitiveImager<T> imgr = ImagerFactory.primitiveFactory(
-//				legDat, ci, booleanCI, dblFmt, asBoolean, parsedBooleanFields);
 
 		return buildPrimitivePanel(
 				imgr, 
 				fieldName,
 				keepAspectRatio, 
 				fixedWidth, fixedHeight ,decoratorRelPointSize);
+	}
+
+
+	public static <T> ImagePanelComboBox<T> buildComboBox(
+			ObjectImagePanel<T> panel,
+			PrimitiveImagePanel<T> legendPanel,
+			List<String> fields, List<String> menuNames,
+			Font font, String initialField)
+	{
+		int n = fields.size();
+		int i = 0;
+		String[] displayNames = new String[n];
+
+		/* Set up the field and menu names. */
+		if (menuNames == null)
+		{
+			i = 0;
+			displayNames = new String[n];
+			for (String st : fields) { displayNames[i] = st; i++; }
+			i = 0;
+			displayNames = new String[n];
+			for (String st : fields) { displayNames[i] = st; i++; }
+		}
+		else if (menuNames.size() != n)
+			throw new IllegalArgumentException("Length of menu names does not match the number of fields");
+		else 
+		{
+			i = 0;
+			displayNames = new String[n];
+			for (String st : menuNames) { displayNames[i] = st; i++; }
+		}
+		ImagePanelComboBox<T> out = new ImagePanelComboBox<T>();
+		out.fieldNames = fields;
+		out.panel = panel;
+
+		for (String st : displayNames) out.addItem(st);
+		out.setFont(font);
+		out.setSelectedIndex(fields.indexOf(initialField.toLowerCase()));
+		out.buildActionListener(legendPanel);
+
+		return out;
+	}
+
+	/**
+	 *  Methods to build combo boxes for choosing which field to display in an object array imager or panel.
+	 * @author michaelfrancenelson
+	 *
+	 */
+	public static class ImagePanelComboBox<T> extends JComboBox<String>
+	{
+		/** */
+		private static final long serialVersionUID = 2409820165770045768L;
+		List<String> fieldNames;
+		String[] displayNames;
+
+		ObjectImagePanel<T> panel;
+
+		void buildActionListener(PrimitiveImagePanel<T> legPanel)
+		{
+			addActionListener(new ActionListener()
+			{
+				@Override public void actionPerformed(ActionEvent e)
+				{
+					String item = getSelectedItem().toString();
+					String tmp = fieldNames.get(fieldNames.indexOf(item));
+					System.out.println("ComboBox item = " + item.toString());
+					panel.setField(item);
+					if (legPanel != null)
+					{
+						logger.debug("Updating legend image to " + tmp);
+						Imager<T> imgr = panel.getImager();
+						Imager<T> legImgr = legPanel.getImager();
+						PrimitiveImagerData<T> legDat = imgr.getLegendData(
+								legPanel.getnLegendSteps(),
+								legPanel.isLegLoToHi(),
+								legPanel.horizontalLegend);
+						legImgr.setImagerData(legDat);
+						legPanel.setField(tmp);
+						legPanel.updateImage();
+					}
+				}
+			});
+		}
 	}
 }

@@ -13,7 +13,6 @@ import imaging.colorInterpolator.ColorInterpolator;
 import imaging.imageFactories.ImageFactory;
 import imaging.imageFactories.ImageFactory.ImageMinMax;
 import imaging.imagers.imagerData.ImagerData;
-import imaging.imagers.imagerData.PrimitiveImagerData;
 import utils.FieldUtils;
 
 public class ObjectImager<T> implements Imager<T>
@@ -76,13 +75,17 @@ public class ObjectImager<T> implements Imager<T>
 	}
 
 	@Override public List<String> getParsedBooleanFields() { return this.parsedBooleanFieldNames; }
+	
 	@Override public Image getImage() { return img.getImg(); }
-	@Override public void setData(ImagerData<T> dat) { imgData = dat; }
+	
 	@Override public int getDataWidth() { return imgData.getWidth(); }
 	@Override public int getDataHeight() { return imgData.getHeight(); }
+	
 	@Override public double getDataMin() { return imgData.getDataMin(); }
 	@Override public double getDataMax() { return imgData.getDataMax(); }
+	
 	@Override public String getDblFmt() { return dblFmt;}
+	
 	@Override public ColorInterpolator getColorInterpolator() { return this.ci; }
 	@Override public ColorInterpolator getBooleanColorInterpolator() { return this.booleanCI; }
 	
@@ -96,17 +99,14 @@ public class ObjectImager<T> implements Imager<T>
 	
 	public String getFieldName() { return currentWatcher.getFieldName(); }
 	public String getFieldType() { return currentWatcher.getField().getType().getSimpleName(); }
-	public void setField(String fieldName) { 
-		this.currentWatcher = watchers.get(fieldName.toLowerCase()); refresh(); } 
+	
 	@Override public void refresh() { buildImage(); }
 
-	public void setField(Field field) { setField(field.getName()); }
+	public void setField(String fieldName) { this.currentWatcher = watchers.get(fieldName.toLowerCase()); refresh(); } 
+	@Override public void setField(Field field) { setField(field.getName()); }
 
-	public void setDataSelection(double relativeI, double relativeJ) 
-	{ queryData(relativeI, relativeJ); }
+	public void setDataSelection(double relativeI, double relativeJ) { queryData(relativeI, relativeJ); }	
 	
-	@Override
-	public ImagerData<T> getImagerData() { return imgData; }
-
-	
+	@Override public ImagerData<T> getImagerData() { return imgData; }
+	@Override public void setImagerData(ImagerData<T> dat) { imgData = dat; }
 }

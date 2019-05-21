@@ -11,8 +11,8 @@ import beans.sampleBeans.Terrain;
 import imaging.imagers.ImagerFactory;
 import imaging.imagers.ObjectImager;
 import imaging.imagers.imagerData.ImagerData;
-import swing.SwingUtils;
 import swing.stretchAndClick.PanelFactory;
+import utils.SwingUtils;
 import swing.stretchAndClick.ObjectImagePanel;
 
 public class ImagePanelDemo extends DemoConsts

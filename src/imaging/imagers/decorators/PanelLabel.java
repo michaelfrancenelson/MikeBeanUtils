@@ -8,7 +8,7 @@ import java.awt.Graphics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import imaging.imagers.imagerData.ArrayData;
+import imaging.imagers.imagerData.ArrayImagerData;
 import swing.stretchAndClick.ObjectImagePanel;
 import utils.ArrayUtils;
 
@@ -53,7 +53,7 @@ public class PanelLabel
 	}
 	
 	public static PanelLabel fromDataAbsoluteCoords(
-			int dataX, int dataY, ArrayData<?> dat, 
+			int dataX, int dataY, ArrayImagerData<?> dat, 
 			int size, Font font, Color color, String label)
 	{
 		double coords[] = new double[] 

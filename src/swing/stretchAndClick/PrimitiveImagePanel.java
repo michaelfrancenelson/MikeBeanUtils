@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import imaging.imagers.Imager;
-import imaging.imagers.ObjectImager;
 import utils.ArrayUtils;
 
 public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
@@ -20,7 +19,6 @@ public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
 	
 	void init(
 			Imager<T> imgr, 
-//			PrimitiveImager<T> imgr, 
 			int width, int height, 
 			boolean keepAspectRatio, 
 			boolean legend)
@@ -73,12 +71,8 @@ public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
 			throw new IllegalArgumentException("Not able to create image"); 
 		this.fixedAspectRatio = keepAspectRatio;
 		this.imageAspectRatio = ((double) image.getWidth(null)) / ((double) image.getHeight(null));
-
-//		imgDisplayWidth = image.getWidth(null);
-//		imgDisplayHeight = image.getHeight(null);
 	}
 
-	@Override public void setField(String name) { this.currentFieldName = name; }
+	@Override public void setField(String name) { this.currentFieldName = name;}
 	@Override public void setField(Field f) { this.currentFieldName = f.getName();}
-	@Override public ObjectImager<T> getImager() { return null; }
 }

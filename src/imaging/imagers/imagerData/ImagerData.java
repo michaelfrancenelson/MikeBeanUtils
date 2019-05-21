@@ -4,7 +4,7 @@ import java.util.List;
 
 import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
-import imaging.imagers.imagerData.ArrayData.ListData;
+import imaging.imagers.imagerData.ArrayImagerData.ListImagerData;
 import utils.Sequences;
 
 public interface ImagerData <T>  
@@ -75,11 +75,11 @@ public interface ImagerData <T>
 	
 	public static <T> ImagerData<T> build(T[][] arrayDat, boolean invertX, boolean invertY, boolean transpose)
 	{
-		return new ArrayData<T>(arrayDat, invertX, invertY, transpose);
+		return new ArrayImagerData<T>(arrayDat, invertX, invertY, transpose);
 	}
 	
 	public static <T> ImagerData<T> build(List<List<T>> listDat, boolean invertX, boolean invertY, boolean transpose)
 	{
-		return new ListData<T>(listDat, invertX, invertY, transpose);
+		return new ListImagerData<T>(listDat, invertX, invertY, transpose);
 	}
 }

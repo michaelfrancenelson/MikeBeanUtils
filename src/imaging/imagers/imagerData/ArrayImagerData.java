@@ -9,9 +9,9 @@ import beans.memberState.FieldWatcher;
 import imaging.colorInterpolator.ColorInterpolator;
 import utils.ArrayUtils;
 
-public class ArrayData<T> implements ImagerData<T>
+public class ArrayImagerData<T> implements ImagerData<T>
 {
-	static Logger logger = LoggerFactory.getLogger(ArrayData.class);
+	static Logger logger = LoggerFactory.getLogger(ArrayImagerData.class);
 
 	private T[][] arrayData;
 
@@ -20,9 +20,9 @@ public class ArrayData<T> implements ImagerData<T>
 	protected boolean invertX, invertY, transpose;
 	protected double dataMin, dataMax;
 
-	public ArrayData() {}
+	public ArrayImagerData() {}
 
-	public ArrayData(T[][] dat, boolean flipX, boolean flipY, boolean transpose)
+	public ArrayImagerData(T[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
 		this.arrayData = dat; 
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
@@ -133,10 +133,10 @@ public class ArrayData<T> implements ImagerData<T>
 	@Override public int getWidth() { return outputWidth; }
 	@Override public int getHeight() { return outputHeight; }
 
-	public static class ListData<T> extends ArrayData<T>
+	public static class ListImagerData<T> extends ArrayImagerData<T>
 	{
 		private List<List<T>> listData;
-		public ListData(List<List<T>> dat, boolean flipX, boolean flipY, boolean transpose)
+		public ListImagerData(List<List<T>> dat, boolean flipX, boolean flipY, boolean transpose)
 		{ 
 			this.listData = dat; 
 			setDims(listData.size(), listData.get(0).size(), flipX, flipY, transpose);

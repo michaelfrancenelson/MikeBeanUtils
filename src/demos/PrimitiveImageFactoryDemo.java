@@ -18,11 +18,11 @@ import imaging.colorInterpolator.SimpleColorInterpolator;
 import imaging.imageFactories.ImageFactory;
 import imaging.imageFactories.ImageFactory.SimpleImagePanel;
 import imaging.imagers.imagerData.PrimitiveImagerData;
-import swing.SwingUtils;
 import swing.stretchAndClick.PanelFactory;
 import swing.stretchAndClick.PrimitiveImagePanel;
 import utils.ColorUtils;
 import utils.Sequences;
+import utils.SwingUtils;
 
 public class PrimitiveImageFactoryDemo extends DemoConsts 
 {

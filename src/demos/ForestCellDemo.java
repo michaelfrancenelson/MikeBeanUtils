@@ -13,10 +13,10 @@ import beans.builder.NetCDFObjBuilder;
 import beans.sampleBeans.ForestCell;
 import beans.sampleBeans.ForestSubclass;
 import imaging.imagers.imagerData.ImagerData;
-import swing.SwingUtils;
 import swing.stretchAndClick.ObjectImagePanel;
 import swing.stretchAndClick.PanelFactory;
 import utils.ColorUtils;
+import utils.SwingUtils;
 
 public class ForestCellDemo extends DemoConsts
 {

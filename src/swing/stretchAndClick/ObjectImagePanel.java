@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import imaging.imagers.Imager;
 import imaging.imagers.ObjectImager;
+import imaging.imagers.PrimitiveImager;
 import imaging.imagers.decorators.PanelLabel;
-import swing.ObjectArrayImageComboBox.BeanComboBox;
 import utils.ArrayUtils;
 import utils.FieldUtils;
 
@@ -56,19 +56,35 @@ public class ObjectImagePanel<T> extends JPanel
 	protected Image image = null;
 
 	protected double imageAspectRatio, compAspectRatio;
-
 	protected boolean centerInPanel = true;
 	protected boolean fixedAspectRatio, fixedWidth, fixedHeight, decorate;
-	protected boolean 
-	verticalLegend,
-	legLoToHi,
-	legBoolNA; 
+	protected boolean horizontalLegend;
+	protected boolean legLoToHi;
+	protected boolean legFixedAspectRatio; 
 	protected int nLegendSteps;
 	protected double ptRelSize;
-	int 
+	protected int 
 	panelWidth, panelHeight, 
 	imgDisplayWidth, imgDisplayHeight, 
 	imgCornerX, imgCornerY;
+	
+	
+	public PrimitiveImagePanel<T> buildLegendPanel(int nSteps, int legendWidth, int legendHeight, boolean loToHi, boolean horiz, boolean keepAspectRatio)
+	{
+		PrimitiveImager<T> imgr = imager.getLegendImager(nSteps, loToHi, horiz);
+		this.legend = PanelFactory.buildPrimitivePanel(
+				imgr, 
+				imager.getFieldName(), 
+				keepAspectRatio, legendWidth, legendHeight, ptRelSize);
+		legend.nLegendSteps = nSteps;
+		legend.horizontalLegend = horiz;
+		legend.setLegLoToHi(loToHi);
+		legend.legFixedAspectRatio = fixedAspectRatio;
+		
+		logger.trace(String.format("%s", "Building legend.  Legend is null? " + (legend == null)));
+		
+		return legend;
+	}
 	
 //	public PrimitiveImagePanel<T> getLegendPanel(int nSteps, int legendWidth, int legendHeight)
 //	{
@@ -155,8 +171,6 @@ public class ObjectImagePanel<T> extends JPanel
 		paintComponent(this.getGraphics());
 	}
 
-
-
 	public JComboBox<String> getControlComboBox(Font font)
 	{
 		List<Field> f2;
@@ -164,7 +178,9 @@ public class ObjectImagePanel<T> extends JPanel
 		List<String> f3 = FieldUtils.getFieldNames(f2, clazz, annClass, true);
 		List<String> dispNames = FieldUtils.getFieldNames(f2, clazz, annClass, true); 
 		
-		return BeanComboBox.build(this, f3, dispNames, font, this.imager.getFieldName());
+		logger.trace(String.format("%s", "Building control combox.  With legend = " + (legend != null)));
+		
+		return PanelFactory.buildComboBox(this, legend, f3, dispNames, font, this.imager.getFieldName());
 	}
 
 	public String queryRelative(double relativeI, double relativeJ) { return imager.queryData(relativeI, relativeJ);}
@@ -249,7 +265,14 @@ public class ObjectImagePanel<T> extends JPanel
 		g.dispose();
 	}
 
-	
+	/**
+	 * Label all pixels with a String representation of the
+	 *  current value of the underlying data field.
+	 *  Mostly useful for debugging on small 2D data sets.
+	 *  
+	 * @param font
+	 * @param color
+	 */
 	public void labelPixels(Font font, Color color)
 	{
 		double relI, relJ;
@@ -328,9 +351,8 @@ public class ObjectImagePanel<T> extends JPanel
 	 * 
 	 */
 	public void addPointRelative(double relI, double relJ, double size, Color color)
-	{
-		labelFromImageRelCoords(relI, relJ, null, null, color, size, "point");
-	}
+	{ labelFromImageRelCoords(relI, relJ, null, null, color, size, "point"); }
+	
 	/**
 	 * 
 	 */
@@ -345,12 +367,46 @@ public class ObjectImagePanel<T> extends JPanel
 	public void setField(Field f) { getImager().setField(f); updateImage(); }
 
 	public Image getImg() { return this.image; }
+	
 	public RenderedImage getRenderedImage() { return (RenderedImage)this.image; }
+	
 	public void setLabelVisibility(boolean b) { this.decorate = b; repaint();}
+	
 	public double getPtRelSize() { return ptRelSize; }
 	public void setPtRelSize(double ptRelSize) { this.ptRelSize = ptRelSize; }
+	
 	public Imager<T> getImager() { return imager; }
+	
 	public String getCurrentClickValue() { return currentClickValue; }
+	
 	public int getImgDisplayWidth() { return imgDisplayWidth;}
 	public int getImgDisplayHeight() { return imgDisplayHeight; }
+
+
+
+
+	public int getnLegendSteps() {
+		return nLegendSteps;
+	}
+
+
+
+
+	public void setnLegendSteps(int nLegendSteps) {
+		this.nLegendSteps = nLegendSteps;
+	}
+
+
+
+
+	public boolean isLegLoToHi() {
+		return legLoToHi;
+	}
+
+
+
+
+	public void setLegLoToHi(boolean legLoToHi) {
+		this.legLoToHi = legLoToHi;
+	}
 }

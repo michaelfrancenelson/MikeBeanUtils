@@ -10,12 +10,11 @@ import utils.ArrayUtils;
 import utils.FieldUtils;
 import utils.Sequences;
 
-public class PrimitiveImagerData<T> extends ArrayData<T>
+public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 {
 	public static Logger logger = LoggerFactory.getLogger(PrimitiveImagerData.class);
 	
 	private String type;
-//	private String dblFmt;
 	private boolean asBoolean = false;
 	
 	@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
@@ -90,42 +89,42 @@ public class PrimitiveImagerData<T> extends ArrayData<T>
 	public PrimitiveImagerData(double[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{  
 		dblDat = dat;  type = "dbl";
-		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
+		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(float[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{	
 		fltDat = dat;  type = "flt";
-		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
+		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(byte[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{
 		bytDat = dat; type = "byt";
-		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
+		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(short[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
 		shtDat = dat; type = "sht";
-		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
+		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(int[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
 		intDat = dat; type = "int";
-		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
+		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(long[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
 		lngDat = dat;	type = "lng";
-		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
+		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(char[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
 		chrDat = dat; type = "chr";
-		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
+		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	public PrimitiveImagerData(boolean[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
 		booDat = dat; type = "boo";  
-		setDims(dat.length, dat[0].length, flipX, flipY, transpose);
+		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
 	
 	public PrimitiveImagerData() {}
@@ -180,7 +179,4 @@ public class PrimitiveImagerData<T> extends ArrayData<T>
 		}
 		throw new IllegalArgumentException("Could not build a gradient data set for data of type " + type + ".");
 	}
-
-//	public String dblFmt() { return dblFmt; }
-//	public void setDblFmt(String dblFmt) { this.dblFmt = dblFmt; }
 }
