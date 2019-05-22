@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import imaging.imagers.Imager;
 import imaging.imagers.ObjectImager;
-import imaging.imagers.PrimitiveImager;
 import imaging.imagers.decorators.PanelLabel;
 import utils.ArrayUtils;
 import utils.FieldUtils;
@@ -136,7 +135,6 @@ public class ObjectImagePanel<T> extends JPanel
 		image = imager.getImage();
 		logger.debug("ObjectArrayImagePanel: updating array image to field " + imager.getFieldName());
 		
-//		super.paintComponent(this.getGraphics());
 		paintComponent(this.getGraphics());
 	}
 
@@ -150,7 +148,6 @@ public class ObjectImagePanel<T> extends JPanel
 		logger.trace(String.format("%s", "Building control combox.  With legend = " + (legend != null)));
 		
 		return PanelFactory.buildComboBox(this, f3, dispNames, font, this.imager.getFieldName());
-//		return PanelFactory.buildComboBox(this, legend, f3, dispNames, font, this.imager.getFieldName());
 	}
 
 	public String queryRelative(double relativeI, double relativeJ, String intFmt, String dblFmt, String strFmt)
@@ -159,8 +156,7 @@ public class ObjectImagePanel<T> extends JPanel
 	@Override public void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
-		logger.trace(String.format("Data width: %d, data height: %d", 
-				imager.getDataWidth(), imager.getDataHeight()));
+		logger.trace(String.format("Data width: %d, data height: %d", imager.getDataWidth(), imager.getDataHeight()));
 		Insets insets = getInsets();
 		Graphics2D g2d = (Graphics2D) g.create();
 		int fixedX = this.imgDisplayWidth, fixedY = this.imgDisplayHeight;
@@ -304,9 +300,7 @@ public class ObjectImagePanel<T> extends JPanel
 		String label = imager.queryData(relI, relJ, intFmt, dblFmt, strFmt);
 		labelFromImageRelCoords(relI, relJ, label, font, color, -9999, "value label");
 
-		logger.trace(String.format("Adding value "
-				+ "label %s at coords (%.0f%%, %.0f%%)",
-				label, 100 * relI, 100 * relJ));
+		logger.trace(String.format("Adding value label %s at coords (%.0f%%, %.0f%%)", label, 100 * relI, 100 * relJ));
 	}
 
 	public void addValueLabel(
@@ -314,7 +308,6 @@ public class ObjectImagePanel<T> extends JPanel
 	{
 		double relI = ArrayUtils.absToRelCoord(dataX, imager.getDataWidth());
 		double relJ = ArrayUtils.absToRelCoord(dataY, imager.getDataHeight());
-		
 		addValueLabelRelative(relI, relJ, font, color, "%d", "%f", "%s");
 	}
 

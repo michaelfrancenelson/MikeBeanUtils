@@ -41,7 +41,7 @@ public class RotationDemo extends DemoConsts
 					arr = new ArrayImagerData<>(flavorArray, 
 							trueFalse[flipX], trueFalse[flipY], trueFalse[trans]);
 
-					pan = PanelFactory.buildPanel(
+					pan = PanelFactory.objectPanel(
 							arr, AllFlavorBean.class, null, field,
 							gradCols, boolCols, null, null, null,
 							null, null,
@@ -52,7 +52,7 @@ public class RotationDemo extends DemoConsts
 				}
 
 		f2 = SwingUtils.frameFactory(fWidth, fHeight, "Array Data Rotation Demo - untransformed");
-		f2.add(PanelFactory.buildPanel(
+		f2.add(PanelFactory.objectPanel(
 				new ArrayImagerData<>(flavorArray, false, false, false),
 				AllFlavorBean.class, null, field,
 				gradCols, boolCols, null, null, null,

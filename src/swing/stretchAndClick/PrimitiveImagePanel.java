@@ -21,8 +21,6 @@ public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
 			Imager<T> imgr, 
 			int width, int height, 
 			boolean keepAspectRatio)
-//	, 
-//			boolean legend)
 	{
 		fixedWidth = false; fixedHeight = false;
 		if (width > 0)  

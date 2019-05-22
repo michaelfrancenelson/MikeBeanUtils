@@ -51,11 +51,6 @@ public class PrimitiveImager<T> implements Imager<T>
 		}
 	}
 
-//	@Override public String queryData(double relativeI, double relativeJ) 
-//	{
-//		return queryData(relativeI, relativeJ, "%d", "%.2f", "%s");
-//	}
-
 	public void setDataSelection(double relativeI, double relativeJ) 
 	{	
 		queryData(relativeI, relativeJ, null, null, null);
@@ -71,19 +66,6 @@ public class PrimitiveImager<T> implements Imager<T>
 		
 		return val;
 	}
-
-//	public String queryData(int x, int y, FieldWatcher<T> w, String intFmt, String dblFmt, String strFmt) {
-//		if (intFmt == null) intFmt = "%d";
-//		if (dblFmt == null) dblFmt = doublePrintFmt;
-//		if (strFmt == null) strFmt = "%s";
-//
-//		String val = imgData.queryData(x, y, intFmt, dblFmt, strFmt);
-//		
-//		if (parsedBooleanFieldNames.contains(currentFieldName.toLowerCase()))
-//		val = FieldUtils.toBoolean(val);
-//		
-//		return val;
-//	}
 
 	protected void initialize(
 			String dblFmt, List<String> parsedBoolean,

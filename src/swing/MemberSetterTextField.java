@@ -289,5 +289,4 @@ public class MemberSetterTextField<T> extends JTextField
 		if (ss.equalsIgnoreCase("0")) return false;
 		throw new IllegalArgumentException("Input: " + s + " could not be parsed to a boolean value");
 	}
-
 }

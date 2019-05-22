@@ -7,7 +7,6 @@ import java.util.List;
 import imaging.colorInterpolator.ColorInterpolator;
 import imaging.imagers.imagerData.ImagerData;
 import imaging.imagers.imagerData.PrimitiveImagerData;
-import utils.FieldUtils;
 
 public interface Imager<T>
 {

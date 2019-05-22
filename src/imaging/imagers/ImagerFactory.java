@@ -83,7 +83,6 @@ public class ImagerFactory
 			ColorInterpolator booleanCI,
 			String dblFmt,
 			String fieldName,
-//			boolean asBoolean,
 			List<String> parsedBooleanFields)
 	{
 		if (parsedBooleanFields == null) parsedBooleanFields = new ArrayList<String>();
@@ -91,7 +90,6 @@ public class ImagerFactory
 		PrimitiveImager<T> out = new PrimitiveImager<T>();
 		out.setImagerData(dat);
 		out.initialize(dblFmt, parsedBooleanFields, ci, booleanCI, fieldName);
-//		out.initialize(dblFmt, parsedBooleanFields, ci, booleanCI, asBoolean);
 		return out;
 	}
 }

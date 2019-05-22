@@ -42,7 +42,7 @@ public class RiverDemo extends DemoConsts
 
 		JFrame f1 = SwingUtils.frameFactory(1100, 1100);
 
-		pan1 = PanelFactory.buildPanel(
+		pan1 = PanelFactory.objectPanel(
 				imDat,
 				Terrain.class, 
 				ParsedField.class,
@@ -115,7 +115,7 @@ public class RiverDemo extends DemoConsts
 			for (int j = 0; j < 2; j++)
 			{
 				int x = (2 * j);
-				ObjectImagePanel<Terrain> pan1 = PanelFactory.buildPanel(
+				ObjectImagePanel<Terrain> pan1 = PanelFactory.objectPanel(
 						imDat,
 						Terrain.class, 
 						ParsedField.class,

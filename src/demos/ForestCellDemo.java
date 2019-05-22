@@ -45,7 +45,7 @@ public class ForestCellDemo extends DemoConsts
 					JPanel pp = new JPanel(); pp.setLayout(new GridBagLayout());
 					c = new GridBagConstraints();
 					
-					ObjectImagePanel<ForestCell> pan = PanelFactory.buildPanel(
+					ObjectImagePanel<ForestCell> pan = PanelFactory.objectPanel(
 							ImagerData.build(forest, trueFalse[k], trueFalse[j], trueFalse[i]),
 							ForestCell.class, ParsedField.class, 
 							"elevation",
@@ -70,7 +70,7 @@ public class ForestCellDemo extends DemoConsts
 					pp2.setLayout(new GridBagLayout());
 					c = new GridBagConstraints();
 					
-					ObjectImagePanel<ForestSubclass> subPan = PanelFactory.buildPanel(
+					ObjectImagePanel<ForestSubclass> subPan = PanelFactory.objectPanel(
 							ImagerData.build(subForest, trueFalse[k], trueFalse[j], trueFalse[i]),
 							ForestSubclass.class, ParsedField.class, 
 							"elevation",

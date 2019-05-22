@@ -41,7 +41,7 @@ public class BooleanDemo extends DemoConsts
 		
 		for (String st : fNames)
 		{
-			JPanel p = PanelFactory.buildPanel(
+			JPanel p = PanelFactory.objectPanel(
 					dat, AllFlavorBean.class, null, 
 					st, 
 					gradCols, boolCols, 
@@ -66,7 +66,7 @@ public class BooleanDemo extends DemoConsts
 		
 		f1 = SwingUtils.frameFactory(width, height, "Boolean combo box value demo");
 		
-		ObjectImagePanel<AllFlavorBean> p = PanelFactory.buildPanel(
+		ObjectImagePanel<AllFlavorBean> p = PanelFactory.objectPanel(
 				dat, AllFlavorBean.class, null, 
 				"intPrim", 
 				gradCols, boolCols, 

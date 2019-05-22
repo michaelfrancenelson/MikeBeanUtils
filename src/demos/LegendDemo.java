@@ -43,7 +43,7 @@ public class LegendDemo extends DemoConsts
 		subForest = NetCDFObjBuilder.factory2D(
 				ForestSubclass.class, ParsedField.class, filename, null, true, true);
 		
-		ObjectImagePanel<ForestSubclass> subPan = PanelFactory.buildPanel(
+		ObjectImagePanel<ForestSubclass> subPan = PanelFactory.objectPanel(
 				ImagerData.build(subForest, false, false, false),
 				ForestSubclass.class, ParsedField.class, 
 				"elevation",
@@ -60,7 +60,7 @@ public class LegendDemo extends DemoConsts
 		double legPtSize = 0.025;
 		
 		LegendPanel<ForestSubclass> legendPan1 =  
-				PanelFactory.buildLegendPanel(
+				PanelFactory.legendPanel(
 						subPan.getImager(),
 						nLegLabels, nLegSteps, legWidth, legHeight,
 						offset1, offset2,

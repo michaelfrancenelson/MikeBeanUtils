@@ -54,10 +54,9 @@ public class ArrayImagerData<T> implements ImagerData<T>
 	protected void setDataCoords(double relativeX, double relativeY)
 	{
 		logger.trace(String.format("Setting data coordinates for relative positions = %.2f, %.2f" , relativeX, relativeY));
-		setDataCoords(
-				ArrayUtils.relToAbsCoord(relativeX, outputWidth),
-				ArrayUtils.relToAbsCoord(relativeY, outputHeight)
-				);
+		int x = ArrayUtils.relToAbsCoord(relativeX, outputWidth);
+		int y = ArrayUtils.relToAbsCoord(relativeY, outputHeight);
+		setDataCoords(x, y);
 	}
 
 	protected void setDims(int dataWidth, int dataHeight, boolean flipX, boolean flipY, boolean transpose)
@@ -90,8 +89,7 @@ public class ArrayImagerData<T> implements ImagerData<T>
 			else dataY = inputX;
 		}
 
-		logger.trace(String.format("Input coords: (%d, %d) data coords: (%d, %d)",
-				inputX, inputY, dataX, dataY));
+		logger.trace(String.format("Input coords: (%d, %d) data coords: (%d, %d)", inputX, inputY, dataX, dataY));
 		setCurrentObj();
 	}
 
@@ -163,5 +161,4 @@ public class ArrayImagerData<T> implements ImagerData<T>
 		@Override public String getType() { return  listData.get(0).get(0).getClass().getSimpleName(); }
 		@Override protected void setCurrentObj() { currentObj = listData.get(dataX).get(dataY); }
 	}
-
 }

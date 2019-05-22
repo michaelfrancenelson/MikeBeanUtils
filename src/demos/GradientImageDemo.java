@@ -75,7 +75,7 @@ public class GradientImageDemo extends DemoConsts
 									trueFalse[horiz], trueFalse[loHi], true); 
 
 					PrimitiveImagePanel<Object> pan = 
-							PanelFactory.buildPanel(
+							PanelFactory.primitivePanel(
 									datArr, 
 									c, c, 
 									"int", "%.0d",

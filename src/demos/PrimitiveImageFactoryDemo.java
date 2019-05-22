@@ -74,7 +74,7 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		int z = 0;
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
 		{
-			f1.add(PanelFactory.buildPanel(
+			f1.add(PanelFactory.primitivePanel(
 					data1.get(z), 
 					c, c, 
 					"byte", 
@@ -130,7 +130,7 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		JPanel pp = new SimpleImagePanel(ImageFactory.buildPrimitiveImage(datBool, c, false, false, false));
 		pp.setBorder(b);
 		f1.add(pp);
-		pp = PanelFactory.buildPanel(new PrimitiveImagerData<Object>(
+		pp = PanelFactory.primitivePanel(new PrimitiveImagerData<Object>(
 				datByte, false, false, false), c, c, "bool", null, null, true, 0, 0, ptSize, true);
 		pp.setBorder(b);
 		f1.add(pp);
@@ -193,11 +193,11 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
 		{
 			PrimitiveImagePanel<Object> pan = 
-					PanelFactory.buildPanel(
+					PanelFactory.primitivePanel(
 							arrDat1.get(z),	c, c, "int", "%.0d", null, true, -1, -1, 0.01, false);
 			f1.add(pan);
 
-			pan = PanelFactory.buildPanel(arrDat2.get(z), c, c, "int", null, null, true, -1, -1, 0.01, false);
+			pan = PanelFactory.primitivePanel(arrDat2.get(z), c, c, "int", null, null, true, -1, -1, 0.01, false);
 			f2.add(pan);
 
 

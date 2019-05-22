@@ -35,21 +35,6 @@ public class PanelFactory
 {
 	public static Logger logger = LoggerFactory.getLogger(PanelFactory.class);
 
-	public static <T> ObjectImagePanel<T> buildPanel(
-			ImagerData<T> dat,
-			Class<T> clazz,	Class<? extends Annotation> annClass,
-			String fieldName, ObjectImager<T> imager,
-			boolean keepAspectRatio, 
-			int fixedWidth, int fixedHeight,
-			double decoratorRelPointSize)
-	{
-		return buildPanel(
-				imager, fieldName,
-				keepAspectRatio, 
-				fixedWidth, fixedHeight, decoratorRelPointSize,
-				clazz, annClass);
-	}
-
 	/**
 	 * 
 	 * @param dat
@@ -69,7 +54,7 @@ public class PanelFactory
 	 * @param decoratorRelPointSize
 	 * @return
 	 */
-	public static <T> ObjectImagePanel<T> buildPanel(
+	public static <T> ObjectImagePanel<T> objectPanel(
 			ImagerData<T> dat, Class<T> clazz,	Class<? extends Annotation> annClass,
 			String fieldName,
 			Color[] gradientColors, Color[] booleanColors,
@@ -90,14 +75,57 @@ public class PanelFactory
 				naDouble, naInt, naColor, 
 				dblFmt, parsedBooleanFields);
 
-		return buildPanel(
+		return objectPanel(
 				imager, fieldName,
 				keepAspectRatio, 
 				fixedWidth, fixedHeight, decoratorRelPointSize,
 				clazz, annClass);
 	}
 
-	public static <T> PrimitiveImagePanel<T> buildPanel(
+	/**
+	 * 
+	 * @param imager
+	 * @param fieldName
+	 * @param keepAspectRatio
+	 * @param fixedWidth
+	 * @param fixedHeight
+	 * @param decoratorRelPointSize
+	 * @param clazz
+	 * @param annClass
+	 * @return
+	 */
+	public static <T> ObjectImagePanel<T> objectPanel(
+			ObjectImager<T> imager, String fieldName,
+			boolean keepAspectRatio, 
+			int fixedWidth, int fixedHeight, double decoratorRelPointSize,
+			Class<T> clazz, Class<? extends Annotation> annClass)
+	{
+		ObjectImagePanel<T> out = new ObjectImagePanel<T>();
+		if (fieldName != null) imager.setField(fieldName.toLowerCase());
+		if (annClass == null) annClass = ParsedField.class;
+		out.setLabelVisibility(true);
+		out.setPtRelSize(decoratorRelPointSize);
+		out.init(imager, fixedWidth, fixedHeight, keepAspectRatio, 
+				clazz, annClass);
+		return out;
+	}
+	
+	/**
+	 * 
+	 * @param dat
+	 * @param ci
+	 * @param booleanCI
+	 * @param fieldName
+	 * @param dblFmt
+	 * @param parsedBooleanFields
+	 * @param keepAspectRatio
+	 * @param fixedWidth
+	 * @param fixedHeight
+	 * @param decoratorRelPointSize
+	 * @param asBoolean
+	 * @return
+	 */
+	public static <T> PrimitiveImagePanel<T> primitivePanel(
 			PrimitiveImagerData<T> dat,
 			ColorInterpolator ci,
 			ColorInterpolator booleanCI,
@@ -117,20 +145,64 @@ public class PanelFactory
 				dblFmt, 
 				fieldName,
 				parsedBooleanFields);
-		return buildPrimitivePanel(
+		return primitivePanel(
 				imager, fieldName,
 				keepAspectRatio, 
 				fixedWidth, fixedHeight, decoratorRelPointSize);
 	}
-
 	
-	public static <T> LegendPanel<T> buildLegendPanel(
+	/**
+	 * 
+	 * @param imager
+	 * @param fieldName
+	 * @param keepAspectRatio
+	 * @param fixedWidth
+	 * @param fixedHeight
+	 * @param decoratorRelPointSize
+	 * @return
+	 */
+	public static <T> PrimitiveImagePanel<T> primitivePanel(
+			Imager<T> imager, 
+			String fieldName,
+			boolean keepAspectRatio, 
+			int fixedWidth, int fixedHeight, double decoratorRelPointSize)
+	{
+		PrimitiveImagePanel<T> out = new PrimitiveImagePanel<T>();
+		out.setLabelVisibility(true);
+		out.setPtRelSize(decoratorRelPointSize);
+		out.init(imager, fixedWidth, fixedHeight, keepAspectRatio);
+		if (fieldName != null) out.setField(fieldName.toLowerCase());
+		return out;
+	}
+
+	/**
+	 * 
+	 * @param imager
+	 * @param nLabels
+	 * @param nSteps
+	 * @param legendWidth
+	 * @param legendHeight
+	 * @param offset1
+	 * @param offset2
+	 * @param textOffset
+	 * @param pointOffset
+	 * @param loToHi
+	 * @param horiz
+	 * @param keepAspectRatio
+	 * @param ptSize
+	 * @param font
+	 * @param textColor
+	 * @param intFmt
+	 * @param dblFmt
+	 * @param strFmt
+	 * @return
+	 */
+	public static <T> LegendPanel<T> legendPanel(
 			Imager<T> imager,
 			int nLabels, int nSteps, int legendWidth, int legendHeight, 
 			double offset1, double offset2, 
 			double textOffset, double pointOffset,
 			boolean loToHi, boolean horiz, boolean keepAspectRatio,
-			
 			double ptSize, Font font, Color textColor,
 			String intFmt, String dblFmt, String strFmt
 			)
@@ -147,25 +219,9 @@ public class PanelFactory
 				intFmt, dblFmt, strFmt);
 		
 		legend.setLabelVisibility(true);
-
 		legend.setField(imager.getFieldName().toLowerCase());
 		legend.init(imgr, legendWidth, legendHeight, keepAspectRatio);
-
 		return legend;
-	}
-	
-	public static <T> PrimitiveImagePanel<T> buildPrimitivePanel(
-			Imager<T> imager, 
-			String fieldName,
-			boolean keepAspectRatio, 
-			int fixedWidth, int fixedHeight, double decoratorRelPointSize)
-	{
-		PrimitiveImagePanel<T> out = new PrimitiveImagePanel<T>();
-		out.setLabelVisibility(true);
-		out.setPtRelSize(decoratorRelPointSize);
-		out.init(imager, fixedWidth, fixedHeight, keepAspectRatio);
-		if (fieldName != null) out.setField(fieldName.toLowerCase());
-		return out;
 	}
 
 	/**
@@ -200,71 +256,17 @@ public class PanelFactory
 		return out;
 	}
 
-	public static <T> ObjectImagePanel<T> buildPanel(
-			ObjectImager<T> imager, String fieldName,
-			boolean keepAspectRatio, 
-			int fixedWidth, int fixedHeight, double decoratorRelPointSize,
-			Class<T> clazz, Class<? extends Annotation> annClass)
-	{
-		ObjectImagePanel<T> out = new ObjectImagePanel<T>();
-		if (fieldName != null) imager.setField(fieldName.toLowerCase());
-		if (annClass == null) annClass = ParsedField.class;
-		out.setLabelVisibility(true);
-		out.setPtRelSize(decoratorRelPointSize);
-		out.init(imager, fixedWidth, fixedHeight, keepAspectRatio, 
-				clazz, annClass);
-		return out;
-	}
-
-//	public static <T> PrimitiveImagePanel<T> buildLegendPanel(
-//			int nSteps, double min, double max, String type,
-//			String dblFmt,
-//			ColorInterpolator ci, ColorInterpolator bi,
-//			boolean horizontal, boolean loToHi, boolean booleanNA,
-//			boolean keepAspectRatio, int width, int height, double ptSize)
-//	{
-//
-//
-//		logger.debug(String.format("build logger panel: min = %"));
-//		PrimitiveImagerData<T> datArr = PrimitiveImagerData.buildGradientData(
-//				type, min, max, nSteps, horizontal, loToHi, booleanNA);
-//
-//		return buildPanel(
-//				datArr, 
-//				ci, bi,
-//				type, 
-//				dblFmt,
-//				null, false, width, height, ptSize, false);
-//	}
-//
-//	public static <T> PrimitiveImagePanel<T> buildLegendPanel(
-//			int nSteps, String fieldType, String fieldName,
-//			double dataMin, double dataMax,
-//			ColorInterpolator ci, ColorInterpolator booleanCI, 
-//			String dblFmt, List<String> parsedBooleanFields,
-//			boolean horizontal, boolean loToHi, boolean booleanNA,
-//			boolean keepAspectRatio, int fixedWidth, int fixedHeight,
-//			double decoratorRelPointSize)
-//	{
-//		PrimitiveImagerData<T> legDat = PrimitiveImagerData.buildGradientData(
-//				fieldType, dataMin, dataMax, nSteps,
-//				horizontal, loToHi, booleanNA);
-//
-//		PrimitiveImager<T> imgr = ImagerFactory.primitiveFactory(
-//				legDat, ci, booleanCI, dblFmt, fieldName, parsedBooleanFields);
-//
-//		return buildPrimitivePanel(
-//				imgr, 
-//				fieldName,
-//				keepAspectRatio, 
-//				fixedWidth, fixedHeight ,decoratorRelPointSize);
-//	}
-
-
+	/**
+	 * 
+	 * @param panel
+	 * @param fields
+	 * @param menuNames
+	 * @param font
+	 * @param initialField
+	 * @return
+	 */
 	public static <T> ImagePanelComboBox<T> buildComboBox(
 			ObjectImagePanel<T> panel,
-//			PrimitiveImagePanel<T> legendPanel,
-//			PrimitiveImagePanel<T> legendPanel,
 			List<String> fields, List<String> menuNames,
 			Font font, String initialField)
 	{
@@ -319,7 +321,6 @@ public class PanelFactory
 		ObjectImagePanel<T> panel;
 
 		void buildActionListener(LegendPanel<T> legPanel)
-//		void buildActionListener(PrimitiveImagePanel<T> legPanel)
 		{
 			addActionListener(new ActionListener()
 			{
@@ -328,8 +329,8 @@ public class PanelFactory
 					String item = getSelectedItem().toString();
 					String tmp = fieldNames.get(fieldNames.indexOf(item));
 					panel.setField(item);
-					logger.debug("ComboBox item = " + item.toString());
-					logger.debug("Has legend? " + (legPanel != null));
+					logger.trace("ComboBox item = " + item.toString());
+					logger.trace("Has legend? " + (legPanel != null));
 					if (legPanel != null)
 					{
 						logger.debug("Updating legend image to " + tmp);
@@ -343,7 +344,6 @@ public class PanelFactory
 								legPanel.loToHi,
 								legPanel.horiz);
 						legImgr.setImagerData(legDat);
-//						legPanel.setField(tmp);
 						legPanel.buildLegendLabels();
 						legPanel.updateImage();
 					}

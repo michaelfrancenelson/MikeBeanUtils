@@ -58,19 +58,19 @@ public class ImagePanelDemo extends DemoConsts
 		imagers.add(ImagerFactory.factory(dat, "intPrim", AllFlavorBean.class, gradCols, boolCols));
 
 		panels1 = new ArrayList<>();
-		panels1.add(PanelFactory.buildPanel(
+		panels1.add(PanelFactory.objectPanel(
 				imagers.get(0), "intPrim", 
 				true, 0, 0, ptSize, 
 				AllFlavorBean.class, null));
-		panels1.add(PanelFactory.buildPanel(
+		panels1.add(PanelFactory.objectPanel(
 				imagers.get(1), "boolBox", 
 				false, 0, 0, ptSize, 
 				AllFlavorBean.class, null));
-		panels1.add(PanelFactory.buildPanel(
+		panels1.add(PanelFactory.objectPanel(
 				imagers.get(2), "charPrim", 
 				false, 100, 0, ptSize, 
 				AllFlavorBean.class, null));
-		panels1.add(PanelFactory.buildPanel(
+		panels1.add(PanelFactory.objectPanel(
 				imagers.get(3), "floatPrim", 
 				true, 400, 700, ptSize, 
 				AllFlavorBean.class, null));
@@ -122,11 +122,11 @@ public class ImagePanelDemo extends DemoConsts
 				imT1 = ImagerFactory.factory(dat, "age", Terrain.class, gradCols, boolCols);
 				imT2 = ImagerFactory.factory(dat, "elevation", Terrain.class, gradCols, boolCols);
 
-				objPan = PanelFactory.buildPanel(
+				objPan = PanelFactory.objectPanel(
 						imT2, "elevation", true, 0, 0, ptSize, Terrain.class, null);
 				objPan.addValueLabelRelative(0.2, 0.4, font, color);
 				panels1.add(objPan);
-				objPan = PanelFactory.buildPanel(
+				objPan = PanelFactory.objectPanel(
 						imT1, "age", true, 0, 0, ptSize, Terrain.class, null);
 				objPan.addValueLabelRelative(0.1 , 0.7, font, color);
 				panels1.add(objPan);
@@ -162,19 +162,19 @@ public class ImagePanelDemo extends DemoConsts
 		
 		f1 = SwingUtils.frameFactory((int) (mult * width), (int) (mult * height),
 				"Terrain Bean Panel Demo", 2, 2);
-		panels1.add(PanelFactory.buildPanel(
+		panels1.add(PanelFactory.objectPanel(
 				im1, "elevation", 
 				true, 0, 0, ptSize, 
 				Terrain.class, null));
-		panels1.add(PanelFactory.buildPanel(
+		panels1.add(PanelFactory.objectPanel(
 				im1, "elevation", 
 				false, 0, 0, ptSize, 
 				Terrain.class, null));
-		panels1.add(PanelFactory.buildPanel(
+		panels1.add(PanelFactory.objectPanel(
 				im1, "elevation", 
 				false, 100, 0, ptSize, 
 				Terrain.class, null));
-		panels1.add(PanelFactory.buildPanel(
+		panels1.add(PanelFactory.objectPanel(
 				im1, "elevation", 
 				true, 400, 700, ptSize, 
 				Terrain.class, null));
