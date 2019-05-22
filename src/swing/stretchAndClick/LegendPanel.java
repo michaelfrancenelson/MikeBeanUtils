@@ -37,18 +37,35 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 			int nLabels, int nSteps,
 			double offset1, double offset2, 
 			double textOffset, double pointOffset, 
-			boolean loToHi, boolean horiz, 
+			boolean loToHi,
+			boolean horiz, 
 			Font font, Color color, double ptSize,
 			String intFmt, String dblFmt, String strFmt
 			
 			)
 	{
-//		this.
+		
+		/* java's image origin is in the screen's upper left corner, so 
+		 * low-to-high vertical gradients must have low values at high 
+		 * indices.
+		 */
+//		if (!horiz)
+//		{
+//			loToHi = !loToHi;
+//			logger.debug("Vertical legend: java's image origin is in the upper left corner"
+//					+ " of the monitor.  For values to increase toward the top of the screen,"
+//					+ " high values  must have low indices: inverting 'loToHi' parameter");
+//		}
+//		
+		
+		loToHi = !loToHi;
+		
 		this.nLabels = nLabels;
 		this.nSteps = nSteps;
 		this.offset1 = offset1; this.offset2 = offset2;
 		this.textOffset = textOffset; this.pointOffset = pointOffset;	
-		this.loToHi = loToHi; this.horiz = horiz;
+		this.loToHi = loToHi; 
+		this.horiz = horiz;
 		this.legFont = font;
 		this.textColor = color;
 		this.ptSize = ptSize;

@@ -86,9 +86,9 @@ public class NetCDFObjBuilder
 	{
 		List<Attribute> attList = ncfile.getGlobalAttributes();
 		
-		System.out.println("NetCDFObjBuilder setStaticFromGlobalAttribute() attempting to set static fields"
+		AnnotatedBeanReader.logger.trace("NetCDFObjBuilder setStaticFromGlobalAttribute() attempting to set static fields"
 				+ "from netCDF global attributes for class " + clazz.getName());
-		System.out.println("NetCDFObjBuilder setStaticFromGlobalAttribute() found " + attList.size() + " global attributes.");
+		AnnotatedBeanReader.logger.trace("NetCDFObjBuilder setStaticFromGlobalAttribute() found " + attList.size() + " global attributes.");
 		
 		Map<String, Field> fMap = new HashMap<>();
 		
@@ -96,19 +96,19 @@ public class NetCDFObjBuilder
 		 * and NCDF variables are case-insensitive. */
 		
 		List<Field> ff = FieldUtils.getFields(clazz, null, false, true, true, false);
-		System.out.println("NetCDFObjBuilder setStaticFromGlobalAttribute() found " + ff.size() + " static.");
+		AnnotatedBeanReader.logger.trace(" found " + ff.size() + " static fields.");
 		
 		for (Field f : ff) fMap.put(f.getName().toLowerCase(), f);
 
 		for (Attribute att : attList)
 		{
 			String attName = att.getFullName().toLowerCase();
-			System.out.println("NetCDFObjBuilder setStaticFromGlobalAttribute() atribute name: " + attName); 
+			AnnotatedBeanReader.logger.trace(" atribute name: " + attName); 
 			if (fMap.containsKey(attName))
 			{
 				Field f = fMap.get(attName);
 				String val = att.getValue(0).toString(); 
-				System.out.println("NetCDFObjBuilder setStaticFromGlobalAttribute()"
+				AnnotatedBeanReader.logger.trace("NetCDFObjBuilder setStaticFromGlobalAttribute()"
 						+ " atribute name: " + att + " value: " + val);
 				
 				AnnotatedBeanReader.setVal(f, null, val, null);

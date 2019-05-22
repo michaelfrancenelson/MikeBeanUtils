@@ -1,6 +1,7 @@
 package demos;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
@@ -15,6 +16,7 @@ import beans.builder.NetCDFObjBuilder;
 import beans.sampleBeans.ForestSubclass;
 import imaging.imagers.imagerData.ImagerData;
 import swing.stretchAndClick.LegendPanel;
+import swing.stretchAndClick.MapAndLegendPanel;
 import swing.stretchAndClick.ObjectImagePanel;
 import swing.stretchAndClick.PanelFactory;
 import utils.ColorUtils;
@@ -28,15 +30,73 @@ public class LegendDemo extends DemoConsts
 
 	public static void main(String[] args) {
 
-		legendDemo1(1200, 1000, 200, 200, 0);
+//		legendDemo1(1200, 1000, 200, 200, 0);
+		mapAndLegendDemo(1200, 1000, 200, 200, 0);
+		
 	}
 
+	
+	public static void mapAndLegendDemo(
+			int width, int height, int nLegSteps, int legWidth, int legHeight)
+	{
+		subForest = NetCDFObjBuilder.factory2D(
+				ForestSubclass.class, ParsedField.class, filename, null, true, true);
+		
+		int legPosition = 1;
+		int controlPosition = 1;
+		boolean horiz = false;
+		boolean legKeepAsp = false;
+		loToHi = true;
+//		loToHi = false;
+		int nLegLabels = 5;
+		double offset1 = 0.05, offset2 = 0.05;
+		double textOffset = 0.1;
+		double pointOffset = -0.2;
+		double legPtSize = 0.025;
+		
+		
+		f1 = SwingUtils.frameFactory(width, height, "map with legend demo ", 1, 1);
+		
+		String legendControlTitle = "Layer";
+		
+		Font legendFont = new Font("Sans", 2, 30);
+		Font controlFont = new Font("Sans", 2, 40);
+		
+		MapAndLegendPanel<ForestSubclass> mapPan;
+		mapPan = PanelFactory.mapLegendPanel(
+				ImagerData.build(subForest, false, false, false),
+				ForestSubclass.class, ParsedField.class, 
+				"elevation",
+				ColorUtils.TERRAIN_COLORS, ColorUtils.GREENS,
+				null, null, Color.gray,
+				"%.4f", Arrays.asList("has_stream"),
+				true, 
+				0, 0, ptSize,
+				legendControlTitle, controlFont,
+				legPosition, controlPosition,
+				nLegLabels, nLegSteps, 
+				legWidth, legHeight,
+				offset1, offset2,
+				textOffset, pointOffset,
+				loToHi, horiz, legKeepAsp,
+				legPtSize, legendFont, Color.black,
+				null, "%.1f", null
+				
+				);
+				
+		f1.add(mapPan); 
+		f1.setVisible(true);
+				
+		
+	}
+	
 	public static void legendDemo1(
 			int width, int height, int nLegSteps, int legWidth, int legHeight)
 	{
 		boolean horiz = false;
 		boolean legKeepAsp = false;
 		loToHi = true;
+		loToHi = false;
 		
 		f1 = SwingUtils.frameFactory(width, height, "Legend demo 1", 1, 2);
 		

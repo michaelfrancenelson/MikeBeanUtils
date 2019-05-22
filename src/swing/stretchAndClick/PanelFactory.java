@@ -35,6 +35,59 @@ public class PanelFactory
 {
 	public static Logger logger = LoggerFactory.getLogger(PanelFactory.class);
 
+
+	public static <T> MapAndLegendPanel<T> mapLegendPanel(
+
+			ImagerData<T> dat, Class<T> clazz,	Class<? extends Annotation> annClass,
+			String fieldName,
+			Color[] gradientColors, Color[] booleanColors,
+			Double naDouble, Integer naInt, Color naColor, 
+			String mapDblFmt, List<String> parsedBooleanFields,
+			boolean mapAspectRatio, 
+			int mapWidth, int mapHeight, double mapPointSize,
+
+			String controlTitle, Font controlFont,
+
+			int legPosition, int controlPosition,
+
+			int nLegendLabels, int nLegendSteps, int legendWidth, int legendHeight, 
+			double offset1, double offset2, 
+			double textOffset, double pointOffset,
+			boolean loToHi, boolean horiz, boolean legendAspectRatio,
+			double legendPointSize, Font legendFont, Color legendAnnotationColor,
+			String legIntFmt, String legDblFmt, String legStrFmt
+			)
+	{
+
+		if (naDouble == null) naDouble = -Double.MAX_VALUE;
+		if (naInt == null) naInt = Integer.MIN_VALUE;
+		if (naColor == null) naColor = Color.gray;
+		if (mapDblFmt == null) mapDblFmt = "%.2f";
+		if (parsedBooleanFields == null) parsedBooleanFields = new ArrayList<String>();
+
+		MapAndLegendPanel<T> out = new MapAndLegendPanel<T>();
+
+		ObjectImager<T> imager = ImagerFactory.factory(
+				dat, fieldName, 
+				clazz, annClass,
+				gradientColors, booleanColors,
+				naDouble, naInt, naColor,
+				mapDblFmt, parsedBooleanFields);
+
+		ObjectImagePanel<T> map =  objectPanel(
+				imager, fieldName,
+				mapAspectRatio, 
+				mapWidth, mapHeight, mapPointSize,
+				clazz, annClass);
+
+		LegendPanel<T> legend = legendPanel(imager, nLegendLabels, nLegendSteps, legendWidth, legendHeight, offset1, offset2, textOffset, pointOffset, loToHi, horiz, legendAspectRatio, legendPointSize, legendFont, legendAnnotationColor, legIntFmt, legDblFmt, legStrFmt);
+		map.setLegend(legend);
+		out.map = map; out.legend = legend;
+		out.setLayout(legPosition, controlPosition, controlTitle, controlFont, true);
+		return out;
+	}
+
+
 	/**
 	 * 
 	 * @param dat
@@ -109,7 +162,7 @@ public class PanelFactory
 				clazz, annClass);
 		return out;
 	}
-	
+
 	/**
 	 * 
 	 * @param dat
@@ -150,7 +203,7 @@ public class PanelFactory
 				keepAspectRatio, 
 				fixedWidth, fixedHeight, decoratorRelPointSize);
 	}
-	
+
 	/**
 	 * 
 	 * @param imager
@@ -207,6 +260,11 @@ public class PanelFactory
 			String intFmt, String dblFmt, String strFmt
 			)
 	{
+
+
+
+
+
 		LegendPanel<T> legend = new LegendPanel<T>();
 		PrimitiveImager<T> imgr = imager.getLegendImager(nSteps, loToHi, horiz);
 
@@ -214,10 +272,11 @@ public class PanelFactory
 				nLabels, nSteps,
 				offset1, offset2, 
 				textOffset, pointOffset,
-				loToHi, horiz, 
+				loToHi,
+				horiz, 
 				font, textColor, ptSize,
 				intFmt, dblFmt, strFmt);
-		
+
 		legend.setLabelVisibility(true);
 		legend.setField(imager.getFieldName().toLowerCase());
 		legend.init(imgr, legendWidth, legendHeight, keepAspectRatio);
@@ -299,7 +358,7 @@ public class PanelFactory
 		for (String st : displayNames) out.addItem(st);
 		out.setFont(font);
 		out.setSelectedIndex(fields.indexOf(initialField.toLowerCase()));
-		
+
 		logger.trace("Has legend? " + (panel.getLegend() != null));
 		out.buildActionListener(panel.getLegend());
 
@@ -335,7 +394,7 @@ public class PanelFactory
 					{
 						logger.debug("Updating legend image to " + tmp);
 						legPanel.setField(tmp);
-						
+
 						Imager<T> imgr = panel.getImager();
 						Imager<T> legImgr = legPanel.getImager();
 						legImgr.setField(tmp);

@@ -18,10 +18,6 @@ public class Sequences
 
 		int nElements;
 
-		//		System.out.println("ArrayImageFactory.spacedIntervals: min = " + min + " max = " + max);	
-		//		System.out.println("ArrayImageFactory.spacedIntervals: range = " +
-		//				range + " requested number of breaks (nBreaks) = " + nBreaks);
-
 		/* If the number of breaks is greater than the range, truncate nElenemts to range.
 		 * If the number of breaks is less than 1, automatically create number of breaks from the range.
 		 */
@@ -30,22 +26,18 @@ public class Sequences
 		{
 			nElements = 1;
 			interval = 0;
-			//			System.out.println("ArrayImageFactory.spacedIntervals: min and max qre equal");
 		}
 		else if ((nBreaks > range) ||  (nBreaks < 1))
 		{
 			nElements = range + 1;
 			interval = sign;
-			//			System.out.println("ArrayImageFactory.spacedIntervals: auto interval = " + interval);
 		}
 		else
 		{
 			nElements = nBreaks;
 			interval = sign * (double)(range + 0) / ((double)nElements - 1.0);
-			//			System.out.println("ArrayImageFactory.spacedIntervals: calculated interval = " + interval);
 		}
 
-		//		System.out.println("ArrayImageFactory.spacedIntervals:  nElements = " + nElements);
 		int[] out = new int[nElements];
 
 		/* In case of non-integer intervals, this allows rounding to maintain the right number of breaks. */
@@ -57,8 +49,6 @@ public class Sequences
 			out[i] = start + (int) sum;
 		}
 		out[nElements - 1] = end;
-
-		//		for (int i = 0; i < out.length; i++) System.out.println("ArrayImageFactory.spacedIntervals() out[" + i + "] = " + out[i]);
 		return out;
 	}
 
@@ -171,5 +161,4 @@ public class Sequences
 		}
 		return out;
 	}
-
 }

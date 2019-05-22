@@ -59,6 +59,9 @@ public class GradientImageDemo extends DemoConsts
 		int[] mins = new int[] {0, -1, -2, -1, 1, -50, -78};
 		int[] maxs = new int[] {0, -2, -1, -3, 4, -60, 555};
 
+		int[] minCoord = new int[] {0, 1};
+		int[] maxCoord = new int[] {1, 0};
+		
 		simplePanels = new ArrayList<>();
 		List<JPanel> panList = new ArrayList<>();
 		for(int horiz = 0; horiz < 2; horiz++)
@@ -71,8 +74,10 @@ public class GradientImageDemo extends DemoConsts
 
 					PrimitiveImagerData<Object> datArr = 
 							PrimitiveImagerData.buildGradientData(
-									"int", mins[i], maxs[i], nBreaks,
-									trueFalse[horiz], trueFalse[loHi], true); 
+									"int", mins[minCoord[loHi]], maxs[maxCoord[loHi]], nBreaks,
+									trueFalse[horiz], 
+//									trueFalse[loHi], 
+									true); 
 
 					PrimitiveImagePanel<Object> pan = 
 							PanelFactory.primitivePanel(

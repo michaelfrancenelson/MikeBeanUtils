@@ -32,21 +32,43 @@ public interface Imager<T>
 	default PrimitiveImagerData<T> getLegendData(
 			int nSteps, boolean loToHi, boolean horiz)
 	{
+		
+		/* Java's image origin coordinate is at the upper left of the screen.
+		 * For vertical legends, high y-coordinates appear lower on the screen
+		 */
+		
 		PrimitiveImagerData<T> legDat;
 		String type = getFieldType();
 
 		ImagerData<T> dat = getImagerData();
 
+		double min = dat.getDataMin();
+		double max = dat.getDataMax();
+		
+		double endpoint1, endpoint2;
+		
+		if (!horiz) loToHi = !loToHi;
+		if (loToHi) { endpoint1 = min; endpoint2 = max; }
+		else {endpoint1 = max; endpoint2 = min; }
+		
 		if (getParsedBooleanFields().contains(getFieldName().toLowerCase())) {
 			legDat = PrimitiveImagerData.buildGradientData(
-					"Boolean", (int) dat.getDataMin(), (int) dat.getDataMax(),
-					nSteps, horiz, loToHi, true);
+					"Boolean", 
+					endpoint1, endpoint2,
+//					(int) dat.getDataMin(), (int) dat.getDataMax(),
+					nSteps, horiz,
+//					loToHi,
+					true);
 			legDat.setAsBoolean(true);
 		}
 		else
 			legDat = PrimitiveImagerData.buildGradientData(
-					type, (int) dat.getDataMin(), (int) dat.getDataMax(),
-					nSteps, horiz, loToHi, false);
+					type,
+					endpoint1, endpoint2,
+//					(int) dat.getDataMin(), (int) dat.getDataMax(),
+					nSteps, horiz, 
+//					loToHi,
+					false);
 
 		legDat.setDataMinMax(null, null);
 		return legDat;

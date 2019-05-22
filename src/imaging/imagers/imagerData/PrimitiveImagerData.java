@@ -158,41 +158,56 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 	public void setAsBoolean(boolean b) { this.asBoolean = b; }
 
 	
-	public static <T> PrimitiveImagerData<T> buildGradientData(
-			Imager<?> imgr, 
-			int nSteps, boolean horizontal, boolean loToHi, boolean includeBoolNA)
-	{
-		return buildGradientData(imgr.getFieldType(), imgr.getDataMin(), imgr.getDataMax(), nSteps, horizontal, loToHi, includeBoolNA);
-	}
+//	public static <T> PrimitiveImagerData<T> buildGradientData(
+//			Imager<?> imgr, 
+//			int nSteps, boolean horizontal, 
+////			boolean loToHi, 
+//			boolean includeBoolNA)
+//	{
+//		return buildGradientData(imgr.getFieldType(), imgr.getDataMin(), imgr.getDataMax(), nSteps, horizontal, loToHi, includeBoolNA);
+//	}
 	
 	
 	
 	public static <T> PrimitiveImagerData<T> buildGradientData(
-			String type, double min, double max, 
-			int nSteps, boolean horizontal, boolean loToHi, boolean includeBoolNA)
+			String type, double endpoint1, double endpoint2, 
+			int nSteps, boolean horizontal, 
+//			boolean loToHi, 
+			boolean includeBoolNA)
 	{
-		if (min > max && loToHi) { double t = min; min = max; max = t; }
-		else if (min < max && !loToHi) { double t = min; min = max; max = t; }
-
-		/* Integer types can all use integer data under the hood*/
+		
+//		if (!horizontal)
+//		{
+//			
+//		}
+//		if (endpoint1 > endpoint2 && loToHi) 
+//		{ double t = endpoint1; endpoint1 = endpoint2; endpoint2 = t; }
+//		else if (endpoint1 < endpoint2 && !loToHi) 
+//		{ double t = endpoint1; endpoint1 = endpoint2; endpoint2 = t; }
+//
+//		
+		
+		
+		/* Integer types can all use int primitives under the hood*/
 		switch(type.toLowerCase())
 		{
 		case("int"): case("integer"): case("byte"): case("short"): case("long"): case("char"): case("character"):
 		{
 			return new PrimitiveImagerData<T>(
-					Sequences.spacedIntervals2D((int) min, (int) max, nSteps, horizontal),
+					Sequences.spacedIntervals2D((int) endpoint1, (int) endpoint2, nSteps, horizontal),
 					false, false, false);
 		}
 		case("double"): case("float"): 
 		{
 			return new PrimitiveImagerData<T>(
-					Sequences.spacedIntervals2D((double) min, (double) max, nSteps, horizontal), 
+					Sequences.spacedIntervals2D((double) endpoint1, (double) endpoint2, nSteps, horizontal), 
 					false, false, false);
 		}
 		case("Boolean"): case("boolean"):
 		{
 			return new PrimitiveImagerData<T>(
-					Sequences.booleanGradient2D(includeBoolNA, horizontal, loToHi),
+					Sequences.booleanGradient2D(includeBoolNA, horizontal),
+//					Sequences.booleanGradient2D(includeBoolNA, horizontal, loToHi),
 					false, false, false);
 		}
 		}
