@@ -50,6 +50,25 @@ public class PanelFactory
 				clazz, annClass);
 	}
 
+	/**
+	 * 
+	 * @param dat
+	 * @param clazz
+	 * @param annClass
+	 * @param fieldName
+	 * @param gradientColors
+	 * @param booleanColors
+	 * @param naDouble
+	 * @param naInt
+	 * @param naColor
+	 * @param dblFmt
+	 * @param parsedBooleanFields
+	 * @param keepAspectRatio
+	 * @param fixedWidth
+	 * @param fixedHeight
+	 * @param decoratorRelPointSize
+	 * @return
+	 */
 	public static <T> ObjectImagePanel<T> buildPanel(
 			ImagerData<T> dat, Class<T> clazz,	Class<? extends Annotation> annClass,
 			String fieldName,
@@ -279,7 +298,7 @@ public class PanelFactory
 		out.setFont(font);
 		out.setSelectedIndex(fields.indexOf(initialField.toLowerCase()));
 		
-		logger.debug("Has legend? " + (panel.getLegend() != null));
+		logger.trace("Has legend? " + (panel.getLegend() != null));
 		out.buildActionListener(panel.getLegend());
 
 		return out;

@@ -67,32 +67,6 @@ public class ObjectImagePanel<T> extends JPanel
 	
 	public void setLegend(LegendPanel<T> legend) { this.legend = legend; }
 	public LegendPanel<T> getLegend() { return this.legend; }
-//
-//	
-//	public PrimitiveImagePanel<T> buildLegendPanel(int nSteps, int legendWidth, int legendHeight, boolean loToHi, boolean horiz, boolean keepAspectRatio)
-//	{
-//		
-//		
-//		
-//		
-////		PrimitiveImager<T> imgr = imager.getLegendImager(nSteps, loToHi, horiz);
-////		this.legend = PanelFactory.buildPrimitivePanel(
-////				imgr, 
-////				imager.getFieldName(), 
-////				keepAspectRatio, legendWidth, legendHeight, ptRelSize);
-////		legend.nLegendSteps = nSteps;
-////		legend.horizontalLegend = horiz;
-////		legend.setLegLoToHi(loToHi);
-////		legend.legFixedAspectRatio = fixedAspectRatio;
-////		
-////		
-////		
-//		
-//		
-//		logger.trace(String.format("%s", "Building legend.  Legend is null? " + (legend == null)));
-//		
-//		return legend;
-//	}
 	
 	void init(
 			ObjectImager<T> imgr, 
@@ -161,6 +135,8 @@ public class ObjectImagePanel<T> extends JPanel
 		imager.refresh();
 		image = imager.getImage();
 		logger.debug("ObjectArrayImagePanel: updating array image to field " + imager.getFieldName());
+		
+//		super.paintComponent(this.getGraphics());
 		paintComponent(this.getGraphics());
 	}
 
@@ -182,6 +158,7 @@ public class ObjectImagePanel<T> extends JPanel
 
 	@Override public void paintComponent(Graphics g)
 	{
+		super.paintComponent(g);
 		logger.trace(String.format("Data width: %d, data height: %d", 
 				imager.getDataWidth(), imager.getDataHeight()));
 		Insets insets = getInsets();
@@ -339,14 +316,6 @@ public class ObjectImagePanel<T> extends JPanel
 		double relJ = ArrayUtils.absToRelCoord(dataY, imager.getDataHeight());
 		
 		addValueLabelRelative(relI, relJ, font, color, "%d", "%f", "%s");
-		
-//		if (font == null) font = this.getFont();
-//		String label = imager.queryData(relI, relJ);
-//		labelFromImageRelCoords(relI, relJ, label, font, color, -9999, "value label");
-//		
-//		logger.trace(String.format("Adding value "
-//				+ "label %s at coords (%.0f%%, %.0f%%)",
-//				label, 100 * relI, 100 * relJ));
 	}
 
 	/**

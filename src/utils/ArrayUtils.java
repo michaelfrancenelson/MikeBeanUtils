@@ -14,18 +14,18 @@ public class ArrayUtils
 				length - 1, 
 				(int)Math.floor(((double) length) * relCoord));
 	}
-	
+
 	public static double absToRelCoord(int point, int length)
 	{
 		return absToRelCoord((double) point, length);
 	}
-	
+
 	public static double absToRelCoord(double point, int length)
 	{
 		return  Math.min(1.0, Math.max(0.0,  point / ((double) length)));
 	}
-	
-	
+
+
 	/** 
 	 *  A container for an int array with its min and max values
 	 *  already calculated.
@@ -81,7 +81,7 @@ public class ArrayUtils
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
 		return out;
 	}
-	
+
 	public static byte[][] transpose(byte[][] dat)
 	{
 		byte[][] out = new byte[dat[0].length][dat.length];
@@ -95,14 +95,14 @@ public class ArrayUtils
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
 		return out;
 	}
-	
+
 	public static long[][] transpose(long[][] dat)
 	{
 		long[][] out = new long[dat[0].length][dat.length];
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
 		return out;
 	}
-	
+
 	public static char[][] transpose(char[][] dat)
 	{
 		char[][] out = new char[dat[0].length][dat.length];
@@ -116,7 +116,7 @@ public class ArrayUtils
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
 		return out;
 	}
-	
+
 	public static double[][] transpose(double[][] dat)
 	{
 		double[][] out = new double[dat[0].length][dat.length];
@@ -129,15 +129,15 @@ public class ArrayUtils
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
 		return out;
 	}
-	
+
 	public static boolean[][] transpose(boolean[][] dat)
 	{
 		boolean[][] out = new boolean[dat[0].length][dat.length];
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++) out[j][i] = dat[i][j];
 		return out;
 	}
-	
-	
+
+
 	public static double[] getArrMinMax(double[][] dat)
 	{
 		double dataMin = Double.MAX_VALUE; double dataMax = -dataMin;
@@ -213,7 +213,7 @@ public class ArrayUtils
 	{
 		return new double[] { 0.0, 1.0 };
 	}
-	
+
 	public static double doubleCaster(float f) { return (double) f; }
 	public static double doubleCaster(byte f) { return (double) f; }
 	public static double doubleCaster(char f) { return (double) f; }
@@ -221,7 +221,13 @@ public class ArrayUtils
 	public static double doubleCaster(int f) { return (double) f; }
 	public static double doubleCaster(long f) { return (double) f; }
 	public static double doubleCaster(boolean f) { if (f) return 1; return 0; }
-	
+	public static double doubleCaster(Boolean f)
+	{ 
+		if (f == null) return -Double.MAX_VALUE;
+		if (f) return 1; 
+		return 0;
+	}
+
 	public static String stringCaster(double f, String fmt) { return String.format(fmt, f); }
 	public static String stringCaster(float f, String fmt) { return String.format(fmt, f); }
 	public static String stringCaster(byte f, String fmt) { return String.format(fmt, f); }
@@ -230,5 +236,11 @@ public class ArrayUtils
 	public static String stringCaster(int f, String fmt) { return String.format(fmt, f); }
 	public static String stringCaster(long f, String fmt) { return String.format(fmt, f); }
 	public static String stringCaster(boolean f, String fmt) { if (f) return String.format(fmt, "true"); return String.format(fmt, "false"); }
-	
+	public static String stringCaster(Boolean f, String fmt) 
+	{
+		if (f == null) return String.format(fmt, "NA");
+		if (f) return String.format(fmt, "true");
+		return String.format(fmt, "false"); 
+	}
+
 }

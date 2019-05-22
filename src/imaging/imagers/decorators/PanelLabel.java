@@ -21,10 +21,10 @@ public class PanelLabel
 	private Color color;
 	private String label;
 
-	
+
 	public void setDblFmt(String d) { dblFmt = d; } 
 	public String getDblFmt() { return dblFmt; } 
-	
+
 	static Logger logger = LoggerFactory.getLogger(PanelLabel.class);
 
 	public static PanelLabel fromImgAbsoluteCoords(
@@ -42,7 +42,7 @@ public class PanelLabel
 				size, font, color, label);
 	}
 
-	
+
 	public static PanelLabel fromDataAbsoluteCoords(
 			int dataX, int dataY, int dataWidth, int dataHeight, 
 			double size, Font font, Color color, String label)
@@ -56,7 +56,7 @@ public class PanelLabel
 				coords[0], coords[1],
 				size, font, color, label);
 	}
-	
+
 	public static PanelLabel fromDataAbsoluteCoords(
 			int dataX, int dataY, ArrayImagerData<?> dat, 
 			int size, Font font, Color color, String label)
@@ -92,7 +92,6 @@ public class PanelLabel
 	public void draw(
 			Graphics g, int imageWidth, int imageHeight,
 			int cellWidth, int cellHeight,
-			//			int dataWidth, int dataHeight,
 			int imageCornerX, int imageCornerY)
 	{
 		g.setFont(font);
@@ -100,46 +99,54 @@ public class PanelLabel
 				{
 						imageCornerX + ArrayUtils.relToAbsCoord(relX, imageWidth),
 						imageCornerY + ArrayUtils.relToAbsCoord(relY, imageHeight)
+						//				};
+						//		logger.debug(String.format("Cell width: %d, cell height: %d", cellWidth, cellHeight));
+						//		logger.debug(String.format("Drawing annotation at (%d, %d) "
+						//				+ "(%.0f%%, %.0f%%)", coords[0], coords[1], 100 * relX, 100 * relY));
 				};
-		//		logger.debug(String.format("Cell width: %d, cell height: %d", cellWidth, cellHeight));
-		//		logger.debug(String.format("Drawing annotation at (%d, %d) "
-		//				+ "(%.0f%%, %.0f%%)", 
-		//				coords[0], coords[1], 100 * relX, 100 * relY));
 		if (label == null) 
 		{
+			logger.trace(String.format("Cell width: %d, cell height: %d", cellWidth, cellHeight));
+			logger.trace(String.format("Drawing point annotation at (%d, %d) "
+					+ "(%.0f%%, %.0f%%)", coords[0], coords[1], 100 * relX, 100 * relY));			
 			int drawSize = (int) (relSize * (double) Math.min(imageWidth, imageHeight));
-			
 			int offset = drawSize / 2;
+			int x = coords[0] - offset;
+			int y = coords[1] - offset;
+			logger.trace(String.format("Point offset = %d", offset));
+			logger.trace(String.format("Drawing point at (%d, %d)", x, y));
 			g.setColor(color);
-			g.fillOval(coords[0] - offset, coords[1] - offset, drawSize, drawSize);
+			g.fillOval(x, y, drawSize, drawSize);
 		}
 		else
 		{
-
+			logger.trace(String.format("Cell width: %d, cell height: %d", cellWidth, cellHeight));
+			logger.trace(String.format("Drawing text annotation at (%d, %d) "
+					+ "(%.0f%%, %.0f%%)", coords[0], coords[1], 100 * relX, 100 * relY));
 			FontMetrics metrics = g.getFontMetrics(font);
 			int stringWidth = metrics.stringWidth(label);
-			// Determine the X coordinate for the text
-			int x = coords[0] + cellWidth / 2 -
+			int stringHeight = metrics.getHeight();
+
+			int heightOffset = (cellHeight / 2);
+			int widthOffset = (cellWidth / 2);
+			int fontHeightOffset = font.getSize() / 2;
+
+			heightOffset = 0;
+			widthOffset = 0;
+			
+			logger.trace(String.format("\ncellHeight = %d\nstringWidth = %d\n stringHeight = %d\n heightOffset = %d\n widthOffset = %d\n fontHeightOffset = %d", cellHeight,
+					stringWidth, stringHeight, heightOffset, widthOffset, fontHeightOffset));
+
+			int x = coords[0] + 
+//					widthOffset -
 					stringWidth / 2;
-			//					2 * cellWidth +
-			//				(cellWidth / 2) - 
-			//					metrics.stringWidth(label);
-			// Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top of the screen)
-			int y = coords[1] + (cellHeight / 2) + 
-					//					metrics.getAscent()/2 +
-					metrics.getHeight()/1 -
-					font.getSize();
-			//			+ metrics.getHeight()/ 2);
-			//			+
-			//					(cellHeight / 2) -
-			//					2 * cellHeight +
-			//					(cellHeight / 2) -
-			//					metrics.getHeight() / 2;
-			//					metrics.getAscent();
-			// Set the font
+			int y = coords[1] +
+//					heightOffset + 
+					stringHeight / 2 - fontHeightOffset;
+			//			-
+			//					font.getSize();
 			g.setFont(font);
-			// Draw the String
-			//			logger.debug(String.format("Drawing text label at (%d, %d)", x, y));
+			logger.trace(String.format("Drawing text label '%s' at (%d, %d)", label, x, y));
 			g.drawString(label, x, y);
 		}
 	}

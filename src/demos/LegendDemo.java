@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -48,13 +49,13 @@ public class LegendDemo extends DemoConsts
 				"elevation",
 				ColorUtils.TERRAIN_COLORS, ColorUtils.GREENS,
 				null, null, null,
-				"%.4f", null,
+				"%.4f", Arrays.asList("has_stream"),
 				true, 
 				0, 0, ptSize);
 				
 		int nLegLabels = 5;
 		double offset1 = 0.05, offset2 = 0.05;
-		double textOffset = 0.0;
+		double textOffset = 0.9;
 		double pointOffset = 0.85;
 		double legPtSize = 0.025;
 		

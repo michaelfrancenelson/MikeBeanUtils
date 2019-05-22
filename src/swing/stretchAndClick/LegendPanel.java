@@ -2,10 +2,10 @@ package swing.stretchAndClick;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import imaging.imagers.imagerData.PrimitiveImagerData;
 import utils.Sequences;
 
 public class LegendPanel<T> extends PrimitiveImagePanel<T>
@@ -27,7 +27,10 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 	
 	protected double[] labelPositions;
 
-
+@Override public void paintComponent(Graphics g)
+{
+	super.paintComponent(g);
+}
 	
 	public void initLegend(
 //			List<String> parsedBooleanFields,
@@ -88,8 +91,6 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 			
 		}
 		
-		
-
 		int valIndex, positionIndex;
 		if (horiz) { valIndex = 0; positionIndex = 1; }
 		else { valIndex = 1; positionIndex = 0; }
@@ -101,11 +102,13 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 			coords[positionIndex] = textPositionOffset;
 
 			addValueLabelRelative(coords[0], coords[1], font, color, intFmt, dblFmt, strFmt);
+			logger.trace(String.format("Label at x = %.2f%%, y = %.2f%%", 100.0 * coords[0], 100.0 * coords[1]));
 
 			if (pointPositionOffset > 0)
 			{
 				coords[positionIndex] = pointPositionOffset;
 				addPointRelative(coords[0], coords[1], ptSize, color);
+				logger.trace(String.format("Point at x = %.2f%%, y = %.2f%%", 100.0 * coords[0], 100.0 * coords[1]));
 			}
 		}
 	}
