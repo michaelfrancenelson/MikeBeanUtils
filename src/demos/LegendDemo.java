@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.builder.NetCDFObjBuilder;
+import beans.sampleBeans.ForestCell;
 import beans.sampleBeans.ForestSubclass;
 import imaging.imagers.imagerData.ImagerData;
 import swing.stretchAndClick.LegendPanel;
@@ -40,8 +41,8 @@ public class LegendDemo extends DemoConsts
 			int width, int height, int nLegSteps, int legWidth, int legHeight)
 	{
 		subForest = NetCDFObjBuilder.factory2D(
-				ForestSubclass.class, ParsedField.class, filename, null, true, true);
-		
+				ForestSubclass.class, ParsedField.class, filename, null, true, true, false);
+		ForestSubclass.setSlopeOutside(subForest);
 		int legPosition = 1;
 		int controlPosition = 1;
 		boolean horiz = false;
@@ -68,7 +69,8 @@ public class LegendDemo extends DemoConsts
 				ForestSubclass.class, ParsedField.class, 
 				"elevation",
 				ColorUtils.TERRAIN_COLORS, ColorUtils.GREENS,
-				null, null, Color.gray,
+//				null, null,
+				Color.gray,
 				"%.4f", Arrays.asList("has_stream"),
 				true, 
 				0, 0, ptSize,
@@ -101,7 +103,7 @@ public class LegendDemo extends DemoConsts
 		f1 = SwingUtils.frameFactory(width, height, "Legend demo 1", 1, 2);
 		
 		subForest = NetCDFObjBuilder.factory2D(
-				ForestSubclass.class, ParsedField.class, filename, null, true, true);
+				ForestSubclass.class, ParsedField.class, filename, null, true, true, false);
 		
 		ObjectImagePanel<ForestSubclass> subPan = PanelFactory.objectPanel(
 				ImagerData.build(subForest, false, false, false),

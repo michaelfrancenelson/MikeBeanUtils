@@ -31,7 +31,7 @@ public class ArrayImagerData<T> implements ImagerData<T>
 	@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
 	{
 		dataMin = Double.MAX_VALUE;
-		dataMax = Double.MIN_VALUE;
+		dataMax = -dataMin;
 
 		if (arrayData[0][0].getClass().equals(Boolean.class))
 		{
@@ -43,8 +43,11 @@ public class ArrayImagerData<T> implements ImagerData<T>
 				for (int j = 0; j < dataHeight; j++)
 				{
 					double val = w.getDoubleVal(arrayData[i][j]);
-					if (val < dataMin) dataMin = val;
-					if (val > dataMax) dataMax = val;
+					if (val != -Double.MAX_VALUE)
+					{
+						if (val < dataMin) dataMin = val;
+						if (val > dataMax) dataMax = val;
+					}
 				}
 			ci.updateMinMax(dataMin, dataMax);
 		}
@@ -145,14 +148,17 @@ public class ArrayImagerData<T> implements ImagerData<T>
 		@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
 		{
 			dataMin = Double.MAX_VALUE;
-			dataMax = Double.MIN_VALUE;
+			dataMax = -dataMin;
 
 			for (int i = 0; i < dataWidth; i++)
 				for (int j = 0; j < dataHeight; j++)
 				{
 					double val = w.getDoubleVal(listData.get(i).get(j));
-					if (val < dataMin) dataMin = val;
-					if (val > dataMax) dataMax = val;
+					if (val != -Double.MAX_VALUE)
+					{
+						if (val < dataMin) dataMin = val;
+						if (val > dataMax) dataMax = val;
+					}
 				}
 			ci.updateMinMax(dataMin, dataMax);
 			logger.trace(String.format("Data min/max = (%.2f, %.2f)", dataMin, dataMax));

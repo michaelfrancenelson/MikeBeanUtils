@@ -30,7 +30,8 @@ public class AnnotatedBeanReporter<T>
 
 
 	public static <T> String getStringVal(Class<T> clazz, T t, Field f,
-			int naInt, double naDouble, String naString, boolean naBoolean, char naChar) throws IllegalArgumentException, IllegalAccessException
+//			int naInt, double naDouble, 
+			String naString, boolean naBoolean, char naChar) throws IllegalArgumentException, IllegalAccessException
 	{
 		f.setAccessible(true);
 
@@ -53,21 +54,22 @@ public class AnnotatedBeanReporter<T>
 	}
 
 	static <T> boolean isNA(Class<T> clazz, T t, Field f,
-			int naInt, double naDouble, String naString, char naChar) 
+//			int naInt, double naDouble, 
+			String naString, char naChar) 
 					throws IllegalArgumentException, IllegalAccessException
 	{
 		String type = f.getType().getSimpleName();
 
 		switch(type)
 		{
-		case("int"):     { return f.getInt(t) == naInt; }
-		case("double"):  { return f.getDouble(t) == naDouble; }
+		case("int"):     { return f.getInt(t) == AnnotatedBeanInitializer.NA_INT; }
+		case("double"):  { return f.getDouble(t) == AnnotatedBeanInitializer.NA_DOUBLE; }
 		/* It doesn't really make sense to check this for the primitive boolean type... */
 		//		case("boolean"): { return f.getBoolean(t) == naBoolean;; }
 
 		case("String"):  { if (f.get(t) == null) return true; return f.get(t).toString().equals(naString); }
-		case("Integer"): { if (f.get(t) == null) return true; return (Integer) f.get(t) == naInt; }
-		case("Double"):  { if (f.get(t) == null) return true; return (Double)  f.get(t) == naDouble; }
+		case("Integer"): { if (f.get(t) == null) return true; return (Integer) f.get(t) == AnnotatedBeanInitializer.NA_INT; }
+		case("Double"):  { if (f.get(t) == null) return true; return (Double)  f.get(t) == AnnotatedBeanInitializer.NA_DOUBLE; }
 		case("Boolean"): { if (f.get(t) == null) return true; return (Boolean) f.get(t) == null; }
 		case("Float"): case("Byte"): case("Short"): case("Long"): case("Character"):
 			if (f.get(t) == null) return true;
@@ -198,6 +200,7 @@ public class AnnotatedBeanReporter<T>
 	 */
 	public static String concat(List<String> l, String sep, Object... additionalCols)
 	{
+		if (additionalCols == null) additionalCols = new Object[0];
 		int nHeaders = l.size();
 		int nExtra = additionalCols.length;
 		int nElements = nHeaders + nExtra;

@@ -48,7 +48,7 @@ public class ImagePanelDemo extends DemoConsts
 	
 	static void netcdfDemo(int width, int height, boolean show, boolean save)
 	{
-		allFlavList = NetCDFObjBuilder.factory2D(AllFlavorBean.class, inputNCDF);
+		allFlavList = NetCDFObjBuilder.factory2D(AllFlavorBean.class, inputNCDF, false);
 
 		List<ObjectImager<AllFlavorBean>> imagers = new ArrayList<>();
 		ImagerData<AllFlavorBean> dat = ImagerData.build(allFlavList, false, false, false);

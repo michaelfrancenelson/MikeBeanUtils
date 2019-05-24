@@ -106,8 +106,18 @@ public class ObjectImager<T> implements Imager<T>
 	
 	@Override public void refresh() { buildImage(); }
 
-	public void setField(String fieldName) { this.currentWatcher = watchers.get(fieldName.toLowerCase()); refresh(); } 
-	@Override public void setField(Field field) { setField(field.getName()); }
+	public void setField(String fieldName) 
+	{
+		String name = fieldName.toLowerCase();
+		if (watchers.containsKey(name))
+		{
+			this.currentWatcher = watchers.get(fieldName.toLowerCase()); refresh(); 
+		}
+		else throw new IllegalArgumentException("No field watcher found in type '" + 
+		clazz.getSimpleName() + "' for field '" + name + ".");} 
+	@Override public void setField(Field field) { 
+		
+		setField(field.getName()); }
 
 	public void setDataSelection(double relativeI, double relativeJ) { queryData(relativeI, relativeJ, null, null, null); }	
 	

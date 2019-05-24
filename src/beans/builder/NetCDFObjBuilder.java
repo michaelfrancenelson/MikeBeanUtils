@@ -45,15 +45,16 @@ public class NetCDFObjBuilder
 			Class<T> clazz,
 			Class<? extends Annotation> annClass,
 			String filename,
-			boolean transpose
+			boolean transpose,
+			boolean ignoreIncomplete
 			)
 	{
 		List<Field> ff = FieldUtils.getFields(
 				clazz, annClass, true, true, true, false);
-		return factory2D(clazz, annClass, filename, ff, transpose, true);
+		return factory2D(clazz, annClass, filename, ff, transpose, true, ignoreIncomplete);
 	}
 
-	
+
 	/**
 	 * Build a collection of beans from a NetCDF file. 
 	 * Will attempt to read data corresponding to all the fields with the @ParsedField
@@ -64,40 +65,42 @@ public class NetCDFObjBuilder
 	 */
 	public static <T> List<List<T>> factory2D(
 			Class<T> clazz,
-			String filename
+			String filename,
+			boolean ignoreIncomplete
 			)
 	{
 		List<Field> ff = FieldUtils.getFields(
 				clazz, ParsedField.class, true, true, true, false);
-		return factory2D(clazz, filename, ff);
+		return factory2D(clazz, filename, ff, ignoreIncomplete);
 	}
-	
-	
+
+
 	public static <T> List<List<T>> factory2D(
 			Class<T> clazz,
 			String filename,
-			List<Field> ff)
+			List<Field> ff, 
+			boolean ignoreIncomplete)
 	{
-		return factory2D(clazz, null, filename, ff, false, true);
+		return factory2D(clazz, null, filename, ff, false, true, ignoreIncomplete);
 	}
-	
-	
+
+
 	public static <T> void setStaticFromGlobalAttributes(NetcdfFile ncfile, Class<T> clazz)
 	{
 		List<Attribute> attList = ncfile.getGlobalAttributes();
-		
+
 		AnnotatedBeanReader.logger.trace("NetCDFObjBuilder setStaticFromGlobalAttribute() attempting to set static fields"
 				+ "from netCDF global attributes for class " + clazz.getName());
 		AnnotatedBeanReader.logger.trace("NetCDFObjBuilder setStaticFromGlobalAttribute() found " + attList.size() + " global attributes.");
-		
+
 		Map<String, Field> fMap = new HashMap<>();
-		
+
 		/* record the field names in all lowercase so that matches between fields
 		 * and NCDF variables are case-insensitive. */
-		
+
 		List<Field> ff = FieldUtils.getFields(clazz, null, false, true, true, false);
 		AnnotatedBeanReader.logger.trace(" found " + ff.size() + " static fields.");
-		
+
 		for (Field f : ff) fMap.put(f.getName().toLowerCase(), f);
 
 		for (Attribute att : attList)
@@ -110,12 +113,12 @@ public class NetCDFObjBuilder
 				String val = att.getValue(0).toString(); 
 				AnnotatedBeanReader.logger.trace("NetCDFObjBuilder setStaticFromGlobalAttribute()"
 						+ " atribute name: " + att + " value: " + val);
-				
+
 				AnnotatedBeanReader.setVal(f, null, val, null);
 			}
 		}
 	}
-	
+
 	/**
 	 * Build a collection of beans from a NetCDF file. 
 	 * Will attempt to read data corresponding to all the specified fields
@@ -131,7 +134,8 @@ public class NetCDFObjBuilder
 			String filename,
 			List<Field> ff, 
 			boolean transpose,
-			boolean attributesAsStaticfields)
+			boolean attributesAsStaticfields,
+			boolean ignoreIncomplete)
 	{
 		NetcdfFile ncfile = null; 
 		List<List<T>> out = null;
@@ -141,7 +145,7 @@ public class NetCDFObjBuilder
 
 		if (ff == null)
 			ff = FieldUtils.getFields(clazz, annClass, true, true, true, true);
-		
+
 		/* record the field names in all lowercase so that matches between fields
 		 * and NCDF variables are case-insensitive. */
 		List<String> parsedFieldNames = FieldUtils.getFieldNames(ff, clazz, null, false);
@@ -155,7 +159,7 @@ public class NetCDFObjBuilder
 		Map<String, Java2DArrayPackage> javaArrayMap = new HashMap<>();
 
 		List<Variable> vars = ncfile.getVariables();
-//		boolean transpose = false;
+		//		boolean transpose = false;
 		for (Variable v : vars)
 		{
 			Java2DArrayPackage pack;
@@ -220,12 +224,38 @@ public class NetCDFObjBuilder
 		}
 
 		/* Check that all the required fields were found in the NCDF file. */
+		List<String> nnnn = new ArrayList<>();
 		for (String st : parsedFieldNames)
 		{
-			if (!javaArrayMap.containsKey(st.toLowerCase()))
-				throw new IllegalArgumentException("Bean field " + st + " does not have a matching "
-						+ "variable int he netCDF input file " + filename);
+			if (!ignoreIncomplete)
+			{
+				if (!javaArrayMap.containsKey(st.toLowerCase()))
+					throw new IllegalArgumentException("Bean field " + st + " does not have a matching "
+							+ "variable int he netCDF input file " + filename);
+				nnnn.add(st);
+			}
+			else
+			{
+				if (javaArrayMap.containsKey(st.toLowerCase()))
+				{
+					nnnn.add(st);
+				}
+			}
 		}
+		
+		parsedFieldNames = FieldUtils.getFieldNames(ff, clazz, null, false);
+		parsedFieldNamesLC = FieldUtils.getFieldNames(ff, clazz, null, true);
+		for (int i = 0; i < parsedFieldNames.size(); i++) 
+			parsedFieldNamesLC.set(i, parsedFieldNamesLC.get(i).toLowerCase());
+
+		List<Field> fff = new ArrayList<>();
+		
+		for (String st : nnnn)
+		{
+			fff.add(ff.get(parsedFieldNamesLC.indexOf(st)));
+		}
+
+ff = fff;
 
 		out = new ArrayList<List<T>>(width);
 		for (int x = 0; x < width; x++)
@@ -238,10 +268,10 @@ public class NetCDFObjBuilder
 			}
 			out.add(l1);
 		}
-		
+
 		/* Read static field values from global attributes. */
 		if (attributesAsStaticfields) setStaticFromGlobalAttributes(ncfile, clazz);
-		
+
 		return out;
 	}
 

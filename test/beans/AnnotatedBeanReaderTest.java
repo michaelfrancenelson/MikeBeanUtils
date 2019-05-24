@@ -21,8 +21,8 @@ public class AnnotatedBeanReaderTest
 		List<List<AllFlavorBean>> beans;
 		String filename = "testData/AllFlavorBean.nc";
 
-		beans = NetCDFObjBuilder.factory2D(AllFlavorBean.class, filename);
-		NetCDFObjBuilder.factory2D(AllFlavorStaticBean.class, filename);
+		beans = NetCDFObjBuilder.factory2D(AllFlavorBean.class, filename, false);
+		NetCDFObjBuilder.factory2D(AllFlavorStaticBean.class, filename, false);
 
 		assertTrue(AnnotatedBeanInitializer.enforceStaticInitialized(
 				AllFlavorStaticBean.class, true)); 

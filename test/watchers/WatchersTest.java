@@ -20,7 +20,7 @@ public class WatchersTest {
 		String filename = "testData/AllFlavorBean.nc";
 		List<List<AllFlavorBean>> beans;
 
-		beans = NetCDFObjBuilder.factory2D(AllFlavorBean.class, filename);
+		beans = NetCDFObjBuilder.factory2D(AllFlavorBean.class, filename, false);
 		Map<String, FieldWatcher<AllFlavorBean>> watcherMap = 
 				SimpleFieldWatcher.getWatcherMap(
 						AllFlavorBean.class, 

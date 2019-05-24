@@ -47,7 +47,7 @@ public class ObjectImagePanel<T> extends JPanel
 	protected String currentClickValue;
 
 	protected Imager<T> imager;
-	private Class<T> clazz;
+	protected Class<T> clazz;
 	private Class<? extends Annotation> annClass;
 
 	LegendPanel<T> legend;
@@ -138,6 +138,13 @@ public class ObjectImagePanel<T> extends JPanel
 		paintComponent(this.getGraphics());
 	}
 
+	
+	public JComboBox<String> getMapLayerComboBox(Font font)
+	{
+		return PanelFactory.buildMapComboBox(clazz, this, font, this.imager.getFieldName());
+	}
+
+	
 	public JComboBox<String> getControlComboBox(Font font)
 	{
 		List<Field> f2;

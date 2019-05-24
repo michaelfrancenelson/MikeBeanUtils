@@ -40,7 +40,7 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 	{
 		boolean show = true, save = false;
 
-		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
+//		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
 //		intDemo(200, 300, 10, 20, 4.3, show, save);
 //		booleanDemo(200, 300, 3.5, show, save);
 //		byteDemo(200, 300, 4, show, save);
@@ -68,7 +68,8 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 			data1.add(new PrimitiveImagerData<Object>(bytes1, trueFalse[jj], trueFalse[ii], false));
 		}
 		c = SimpleColorInterpolator.factory(ColorUtils.RAINBOW, 0, maxb,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, "%0.4f");
+//				Double.MIN_VALUE, Integer.MIN_VALUE, 
+				Color.gray, "%0.4f");
 		f1 = SwingUtils.frameFactory((int)(width * size), (int)(height * size), "Byte array demo", 2, 2);
 		f2 = SwingUtils.frameFactory((int)(height * size), (int)(width * size), " Transposed byte array demo", 2, 2);
 		int z = 0;
@@ -184,7 +185,8 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		}
 
 		c = SimpleColorInterpolator.factory(ColorUtils.TOPO_COLORS, min, max,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, "%0.4f");
+//				Double.MIN_VALUE, Integer.MIN_VALUE,
+				Color.gray, "%0.4f");
 
 		f1 = SwingUtils.frameFactory((int)(nCol * size), (int) (nRow * size), "Int value array demo", 2, 2);
 		f2 = SwingUtils.frameFactory((int) (nRow * size), (int)(nCol * size), "Transposed int value array demo", 2, 2);
@@ -247,7 +249,8 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 		}
 		c = SimpleColorInterpolator.factory(
 				ColorUtils.TOPO_COLORS,	minVal, maxVal,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, "%0.4f");
+//				Double.MIN_VALUE, Integer.MIN_VALUE,
+				Color.gray, "%0.4f");
 
 		f1 = SwingUtils.frameFactory((int)(width * size), (int) (height * size), "Double value array demo");
 		f1.add(new SimpleImagePanel(ImageFactory.buildPrimitiveImage(datDbl, c, false, false, false)));

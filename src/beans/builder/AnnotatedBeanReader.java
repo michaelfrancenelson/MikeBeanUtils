@@ -36,6 +36,89 @@ public class AnnotatedBeanReader
 
 
 	/**
+	 *  Set the fields of an already existing bean from a file. <br>
+	 *  Uses a slightly brute-force approach.
+	 */
+	public static <T> void setFieldsFromfile(
+			Class<T> clazz,
+			Class<? extends Annotation> annClass,
+			String filename,
+			T object,
+			String matchFieldName,
+			String matchFieldValue
+			)
+	{
+		T referenceObject = null;;
+		Field fieldToMatch = null;
+		/* Which fields to set from the file? */
+		List<Field> fieldsToSet = FieldUtils.getFields(
+				clazz, annClass, true, false, true, false);
+
+		/* If no field to match is provided, just use the values
+		 * from the first element
+		 */
+		int maxElements = -1;
+		if (matchFieldName == null) maxElements = 1;
+
+		List<T> beans = factory(clazz, filename, true, maxElements);
+		if (beans.size() == 0) 
+			throw new IllegalArgumentException("No parseable data found in" +
+					" file " + filename);
+
+		/* Attempt to find an entry matching the input pattern. */
+		if (matchFieldName != null)
+		{
+			try {
+				fieldToMatch = clazz.getDeclaredField(matchFieldName);
+				fieldToMatch.setAccessible(true);
+			} catch (NoSuchFieldException | SecurityException e) {
+				throw new IllegalArgumentException("Unable to find a field"
+						+ " named '" + matchFieldName + "' in type  " +
+						clazz.getSimpleName() + ".  Check that " +
+						"the matching field request is spelled correctly"
+						);
+			}
+			if (!fieldToMatch.getType().getSimpleName().equals("String"))
+				throw new IllegalArgumentException("Attempting to match a "
+						+ "non-string field: '" + matchFieldName + " of type " +
+						fieldToMatch.getType().getSimpleName() + ".");
+
+			for (T t : beans)
+			{
+				try {
+					if (fieldToMatch.get(t).toString().equals(matchFieldValue))
+					{
+						referenceObject = t; break;
+					}
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (referenceObject == null)
+				throw new IllegalArgumentException("Unable to find an entry in file " +
+						filename + " for field '" + matchFieldName + "' with value '" +
+						matchFieldValue + "'.");
+		}
+		else 
+		{
+			referenceObject = beans.get(0);
+		}
+
+		for (Field f : fieldsToSet)
+		{
+			try {
+				f.set(object, f.get(referenceObject));
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+
+
+
+	/**
 	 * Build list of beans from an input csv or xlsx.
 	 * 
 	 * @param clazz    class of bean

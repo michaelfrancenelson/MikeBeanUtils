@@ -41,7 +41,8 @@ public class GradientImageDemo extends DemoConsts
 		int min = -3, max = 2;
 		c = SimpleColorInterpolator.factory(
 				ColorUtils.BLUES, min, max,
-				Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null);
+//				Double.MIN_VALUE, Integer.MIN_VALUE, 
+				Color.gray, null);
 
 		f1 = SwingUtils.frameFactory(4 * cellSize , 2 * cellSize, "Direction/orientation demo", 2, 2);
 		for (int i = 0; i < 2; i++) for (int j = 0; j < 2; j++)
@@ -70,7 +71,8 @@ public class GradientImageDemo extends DemoConsts
 				{
 					c = SimpleColorInterpolator.factory(
 							ColorUtils.TERRAIN_COLORS, mins[i], maxs[i],
-							Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null);
+//							Double.MIN_VALUE, Integer.MIN_VALUE,
+							Color.gray, null);
 
 					PrimitiveImagerData<Object> datArr = 
 							PrimitiveImagerData.buildGradientData(
@@ -124,7 +126,8 @@ public class GradientImageDemo extends DemoConsts
 				{
 					c = SimpleColorInterpolator.factory(
 							ColorUtils.TERRAIN_COLORS, mins[i], maxs[i],
-							Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null);
+//							Double.MIN_VALUE, Integer.MIN_VALUE,
+							Color.gray, null);
 
 
 
@@ -154,7 +157,8 @@ public class GradientImageDemo extends DemoConsts
 				{
 					c = SimpleColorInterpolator.factory(
 							ColorUtils.HEAT_COLORS, mins[i], maxs[i],
-							Double.MIN_VALUE, Integer.MIN_VALUE, Color.gray, null);
+//							Double.MIN_VALUE, Integer.MIN_VALUE,
+							Color.gray, null);
 					simplePan = new SimpleImagePanel(GradientImageFactory.buildGradientImage(
 							mins[i], maxs[i], nBreaks, c, trueFalse[orient], trueFalse[dir]));
 					simplePan.setBorder(border);

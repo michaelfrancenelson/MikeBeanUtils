@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,8 @@ import imaging.imagers.ObjectImager;
 import imaging.imagers.PrimitiveImager;
 import imaging.imagers.imagerData.ImagerData;
 import imaging.imagers.imagerData.PrimitiveImagerData;
+import swing.stretchAndClick.MapAndLegendPanel.MapLayer;
+import utils.FieldUtils;
 
 /**
  *  
@@ -41,7 +44,8 @@ public class PanelFactory
 			ImagerData<T> dat, Class<T> clazz,	Class<? extends Annotation> annClass,
 			String fieldName,
 			Color[] gradientColors, Color[] booleanColors,
-			Double naDouble, Integer naInt, Color naColor, 
+//			Double naDouble, Integer naInt, 
+			Color naColor, 
 			String mapDblFmt, List<String> parsedBooleanFields,
 			boolean mapAspectRatio, 
 			int mapWidth, int mapHeight, double mapPointSize,
@@ -59,8 +63,8 @@ public class PanelFactory
 			)
 	{
 
-		if (naDouble == null) naDouble = -Double.MAX_VALUE;
-		if (naInt == null) naInt = Integer.MIN_VALUE;
+//		if (naDouble == null) naDouble = -Double.MAX_VALUE;
+//		if (naInt == null) naInt = Integer.MIN_VALUE;
 		if (naColor == null) naColor = Color.gray;
 		if (mapDblFmt == null) mapDblFmt = "%.2f";
 		if (parsedBooleanFields == null) parsedBooleanFields = new ArrayList<String>();
@@ -71,7 +75,8 @@ public class PanelFactory
 				dat, fieldName, 
 				clazz, annClass,
 				gradientColors, booleanColors,
-				naDouble, naInt, naColor,
+//				naDouble, naInt,
+				naColor,
 				mapDblFmt, parsedBooleanFields);
 
 		ObjectImagePanel<T> map =  objectPanel(
@@ -125,7 +130,8 @@ public class PanelFactory
 				dat, fieldName, 
 				clazz, annClass,
 				gradientColors, booleanColors,
-				naDouble, naInt, naColor, 
+//				naDouble, naInt, 
+				naColor, 
 				dblFmt, parsedBooleanFields);
 
 		return objectPanel(
@@ -315,6 +321,44 @@ public class PanelFactory
 		return out;
 	}
 
+	public static <T> ImagePanelComboBox<T> buildMapComboBox(
+			Class<T> clazz,
+			ObjectImagePanel<T> panel,
+			Font font, String initialField)
+	{
+		List<Field> mapLayerFields = FieldUtils.getFields(
+				clazz, MapLayer.class, true, false, true, false);
+		
+		if (mapLayerFields.size() < 1)
+			throw new IllegalArgumentException("No fields with the @MapLayer " +
+					"annotation found in type '" + clazz.getSimpleName() + "'. " +
+					"Make sure the fields you want to display have the annotation");
+			
+		
+		for (Field f : mapLayerFields)
+		{
+			f.setAccessible(true);
+			if (!f.isAnnotationPresent(ParsedField.class))
+				throw new IllegalArgumentException("Field '" + f.getName() +
+						" does not have the @ParsedField annotation.");
+		}
+		
+		List<String> mapFieldNames = new ArrayList<>();
+		List<String> menuNames = new ArrayList<>();
+		
+		for (Field f : mapLayerFields)
+		{
+			f.setAccessible(true);
+			mapFieldNames.add(f.getName());
+			menuNames.add(f.getAnnotation(MapLayer.class).layerName());
+		}
+
+		if (!mapFieldNames.contains(initialField))
+			initialField = mapFieldNames.get(0);
+		return buildComboBox(panel, mapFieldNames, menuNames, font, initialField);
+	}
+	
+	
 	/**
 	 * 
 	 * @param panel
@@ -324,37 +368,29 @@ public class PanelFactory
 	 * @param initialField
 	 * @return
 	 */
+	
+	
 	public static <T> ImagePanelComboBox<T> buildComboBox(
 			ObjectImagePanel<T> panel,
 			List<String> fields, List<String> menuNames,
 			Font font, String initialField)
 	{
 		int n = fields.size();
-		int i = 0;
-		String[] displayNames = new String[n];
+		List<String> displayNames = new ArrayList<String>();
 
 		/* Set up the field and menu names. */
 		if (menuNames == null)
 		{
-			i = 0;
-			displayNames = new String[n];
-			for (String st : fields) { displayNames[i] = st; i++; }
-			i = 0;
-			displayNames = new String[n];
-			for (String st : fields) { displayNames[i] = st; i++; }
+			for (String st : fields) displayNames.add(st);
 		}
 		else if (menuNames.size() != n)
 			throw new IllegalArgumentException("Length of menu names does not match the number of fields");
 		else 
-		{
-			i = 0;
-			displayNames = new String[n];
-			for (String st : menuNames) { displayNames[i] = st; i++; }
-		}
+			displayNames = menuNames;
 		ImagePanelComboBox<T> out = new ImagePanelComboBox<T>();
 		out.fieldNames = fields;
 		out.panel = panel;
-
+		out.displayNames = displayNames;
 		for (String st : displayNames) out.addItem(st);
 		out.setFont(font);
 		out.setSelectedIndex(fields.indexOf(initialField.toLowerCase()));
@@ -375,8 +411,7 @@ public class PanelFactory
 		/** */
 		private static final long serialVersionUID = 2409820165770045768L;
 		List<String> fieldNames;
-		String[] displayNames;
-
+		List<String> displayNames;
 		ObjectImagePanel<T> panel;
 
 		void buildActionListener(LegendPanel<T> legPanel)
@@ -386,8 +421,8 @@ public class PanelFactory
 				@Override public void actionPerformed(ActionEvent e)
 				{
 					String item = getSelectedItem().toString();
-					String tmp = fieldNames.get(fieldNames.indexOf(item));
-					panel.setField(item);
+					String tmp = fieldNames.get(displayNames.indexOf(item));
+					panel.setField(tmp);
 					logger.trace("ComboBox item = " + item.toString());
 					logger.trace("Has legend? " + (legPanel != null));
 					if (legPanel != null)

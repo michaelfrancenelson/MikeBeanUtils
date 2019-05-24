@@ -46,7 +46,8 @@ public class ImagerFactory
 				field,
 				clazz, null, 
 				gradColors, boolColors,
-				-Double.MAX_VALUE, Integer.MIN_VALUE, Color.gray,
+//				-Double.MAX_VALUE, Integer.MIN_VALUE,
+				Color.gray,
 				defaultDblFmt,  null
 				);
 	}
@@ -56,7 +57,8 @@ public class ImagerFactory
 			String fieldName, 
 			Class<T> clazz, Class<? extends Annotation> annClass, 
 			Color[] gradientColors, Color[] booleanColors,
-			double naDouble, int naInt, Color naColor,
+//			double naDouble, int naInt,
+			Color naColor,
 			String dblFmt, List<String> parsedBooleanFields
 			)
 	{
@@ -71,7 +73,9 @@ public class ImagerFactory
 		out.initialize(
 				clazz, annClass, 
 				dblFmt, fieldName,
-				SimpleColorInterpolator.factory(gradientColors, 0.0, 1.0, naDouble, naInt, naColor, dblFmt),
+				SimpleColorInterpolator.factory(gradientColors, 0.0, 1.0, 
+//						naDouble, naInt,
+						naColor, dblFmt),
 				SimpleBooleanColorInterpolator.factory(booleanColors, naColor),
 				parsedBooleanFields);
 		return out;

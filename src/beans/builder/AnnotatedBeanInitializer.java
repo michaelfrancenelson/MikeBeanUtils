@@ -176,7 +176,9 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 				message = "Instance Field: " + f.getName() + " in type " + typeName + " is not initialized.";
 				try {
 					if (AnnotatedBeanReporter.isNA(
-							clazz, bean, f, naInt, naDouble, naString, naChar)) 
+							clazz, bean, f,
+//							naInt, naDouble, 
+							naString, naChar)) 
 					{
 						//						logger.debug(message);
 						if (enforce) throw new IllegalArgumentException(message);
@@ -201,7 +203,9 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 			{
 				message = "Static Field: " + f.getName() + " in type " + typeName + " is not initialized.";
 				try {
-					if (AnnotatedBeanReporter.isNA(clazz, null, f, naInt, naDouble, naString, naChar)) 
+					if (AnnotatedBeanReporter.isNA(clazz, null, f, 
+//							naInt, naDouble,
+							naString, naChar)) 
 					{
 						//						logger.debug(message);
 						if (enforce) throw new IllegalArgumentException(message);
@@ -228,7 +232,9 @@ public class AnnotatedBeanInitializer extends AnnotatedBeanReader
 				for (T bean : beans)
 				{
 				try {
-					if (AnnotatedBeanReporter.isNA(clazz, bean, f, naInt, naDouble, naString, naChar)) 
+					if (AnnotatedBeanReporter.isNA(clazz, bean, f,
+//							naInt, naDouble, 
+							naString, naChar)) 
 					{
 						//						logger.debug(message);
 						if (enforce) throw new IllegalArgumentException(message);

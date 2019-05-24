@@ -203,7 +203,11 @@ public class GetterGetterGetter
 		case("double"):  
 		{
 			DoubleGetter<T> d = doubleGetterGetter(t, f);
-			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(dblFmt, d.get(tt)); }; 
+			
+			out = (T tt, String intFmt, String dblFmt, String strFmt) -> {
+				double val = d.get(tt);
+				if (val == -Double.MAX_VALUE) return "NA";
+				return String.format(dblFmt, d.get(tt)); }; 
 			break; 
 		} 
 

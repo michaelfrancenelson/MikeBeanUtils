@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -14,7 +16,8 @@ import javax.swing.border.Border;
 
 public class MapAndLegendPanel<T> extends JPanel
 {
-
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface MapLayer{ String layerName(); };
 	/**
 	 */
 	private static final long serialVersionUID = -3342833816567614979L;
@@ -24,10 +27,12 @@ public class MapAndLegendPanel<T> extends JPanel
 	protected JComboBox<String> layerChooser;
 	protected JLabel layerChooserTitle;
 
-	private int legendPosition;
-	private int coltrolPosition;
-
-	public void setLayout(int legPosition, int controlPosition, String controlTitle, Font controlFont, boolean border)
+	public void setLayout(
+			int legPosition, 
+			int controlPosition,
+			String controlTitle,
+			Font controlFont, 
+			boolean border)
 	{
 		if (controlTitle != null)
 		{
@@ -35,7 +40,7 @@ public class MapAndLegendPanel<T> extends JPanel
 			layerChooserTitle.setFont(controlFont);
 		}
 		
-		layerChooser = map.getControlComboBox(controlFont);
+		layerChooser = map.getMapLayerComboBox(controlFont);
 		
 		JPanel controlPanel = new JPanel();
 		if (layerChooserTitle != null)
@@ -58,7 +63,6 @@ public class MapAndLegendPanel<T> extends JPanel
 		double mapWeight = 0.5;
 		double legendWeight = 0.1;
 		double controlWeight = 0.0;
-		
 		
 		legendWeight = 0.1;
 		
@@ -132,11 +136,5 @@ public class MapAndLegendPanel<T> extends JPanel
 		add(controlPanel, c);
 		
 	}
-	
-	
-	
-	
-	
-	
 
 }

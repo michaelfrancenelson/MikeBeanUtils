@@ -31,8 +31,8 @@ public class ForestCellDemo extends DemoConsts
 
 	static void forestDemo(int width, int height, boolean show)
 	{
-		forest = NetCDFObjBuilder.factory2D(ForestCell.class, filename);
-		subForest = NetCDFObjBuilder.factory2D(ForestSubclass.class, filename);
+		forest = NetCDFObjBuilder.factory2D(ForestCell.class, filename, false);
+		subForest = NetCDFObjBuilder.factory2D(ForestSubclass.class, filename, false);
 		f1 = SwingUtils.frameFactory(width, height, "Forest Cell Demo", 2, 4);
 		f2 = SwingUtils.frameFactory(width, height, "Forest Cell Subclass Demo", 2, 4);
 

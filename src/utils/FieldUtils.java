@@ -39,7 +39,10 @@ public class FieldUtils
 	 * @param getInstance Should instance fields be retrieved?
 	 * @param getStatic Should static fields be retrieved?  
 	 *        If getInstance and getStatic are both false, an exception is thrown.
+	 * @param getSuperclassFields
+	 * @param errorIfNone
 	 * @return List of matching fields.  If none were found, throws an exception.
+	 * @throws IllegalArgumentException
 	 */
 	public static <T, A extends Annotation> List<Field> getFields(
 			Class<T> clazz, Class<A> annClazz, 

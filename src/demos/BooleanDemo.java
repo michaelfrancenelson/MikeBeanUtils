@@ -31,7 +31,7 @@ public class BooleanDemo extends DemoConsts
 	
 	static void asBooleanDemo(int width, int height, int nRow, int nCol, boolean show, boolean save)
 	{
-		List<List<AllFlavorBean>> listData = NetCDFObjBuilder.factory2D(AllFlavorBean.class, inputNCDF);
+		List<List<AllFlavorBean>> listData = NetCDFObjBuilder.factory2D(AllFlavorBean.class, inputNCDF, false);
 		c = SimpleBooleanColorInterpolator.factory(ColorUtils.REDS, Color.white);
 		listData = RandomBeanBuilder.randomFactory(AllFlavorBean.class, nRow, nCol, -4, 4);
 		ImagerData<AllFlavorBean> dat = ImagerData.build(listData, false, false, false);
@@ -58,7 +58,7 @@ public class BooleanDemo extends DemoConsts
 	}
 	static void comboBoxDemo(int width, int height, int nRow, int nCol, boolean show, boolean save)
 	{
-		List<List<AllFlavorBean>> listData = NetCDFObjBuilder.factory2D(AllFlavorBean.class, inputNCDF);
+		List<List<AllFlavorBean>> listData = NetCDFObjBuilder.factory2D(AllFlavorBean.class, inputNCDF, false);
 		c = SimpleBooleanColorInterpolator.factory(ColorUtils.REDS, Color.white);
 		listData = RandomBeanBuilder.randomFactory(AllFlavorBean.class, nRow, nCol, -4, 4);
 		ImagerData<AllFlavorBean> dat = ImagerData.build(listData, false, false, false);

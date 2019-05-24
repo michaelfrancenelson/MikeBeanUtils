@@ -17,7 +17,7 @@ public class SimpleColorInterpolator implements ColorInterpolator
 
 	private Color naColor = Color.GRAY;
 	private int naInt = Integer.MIN_VALUE;
-	private double naDouble = Double.MIN_VALUE;
+	private double naDouble = -Double.MAX_VALUE;
 
 	private double minVal, maxVal;
 	private String dblFmt;
@@ -53,7 +53,7 @@ public class SimpleColorInterpolator implements ColorInterpolator
 	public static ColorInterpolator factory(
 			Color[] colors, 
 			double min, double max,
-			double naDouble, int naInt, 
+//			double naDouble, int naInt, 
 			Color naColor, String dblFmt)
 	{
 		SimpleColorInterpolator ci = new SimpleColorInterpolator();
@@ -63,7 +63,9 @@ public class SimpleColorInterpolator implements ColorInterpolator
 			min = max; max = t;
 		}
 //		if (dblFmt == null) dblFmt = "%.2f";
-		ci.colors = colors; ci.naDouble = naDouble; ci.naInt = naInt; ci.naColor = naColor;
+		ci.colors = colors; 
+//		ci.naDouble = naDouble; ci.naInt = naInt; 
+		ci.naColor = naColor;
 		ci.minVal = min; ci.maxVal = max;
 		ci.dblFmt = dblFmt;
 		ci.setBreaks();
@@ -83,9 +85,11 @@ public class SimpleColorInterpolator implements ColorInterpolator
 	public static ColorInterpolator factory(
 			Color[] colors,
 			int min, int max, 
-			double naDouble, int naInt,
+//			double naDouble, int naInt,
 			Color naColor, String dblFmt)
-	{ return factory(colors, (double) min, (double) max, naDouble, naInt, naColor, dblFmt); }
+	{ return factory(colors, (double) min, (double) max, 
+//			naDouble, naInt, 
+			naColor, dblFmt); }
 
 	/** 
 	 *  Rebuild the interpolation intervals when min/max values or count of colors changes.
