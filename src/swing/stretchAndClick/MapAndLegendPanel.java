@@ -26,7 +26,7 @@ public class MapAndLegendPanel<T> extends JPanel
 	protected LegendPanel<T> legend;
 	protected JComboBox<String> layerChooser;
 	protected JLabel layerChooserTitle;
-
+	
 	public void setLayout(
 			int legPosition, 
 			int controlPosition,
@@ -96,7 +96,6 @@ public class MapAndLegendPanel<T> extends JPanel
 		c.gridx = legendX; c.gridy = legendY;
 		mapPanel.add(legend, c);
 		
-		
 		setLayout(new GridBagLayout());
 		
 		if (controlPosition == 1)
@@ -109,7 +108,6 @@ public class MapAndLegendPanel<T> extends JPanel
 			mapY = 1; controlY = 0;
 		}
 		
-		
 		if (border)
 		{
 			Border b1 = BorderFactory.createLineBorder(Color.black);
@@ -121,20 +119,17 @@ public class MapAndLegendPanel<T> extends JPanel
 			controlPanel.setBorder(b1);
 			layerChooser.setBorder(b2);
 			if (layerChooserTitle != null) layerChooserTitle.setBorder(b2);
-			
 		}
-		
 		
 		c.weightx = mapWeight; c.weighty = mapWeight;
 		c.gridx = 0;
 		c.gridy = mapY;
 		add(mapPanel, c);
 		
-		
 		c.weightx = controlWeight; c.weighty = controlWeight;
 		c.gridy = controlY;
 		add(controlPanel, c);
 		
+		repaint();
 	}
-
 }

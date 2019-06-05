@@ -528,7 +528,7 @@ public class AnnotatedBeanReader
 	 * @return are they equal?
 	 */
 	public static <T> boolean equals(Class<T> clazz, T t1, T t2) {
-		AnnotatedBeanReporter<T> rep = AnnotatedBeanReporter.factory(clazz, "%.4f", ",");
+		AnnotatedBeanReporter<T> rep = AnnotatedBeanReporter.factory(clazz, ParsedField.class, "%.4f", ",");
 		List<String> r1 = rep.stringValReport(t1);
 		List<String> r2 = rep.stringValReport(t2);
 		if (r1.size() != r2.size())

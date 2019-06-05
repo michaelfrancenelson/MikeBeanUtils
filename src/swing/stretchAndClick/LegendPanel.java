@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import imaging.imagers.decorators.PanelLabel;
 import utils.Sequences;
 
 public class LegendPanel<T> extends PrimitiveImagePanel<T>
@@ -13,7 +14,7 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 	/**
 	 */
 	private static final long serialVersionUID = -3449414365832753932L;
-	
+
 	protected int nSteps;
 	protected int nLabels;
 	double offset1, offset2;
@@ -22,18 +23,32 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 	Color textColor;
 	double ptSize;
 
+
 	protected boolean loToHi, horiz;
 	String intFmt, dblFmt, strFmt;
-	
+
+	private int nSigFigs = 4;
+
 	protected double[] labelPositions;
 
-@Override public void paintComponent(Graphics g)
-{
-	super.paintComponent(g);
-}
-	
+	public void roundLegendLabels()
+	{
+		if (legend != null)
+			for (PanelLabel p : legend.labels)
+				p.roundNumericLabel(nSigFigs, dblFmt);
+	}
+
+	@Override public void paintComponent(Graphics g)
+	{
+		//		if (sigFigs > 0)
+		//			for (PanelLabel p : valueLabels)
+		//				p.roundNumericLabel(sigFigs, );
+		roundLegendLabels();
+		super.paintComponent(g);
+	}
+
 	public void initLegend(
-//			List<String> parsedBooleanFields,
+			//			List<String> parsedBooleanFields,
 			int nLabels, int nSteps,
 			double offset1, double offset2, 
 			double textOffset, double pointOffset, 
@@ -41,25 +56,25 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 			boolean horiz, 
 			Font font, Color color, double ptSize,
 			String intFmt, String dblFmt, String strFmt
-			
+
 			)
 	{
-		
+
 		/* java's image origin is in the screen's upper left corner, so 
 		 * low-to-high vertical gradients must have low values at high 
 		 * indices.
 		 */
-//		if (!horiz)
-//		{
-//			loToHi = !loToHi;
-//			logger.debug("Vertical legend: java's image origin is in the upper left corner"
-//					+ " of the monitor.  For values to increase toward the top of the screen,"
-//					+ " high values  must have low indices: inverting 'loToHi' parameter");
-//		}
-//		
-		
-		loToHi = !loToHi;
-		
+		//		if (!horiz)
+		//		{
+		//			loToHi = !loToHi;
+		//			logger.debug("Vertical legend: java's image origin is in the upper left corner"
+		//					+ " of the monitor.  For values to increase toward the top of the screen,"
+		//					+ " high values  must have low indices: inverting 'loToHi' parameter");
+		//		}
+		//		
+
+		//		if (!horiz)	loToHi = !loToHi;
+
 		this.nLabels = nLabels;
 		this.nSteps = nSteps;
 		this.offset1 = offset1; this.offset2 = offset2;
@@ -70,9 +85,14 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 		this.textColor = color;
 		this.ptSize = ptSize;
 
-		this.intFmt = intFmt; this.dblFmt = dblFmt; this.strFmt = strFmt;
+		this.intFmt = intFmt; 
+		this.dblFmt = dblFmt; 
+		this.strFmt = strFmt;
 	}
-	
+
+	/**
+	 * 
+	 */
 	public void buildLegendLabels()
 	{
 		buildLegendLabels(
@@ -83,6 +103,20 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 				intFmt, dblFmt, strFmt);
 	}
 
+	/**
+	 * 
+	 * @param nLabels
+	 * @param offset1
+	 * @param offset2
+	 * @param textPositionOffset
+	 * @param pointPositionOffset
+	 * @param font
+	 * @param color
+	 * @param ptSize
+	 * @param intFmt
+	 * @param dblFmt
+	 * @param strFmt
+	 */
 	public void buildLegendLabels(
 			int nLabels, 
 			double offset1, double offset2, 
@@ -92,7 +126,7 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 	{
 		valueLabels = new ArrayList<>();
 		points = new ArrayList<>();
-		
+
 		if (intFmt == null) intFmt = "%d";
 		if (dblFmt == null) dblFmt = imager.getDblFmt();
 		if (strFmt == null) strFmt = "%s";
@@ -101,13 +135,12 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 
 		if ( imager.getImagerData().getType().toLowerCase().equals("boolean"))
 		{
-			
+
 			nLabels = Math.max(imager.getImagerData().getHeight(), imager.getImagerData().getWidth());
 			double offset = 1.0 / ((double) nLabels * 2.0);
 			labelPositions = Sequences.spacedIntervals(offset, 1.0 - offset, nLabels - 1);
-			
 		}
-		
+
 		int valIndex, positionIndex;
 		if (horiz) { valIndex = 0; positionIndex = 1; }
 		else { valIndex = 1; positionIndex = 0; }
@@ -129,7 +162,7 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 			}
 		}
 	}
-	
+
 	@Override
 	public void addValueLabelRelative(
 			double relI, double relJ, Font font, Color color, String intFmt, String dblFmt, String strFmt)
@@ -142,9 +175,7 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 				+ "label %s at coords (%.0f%%, %.0f%%)",
 				label, 100 * relI, 100 * relJ));
 	}
-	
-	
+
 	@Override public void setField(String name) { this.currentFieldName = name; }
 	@Override public void setField(Field f) { setField(f.getName());}
-
 }

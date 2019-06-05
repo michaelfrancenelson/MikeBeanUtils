@@ -85,10 +85,18 @@ public class PanelFactory
 				mapWidth, mapHeight, mapPointSize,
 				clazz, annClass);
 
-		LegendPanel<T> legend = legendPanel(imager, nLegendLabels, nLegendSteps, legendWidth, legendHeight, offset1, offset2, textOffset, pointOffset, loToHi, horiz, legendAspectRatio, legendPointSize, legendFont, legendAnnotationColor, legIntFmt, legDblFmt, legStrFmt);
+		LegendPanel<T> legend = legendPanel(
+				imager, nLegendLabels, nLegendSteps, 
+				legendWidth, legendHeight, 
+				offset1, offset2, textOffset, pointOffset, 
+				loToHi, horiz, 
+				legendAspectRatio, legendPointSize, 
+				legendFont, legendAnnotationColor,
+				legIntFmt, legDblFmt, legStrFmt);
 		map.setLegend(legend);
 		out.map = map; out.legend = legend;
 		out.setLayout(legPosition, controlPosition, controlTitle, controlFont, true);
+		out.repaint();
 		return out;
 	}
 
@@ -266,10 +274,6 @@ public class PanelFactory
 			String intFmt, String dblFmt, String strFmt
 			)
 	{
-
-
-
-
 
 		LegendPanel<T> legend = new LegendPanel<T>();
 		PrimitiveImager<T> imgr = imager.getLegendImager(nSteps, loToHi, horiz);

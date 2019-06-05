@@ -14,7 +14,7 @@ import imaging.imagers.imagerData.PrimitiveImagerData;
 
 public class ImagerFactory 
 {
-	public static final String defaultDblFmt = "%.2f";
+	public static final String defaultDblFmt = "%.4g";
 	public static final Class<ParsedField> defaultAnnClass = ParsedField.class;
 
 	/**

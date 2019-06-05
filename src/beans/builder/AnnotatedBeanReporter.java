@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -230,21 +231,13 @@ public class AnnotatedBeanReporter<T>
 		catch (IOException e) { e.printStackTrace();}
 	}
 
-	/** Build a reporter for the annotated bean type T
-	 * 
-	 * @param clazz type of bean
-	 * @param dblFmt how to print double values
-	 * @param sep usually a comma
-	 * @param additionalColumns extra items for the report
-	 * @param <T> annotated bean type to report
-	 * @return reporter for type clazz
-	 */
 	public static <T> AnnotatedBeanReporter<T> 
-	factory(Class<T> clazz, String dblFmt, String sep, String... additionalColumns)
+	factory(Class<T> clazz, Class<? extends Annotation> annClass, 
+			String dblFmt, String sep, String... additionalColumns)
 	{
 		AnnotatedBeanReporter<T> rep = new AnnotatedBeanReporter<>();
 		rep.clazz = clazz;
-		List<Field> fields = FieldUtils.getFields(rep.clazz, ParsedField.class, true, true, true, true);
+		List<Field> fields = FieldUtils.getFields(rep.clazz, annClass, true, true, true, true);
 		rep.dblFmt = dblFmt;
 		rep.sep = sep;
 		rep.getters = GetterGetterGetter.toStringGetterGetter(
@@ -255,5 +248,33 @@ public class AnnotatedBeanReporter<T>
 		try	{ rep.bStreamOut.write(rep.headerReportLine().getBytes()); } 
 		catch (IOException e) { e.printStackTrace(); }
 		return rep;
+		
+	}
+	/** Build a reporter for the annotated bean type T
+	 * 
+	 * @param clazz type of bean
+	 * @param dblFmt how to print double values
+	 * @param sep usually a comma
+	 * @param additionalColumns extra items for the report
+	 * @param <T> annotated bean type to report
+	 * @return reporter for type clazz
+	 */
+	private static <T> AnnotatedBeanReporter<T> 
+	factory(Class<T> clazz, String dblFmt, String sep, String... additionalColumns)
+	{
+		return factory(clazz, ParsedField.class, dblFmt, sep, additionalColumns);
+//		AnnotatedBeanReporter<T> rep = new AnnotatedBeanReporter<>();
+//		rep.clazz = clazz;
+//		List<Field> fields = FieldUtils.getFields(rep.clazz, ParsedField.class, true, true, true, true);
+//		rep.dblFmt = dblFmt;
+//		rep.sep = sep;
+//		rep.getters = GetterGetterGetter.toStringGetterGetter(
+//				rep.clazz, fields, rep.dblFmt);
+//		rep.headers = GetterGetterGetter.columnHeaderGetter(fields);
+//		rep.additionalColumnNames = additionalColumns;
+//		rep.bStreamOut = new ByteArrayOutputStream();
+//		try	{ rep.bStreamOut.write(rep.headerReportLine().getBytes()); } 
+//		catch (IOException e) { e.printStackTrace(); }
+//		return rep;
 	}
 }

@@ -11,6 +11,37 @@ import beans.memberState.SimpleFieldWatcher.DisplayName;
 public class FieldUtils 
 {
 
+	public static <T> T getMatchingItem(List<T> items, Class<T> clazz, String fieldName, String valToMatch)
+	{
+		Field f = getField(clazz, null, fieldName, false);
+		return getMatchingItem(items, f, valToMatch);
+	}
+
+	public static <T> T getMatchingItem(List<T> items, Field f, String valToMatch)
+	{
+		f.setAccessible(true);
+		T out = null;
+
+		for (int i = 0; i < items.size(); i++)
+		{
+			String val = null;
+			try {
+				T item = items.get(i);
+				val = f.get(item).toString();
+//				System.out.println(val.toString().equals(valToMatch));
+				if (val.equals(valToMatch))
+				{
+					out = item;
+					break;
+				}
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			} 
+		}
+		if (out == null) throw new IllegalArgumentException("No matching item found");
+		return out;
+	}
+
 	private static <A extends Annotation> boolean hasAnnotation(Field f, Class<A> ann)
 	{
 		if (ann == null) return false;
@@ -23,7 +54,7 @@ public class FieldUtils
 		return "";
 	}
 
-	private static <T> String typString(Class<T> c) { return "in type " + c.getSimpleName(); }
+	private static <T> String typString(Class<T> c) { return " in type " + c.getSimpleName(); }
 
 	private static <T> String modString(Class<T> clazz, boolean getInstance, boolean getStatic)
 	{
@@ -57,7 +88,7 @@ public class FieldUtils
 		{
 			Field[] superFields = clazz.getSuperclass().getDeclaredFields();
 			Field[] tmp = new Field[superFields.length + fields.length];
-		
+
 			int index = 0;
 			for (int i = 0; i < fields.length; i++) { tmp[index] = fields[i]; index++; }
 
@@ -115,7 +146,6 @@ public class FieldUtils
 			boolean toLowerCase
 			) throws IllegalArgumentException
 	{
-		//		System.out.println("FieldUtils: getting instance field names from class " + clazz.getName());
 		List<Field> ff = getFields(clazz, annClass, getInstance, getStatic, getSuperclassFields, errorIfNone);
 		return getFieldNames(ff, clazz, annClass, toLowerCase);
 	}
@@ -174,7 +204,7 @@ public class FieldUtils
 					throws IllegalArgumentException
 	{
 		List<Field> ll = getFields(clazz, annClass, true, true, true, true);
-		if (matchCase) fieldName = fieldName.toLowerCase();
+		if (!matchCase) fieldName = fieldName.toLowerCase();
 		String nameTemp;
 		Field out = null;
 		boolean hasAnnotation = false;
@@ -190,7 +220,7 @@ public class FieldUtils
 			if (annClass == null || hasAnnotation)
 			{
 				nameTemp = f.getName();
-				if (matchCase) nameTemp = nameTemp.toLowerCase(); 
+				if (!matchCase) nameTemp = nameTemp.toLowerCase(); 
 				if (nameTemp.equals(fieldName))	out = f;
 			}
 		}

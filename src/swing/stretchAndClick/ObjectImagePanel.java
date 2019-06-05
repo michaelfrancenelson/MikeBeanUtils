@@ -271,6 +271,7 @@ public class ObjectImagePanel<T> extends JPanel
 		PanelLabel p = PanelLabel.fromRelImgCoords(
 				relI, relJ, pointSize,
 				font, color, label);
+		
 		switch(type)
 		{
 		case("label"): labels.add(p); break;
@@ -301,7 +302,9 @@ public class ObjectImagePanel<T> extends JPanel
 		addValueLabelRelative(relI, relJ, font, color, "%d", imager.getDblFmt(), "%s");
 	}
 	public void addValueLabelRelative(
-			double relI, double relJ, Font font, Color color, String intFmt, String dblFmt, String strFmt)
+			double relI, double relJ, 
+			Font font, Color color, 
+			String intFmt, String dblFmt, String strFmt)
 	{
 		if (font == null) font = this.getFont();
 		String label = imager.queryData(relI, relJ, intFmt, dblFmt, strFmt);

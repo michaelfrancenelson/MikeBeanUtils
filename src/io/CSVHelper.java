@@ -43,7 +43,7 @@ import java.util.List;
 public class CSVHelper {
 
 	/**
-	 * Just a convenience method that iterates teh rows of a table and outputs
+	 * Just a convenience method that iterates the rows of a table and outputs
 	 * to a writer which is presumably a CSV file.
 	 * 
 	 * @param w writer
