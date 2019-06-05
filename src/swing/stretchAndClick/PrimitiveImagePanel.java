@@ -70,6 +70,7 @@ public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
 			throw new IllegalArgumentException("Not able to create image"); 
 		this.fixedAspectRatio = keepAspectRatio;
 		this.imageAspectRatio = ((double) image.getWidth(null)) / ((double) image.getHeight(null));
+		repaint();
 	}
 
 	@Override public void setField(String name) { this.currentFieldName = name;}

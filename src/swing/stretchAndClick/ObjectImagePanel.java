@@ -133,9 +133,9 @@ public class ObjectImagePanel<T> extends JPanel
 	{
 		imager.refresh();
 		image = imager.getImage();
-		logger.debug("ObjectArrayImagePanel: updating array image to field " + imager.getFieldName());
-		
-		paintComponent(this.getGraphics());
+		logger.trace("ObjectArrayImagePanel: updating array image to field " + imager.getFieldName());
+		Graphics g = super.getGraphics();
+		paintComponent(g);
 	}
 
 	

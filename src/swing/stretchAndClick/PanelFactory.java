@@ -44,7 +44,7 @@ public class PanelFactory
 			ImagerData<T> dat, Class<T> clazz,	Class<? extends Annotation> annClass,
 			String fieldName,
 			Color[] gradientColors, Color[] booleanColors,
-//			Double naDouble, Integer naInt, 
+			//			Double naDouble, Integer naInt, 
 			Color naColor, 
 			String mapDblFmt, List<String> parsedBooleanFields,
 			boolean mapAspectRatio, 
@@ -63,8 +63,8 @@ public class PanelFactory
 			)
 	{
 
-//		if (naDouble == null) naDouble = -Double.MAX_VALUE;
-//		if (naInt == null) naInt = Integer.MIN_VALUE;
+		//		if (naDouble == null) naDouble = -Double.MAX_VALUE;
+		//		if (naInt == null) naInt = Integer.MIN_VALUE;
 		if (naColor == null) naColor = Color.gray;
 		if (mapDblFmt == null) mapDblFmt = "%.2f";
 		if (parsedBooleanFields == null) parsedBooleanFields = new ArrayList<String>();
@@ -75,7 +75,7 @@ public class PanelFactory
 				dat, fieldName, 
 				clazz, annClass,
 				gradientColors, booleanColors,
-//				naDouble, naInt,
+				//				naDouble, naInt,
 				naColor,
 				mapDblFmt, parsedBooleanFields);
 
@@ -96,7 +96,9 @@ public class PanelFactory
 		map.setLegend(legend);
 		out.map = map; out.legend = legend;
 		out.setLayout(legPosition, controlPosition, controlTitle, controlFont, true);
-		out.repaint();
+//		legend.repaint();
+		legend.buildLegendLabels();
+//		out.repaint();
 		return out;
 	}
 
@@ -138,7 +140,7 @@ public class PanelFactory
 				dat, fieldName, 
 				clazz, annClass,
 				gradientColors, booleanColors,
-//				naDouble, naInt, 
+				//				naDouble, naInt, 
 				naColor, 
 				dblFmt, parsedBooleanFields);
 
@@ -325,6 +327,15 @@ public class PanelFactory
 		return out;
 	}
 
+
+	/**
+	 * 
+	 * @param clazz
+	 * @param panel
+	 * @param font
+	 * @param initialField
+	 * @return
+	 */
 	public static <T> ImagePanelComboBox<T> buildMapComboBox(
 			Class<T> clazz,
 			ObjectImagePanel<T> panel,
@@ -332,13 +343,13 @@ public class PanelFactory
 	{
 		List<Field> mapLayerFields = FieldUtils.getFields(
 				clazz, MapLayer.class, true, false, true, false);
-		
+
 		if (mapLayerFields.size() < 1)
 			throw new IllegalArgumentException("No fields with the @MapLayer " +
 					"annotation found in type '" + clazz.getSimpleName() + "'. " +
 					"Make sure the fields you want to display have the annotation");
-			
-		
+
+
 		for (Field f : mapLayerFields)
 		{
 			f.setAccessible(true);
@@ -346,10 +357,10 @@ public class PanelFactory
 				throw new IllegalArgumentException("Field '" + f.getName() +
 						" does not have the @ParsedField annotation.");
 		}
-		
+
 		List<String> mapFieldNames = new ArrayList<>();
 		List<String> menuNames = new ArrayList<>();
-		
+
 		for (Field f : mapLayerFields)
 		{
 			f.setAccessible(true);
@@ -360,11 +371,11 @@ public class PanelFactory
 		if (!mapFieldNames.contains(initialField))
 			initialField = mapFieldNames.get(0);
 		return buildComboBox(panel, mapFieldNames, menuNames, font, initialField);
+
 	}
-	
-	
+
 	/**
-	 * 
+	 * 	
 	 * @param panel
 	 * @param fields
 	 * @param menuNames
@@ -372,8 +383,6 @@ public class PanelFactory
 	 * @param initialField
 	 * @return
 	 */
-	
-	
 	public static <T> ImagePanelComboBox<T> buildComboBox(
 			ObjectImagePanel<T> panel,
 			List<String> fields, List<String> menuNames,
@@ -389,8 +398,7 @@ public class PanelFactory
 		}
 		else if (menuNames.size() != n)
 			throw new IllegalArgumentException("Length of menu names does not match the number of fields");
-		else 
-			displayNames = menuNames;
+		else displayNames = menuNames;
 		ImagePanelComboBox<T> out = new ImagePanelComboBox<T>();
 		out.fieldNames = fields;
 		out.panel = panel;
@@ -431,7 +439,7 @@ public class PanelFactory
 					logger.trace("Has legend? " + (legPanel != null));
 					if (legPanel != null)
 					{
-						logger.debug("Updating legend image to " + tmp);
+						logger.trace("Updating legend image to " + tmp);
 						legPanel.setField(tmp);
 
 						Imager<T> imgr = panel.getImager();
@@ -447,6 +455,12 @@ public class PanelFactory
 					}
 				}
 			});
+			
+			if (legPanel != null)
+			{
+//				legPanel.buildLegendLabels();
+//				legPanel.updateImage();
+			}
 		}
 	}
 }

@@ -85,6 +85,29 @@ public class NetCDFObjBuilder
 	}
 
 
+	public static <T> String getGlobalAttribute(String filename, String attName)
+	{
+		NetcdfFile ncfile = null;
+		try { ncfile = NetcdfFile.open(filename); }
+		catch (IOException e) { e.printStackTrace(); }
+
+		List<Attribute> attList = ncfile.getGlobalAttributes();
+
+		String attName2 = attName.trim().toLowerCase();
+		
+		for (Attribute att : attList)
+		{
+			String name = att.getFullName().trim().toLowerCase();
+		
+			if (attName2.equals(name))
+				return att.getValue(0).toString();
+		}
+		throw new IllegalArgumentException(
+				String.format("Unable to find global attribute"
+						+ " '%s' in file '%s", attName, filename));
+	}
+	
+	
 	public static <T> void setStaticFromGlobalAttributes(NetcdfFile ncfile, Class<T> clazz)
 	{
 		List<Attribute> attList = ncfile.getGlobalAttributes();
@@ -242,20 +265,20 @@ public class NetCDFObjBuilder
 				}
 			}
 		}
-		
+
 		parsedFieldNames = FieldUtils.getFieldNames(ff, clazz, null, false);
 		parsedFieldNamesLC = FieldUtils.getFieldNames(ff, clazz, null, true);
 		for (int i = 0; i < parsedFieldNames.size(); i++) 
 			parsedFieldNamesLC.set(i, parsedFieldNamesLC.get(i).toLowerCase());
 
 		List<Field> fff = new ArrayList<>();
-		
+
 		for (String st : nnnn)
 		{
 			fff.add(ff.get(parsedFieldNamesLC.indexOf(st)));
 		}
 
-ff = fff;
+		ff = fff;
 
 		out = new ArrayList<List<T>>(width);
 		for (int x = 0; x < width; x++)

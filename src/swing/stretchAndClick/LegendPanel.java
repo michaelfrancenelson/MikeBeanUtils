@@ -78,7 +78,8 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 		this.nLabels = nLabels;
 		this.nSteps = nSteps;
 		this.offset1 = offset1; this.offset2 = offset2;
-		this.textOffset = textOffset; this.pointOffset = pointOffset;	
+		this.textOffset = textOffset;
+		this.pointOffset = pointOffset;	
 		this.loToHi = loToHi; 
 		this.horiz = horiz;
 		this.legFont = font;

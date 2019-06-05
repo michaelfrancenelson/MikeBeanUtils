@@ -45,11 +45,13 @@ public class AnnotatedBeanReader
 			String filename,
 			T object,
 			String matchFieldName,
-			String matchFieldValue
+			String matchFieldValue,
+			boolean exactMatch
 			)
 	{
 		T referenceObject = null;;
 		Field fieldToMatch = null;
+		
 		/* Which fields to set from the file? */
 		List<Field> fieldsToSet = FieldUtils.getFields(
 				clazz, annClass, true, false, true, false);
@@ -68,6 +70,10 @@ public class AnnotatedBeanReader
 		/* Attempt to find an entry matching the input pattern. */
 		if (matchFieldName != null)
 		{
+			if (matchFieldValue == null)
+				throw new IllegalArgumentException(String.format("If a value for the"
+						+ " 'matchFieldName' argument is specified,"
+						+ " you must provide a non-null value for 'matchFieldValue'." ));
 			try {
 				fieldToMatch = clazz.getDeclaredField(matchFieldName);
 				fieldToMatch.setAccessible(true);
@@ -93,6 +99,17 @@ public class AnnotatedBeanReader
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					e.printStackTrace();
 				}
+			}
+			try {
+//				if (exactMatch && (! matchFieldValue.equals(fieldToMatch.get(referenceObject).toString())))
+				if (referenceObject == null)
+				{
+					throw new IllegalArgumentException(String.format("Could not find an entry in the input"
+							+ " file '%s' with an entry for the field '%s' matching the pattern %s'", filename, matchFieldName, matchFieldValue));
+				}
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 			if (referenceObject == null)
