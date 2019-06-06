@@ -39,7 +39,7 @@ public class PrimitiveImager<T> implements Imager<T>
 
 	@Override public void buildImage()
 	{
-		if (parsedBooleanFieldNames.contains(currentFieldName))
+		if (parsedBooleanFieldNames.contains(currentFieldName.toLowerCase()))
 		{
 			imgData.setDataMinMax(null, booleanCI);
 			img = ImageFactory.buildPrimitiveImage(imgData, booleanCI);

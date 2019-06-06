@@ -354,7 +354,7 @@ public class AnnotatedBeanReader
 		/* Otherwise there was a parsing issue: */
 
 		String message1 = "Problem parsing input (" + filename + ")";
-		String message2 = "Data appears to be oriented in "; 
+		String message2 = " Data appears to be oriented in "; 
 		String message3 = " but headings are missing for the following fields: "; 
 		String message4 = "";
 

@@ -81,15 +81,15 @@ public class BooleanDemo extends DemoConsts
 		JComboBox<String> cb = p.getControlComboBox(font);
 		
 		f1.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
+		GridBagConstraints cc = new GridBagConstraints();
 		
-		c.weightx = 1; c.weighty = 1;
-		c.gridy = 0; c.fill = GridBagConstraints.BOTH;
-		f1.add(p, c);
+		cc.weightx = 1; cc.weighty = 1;
+		cc.gridy = 0; cc.fill = GridBagConstraints.BOTH;
+		f1.add(p, cc);
 		
-		c.weightx = 0; c.weighty = 0;
-		c.gridy = 1;
-		f1.add(cb, c);
+		cc.weightx = 0; cc.weighty = 0;
+		cc.gridy = 1;
+		f1.add(cb, cc);
 		f1.setVisible(show);
 	}
 }

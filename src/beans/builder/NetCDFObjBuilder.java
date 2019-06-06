@@ -255,13 +255,13 @@ public class NetCDFObjBuilder
 				if (!javaArrayMap.containsKey(st.toLowerCase()))
 					throw new IllegalArgumentException("Bean field " + st + " does not have a matching "
 							+ "variable int he netCDF input file " + filename);
-				nnnn.add(st);
+				nnnn.add(st.toLowerCase());
 			}
 			else
 			{
 				if (javaArrayMap.containsKey(st.toLowerCase()))
 				{
-					nnnn.add(st);
+					nnnn.add(st.toLowerCase());
 				}
 			}
 		}

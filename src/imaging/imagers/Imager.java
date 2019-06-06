@@ -55,9 +55,7 @@ public interface Imager<T>
 			legDat = PrimitiveImagerData.buildGradientData(
 					"Boolean", 
 					endpoint1, endpoint2,
-//					(int) dat.getDataMin(), (int) dat.getDataMax(),
 					nSteps, horiz,
-//					loToHi,
 					true);
 			legDat.setAsBoolean(true);
 		}
@@ -65,9 +63,7 @@ public interface Imager<T>
 			legDat = PrimitiveImagerData.buildGradientData(
 					type,
 					endpoint1, endpoint2,
-//					(int) dat.getDataMin(), (int) dat.getDataMax(),
 					nSteps, horiz, 
-//					loToHi,
 					false);
 
 		legDat.setDataMinMax(null, null);

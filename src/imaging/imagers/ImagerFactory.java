@@ -74,7 +74,6 @@ public class ImagerFactory
 				clazz, annClass, 
 				dblFmt, fieldName,
 				SimpleColorInterpolator.factory(gradientColors, 0.0, 1.0, 
-//						naDouble, naInt,
 						naColor, dblFmt),
 				SimpleBooleanColorInterpolator.factory(booleanColors, naColor),
 				parsedBooleanFields);
