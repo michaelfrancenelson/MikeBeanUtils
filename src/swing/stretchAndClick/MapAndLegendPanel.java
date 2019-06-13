@@ -129,7 +129,7 @@ public class MapAndLegendPanel<T> extends JPanel
 		if (border)
 		{
 			Border b1 = BorderFactory.createLineBorder(Color.black);
-			Border b2 = BorderFactory.createLineBorder(Color.red);
+			Border b2 = BorderFactory.createLineBorder(Color.black);
 			map.setBorder(b2);
 			legend.setBorder(b2);
 			

@@ -1,10 +1,21 @@
 package utils;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.CallSite;
+import java.lang.invoke.LambdaConversionException;
+import java.lang.invoke.LambdaMetafactory;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.IntBinaryOperator;
+
 
 import beans.memberState.SimpleFieldWatcher.DisplayName;
 
@@ -28,7 +39,7 @@ public class FieldUtils
 			try {
 				T item = items.get(i);
 				val = f.get(item).toString();
-//				System.out.println(val.toString().equals(valToMatch));
+				//				System.out.println(val.toString().equals(valToMatch));
 				if (val.equals(valToMatch))
 				{
 					out = item;
@@ -324,5 +335,211 @@ public class FieldUtils
 		}
 		return "NA";
 	}
+
+
+	//	public static <T> IntBinaryOperator getIntAccessor(Class<T> clazz, String methodName) throws LambdaConversionException, Throwable
+	//	{
+	//		Method reflected = clazz.getDeclaredMethod(methodName, int.class, int.class);
+	//		final MethodHandles.Lookup lookup = MethodHandles.lookup();
+	//		MethodHandle mh = lookup.unreflect(reflected);
+	//		IntBinaryOperator lambda = (IntBinaryOperator) LambdaMetafactory.metafactory(
+	//				lookup,
+	//				"applyAsInt", 
+	//				MethodType.methodType(IntBinaryOperator.class),
+	//				mh.type(),
+	//				mh, 
+	//				mh.type()).getTarget().invokeExact();
+	//	
+	//		
+	//		
+	//		
+	//		return lambda;
+	//
+	//	}
+	//	
+	//	public static <T> Function getDoubleGetter(Class<T> clazz, String methodName) throws Throwable
+	//	{
+	//        MethodHandles.Lookup lookup = MethodHandles.lookup();
+	//        CallSite site = LambdaMetafactory.metafactory(lookup,
+	//                "apply",
+	//                MethodType.methodType(Function.class),
+	//                MethodType.methodType(Object.class, Object.class),
+	//                lookup.findVirtual(clazz, methodName, MethodType.methodType(String.class)),
+	//                MethodType.methodType(double.class, clazz));
+	//        return (Function) site.getTarget().invokeExact();
+	//	}
+	//	
+	//	public static <T> Function getIntGetter(Class<T> clazz, String methodName) throws Throwable
+	//	{
+	//		MethodHandles.Lookup lookup = MethodHandles.lookup();
+	//		CallSite site = LambdaMetafactory.metafactory(lookup,
+	//				"apply",
+	//				MethodType.methodType(Function.class),
+	//				MethodType.methodType(Object.class, Object.class),
+	//				lookup.findVirtual(clazz, methodName, MethodType.methodType(String.class)),
+	//				MethodType.methodType(int.class, clazz));
+	//		return (Function) site.getTarget().invokeExact();
+	//	}
+
+
+	@FunctionalInterface 
+	interface DoubleGetter<T>
+	{
+		double invoke(final T t);
+	}
+
+
+	@FunctionalInterface
+	interface GetterFunction
+	{
+		double invoke(final Person callable);
+	}
+
+
+	
+	
+	public static void main(String[] args) throws Throwable 
+	{
+Class<Person> clazz = Person.class;
+	      GetterFunction getterFunction;
+	        final MethodHandles.Lookup lookup = MethodHandles.lookup();
+	        MethodType methodType = MethodType.methodType(double.class, clazz);
+	        final CallSite site = LambdaMetafactory.metafactory(lookup,
+	                "invoke",
+	                MethodType.methodType(GetterFunction.class),
+	                methodType,
+	                lookup.findVirtual(Person.class, "getD", 
+	                		MethodType.methodType(double.class)),
+	                methodType);
+	        getterFunction = (GetterFunction) site.getTarget().invokeExact();
+	        System.out.println(getterFunction.invoke(new Person(4.5)));
+
+
+
+	}
+
+	static class Person
+	{
+		double d;
+		public Person(double d) { this.d = d; }
+		public double getD() { return d; }
+	}
+
+
+	public static final class DoubleAccessor<T>
+	{
+		private final DoubleGetter<T> getterFunction;
+		//		private final Function<T, Double> getterFunction;
+
+
+
+		public DoubleAccessor(Class<T> clazz, String getterName) throws Throwable
+		{
+			final MethodHandles.Lookup lookup = MethodHandles.lookup();
+			MethodType methodType = MethodType.methodType(Double.class, clazz);
+
+
+			//			MethodType func = MethodType.methodType(double.class);
+			//			Method m = clazz.getDeclaredMethod(getterName);
+			//			MethodHandle getter = lookup.unreflect(m);
+
+			CallSite site = LambdaMetafactory.metafactory(lookup,
+					"invoke",
+					MethodType.methodType(DoubleGetter.class),
+					methodType,
+					lookup.findVirtual(clazz, getterName, MethodType.methodType(double.class)),
+					methodType);
+			//					func,
+			//					getter,
+			//					invokedType);
+			//					getter.type());
+			//					MethodType.methodType(Function.class),
+			//					MethodType.methodType(Double.class, clazz),
+			//					lookup.findVirtual(clazz, getterName,
+			//							MethodType.methodType(double.class)),
+			//					MethodType.methodType(double.class, clazz));
+			getterFunction = (DoubleGetter<T>) site.getTarget().invokeExact();
+		}
+
+		public double executeGetter(T bean) {
+			return getterFunction.invoke(bean);
+		}	
+	}
+
+	public final class IntAccessor<T>
+	{
+		private final Function<T, Integer> getterFunction;
+
+		public IntAccessor(Class<T> clazz, String getterName) throws Throwable
+		{
+			MethodHandles.Lookup lookup = MethodHandles.lookup();
+			CallSite site = LambdaMetafactory.metafactory(lookup,
+					"apply",
+					MethodType.methodType(Function.class),
+					MethodType.methodType(Object.class, Object.class),
+					lookup.findVirtual(clazz, getterName, MethodType.methodType(String.class)),
+					MethodType.methodType(int.class, clazz));
+			getterFunction = (Function<T, Integer>) site.getTarget().invokeExact();
+		}
+
+		public int executeGetter(T bean) {
+			return getterFunction.apply(bean);
+		}	
+	}
+
+	public interface Node {}
+
+	@FunctionalInterface
+	interface NodeGetter {
+		Node apply (Node node);
+	}
+
+	
+	
+	
+
+
+	static <T> T produceLambda( //
+			final Lookup caller, //
+			final Class<T> functionKlaz, //
+			final String functionName, //
+			final Class<?> functionReturn, //
+			final Class<?>[] functionParams, //
+			final MethodHandle implementationMethod //
+	) throws Throwable {
+
+		final MethodType factoryMethodType = MethodType
+				.methodType(functionKlaz);
+		final MethodType functionMethodType = MethodType.methodType(
+				functionReturn, functionParams);
+
+		final CallSite lambdaFactory = LambdaMetafactory.metafactory( //
+				caller, // Represents a lookup context.
+				functionName, // The name of the method to implement.
+				factoryMethodType, // Signature of the factory method.
+				functionMethodType, // Signature of function implementation.
+				implementationMethod, // Function method implementation.
+				implementationMethod.type() // Function method type signature.
+				);
+
+		final MethodHandle factoryInvoker = lambdaFactory.getTarget();
+
+		// FIXME
+		/**
+		 * <pre>
+		 * Exception in thread "main" java.lang.invoke.WrongMethodTypeException: expected ()ToIntFunction but found ()Object
+		 * 	at java.lang.invoke.Invokers.newWrongMethodTypeException(Invokers.java:340)
+		 * 	at java.lang.invoke.Invokers.checkExactType(Invokers.java:351)
+		 * 	at design.PrivateTargetLambdaGeneric.produceLambda(PrivateTargetLambdaGeneric.java:64)
+		 * 	at design.PrivateTargetLambdaGeneric.getterLambda(PrivateTargetLambdaGeneric.java:71)
+		 * 	at design.PrivateTargetLambdaGeneric.main(PrivateTargetLambdaGeneric.java:100)
+		 * </pre>
+		 */
+		final T lambda = (T) factoryInvoker.invokeExact();
+
+		return lambda;
+	}
+
+
 }
 
