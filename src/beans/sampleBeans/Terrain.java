@@ -18,6 +18,8 @@ public class Terrain
 	@ParsedField double elevation;
 	@ParsedField byte road = 0;
 
+	public Terrain() {}
+	
 	public Terrain(double elevation, int age) { this.elevation = elevation; this.age = age; }
 
 	/**
@@ -126,4 +128,6 @@ public class Terrain
 			}
 		return out;
 	}
+	
+	public double getElevation() { return this.elevation; }
 }

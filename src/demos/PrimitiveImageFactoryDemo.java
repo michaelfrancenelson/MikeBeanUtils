@@ -39,11 +39,10 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 	public static void main(String[] args) 
 	{
 		boolean show = true, save = false;
-
-//		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
-//		intDemo(200, 300, 10, 20, 4.3, show, save);
-//		booleanDemo(200, 300, 3.5, show, save);
-//		byteDemo(200, 300, 4, show, save);
+		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
+		intDemo(200, 300, 10, 20, 4.3, show, save);
+		booleanDemo(200, 300, 3.5, show, save);
+		byteDemo(200, 300, 4, show, save);
 	}
 
 	static void byteDemo(int width, int height, double size, boolean show, boolean saveFile)
@@ -67,9 +66,7 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 			data2.add(new PrimitiveImagerData<Object>(bytes1, trueFalse[jj], trueFalse[ii], true));
 			data1.add(new PrimitiveImagerData<Object>(bytes1, trueFalse[jj], trueFalse[ii], false));
 		}
-		c = SimpleColorInterpolator.factory(ColorUtils.RAINBOW, 0, maxb,
-//				Double.MIN_VALUE, Integer.MIN_VALUE, 
-				Color.gray, "%0.4f");
+		c = SimpleColorInterpolator.factory(ColorUtils.RAINBOW, 0, maxb, Color.gray, "%0.4f");
 		f1 = SwingUtils.frameFactory((int)(width * size), (int)(height * size), "Byte array demo", 2, 2);
 		f2 = SwingUtils.frameFactory((int)(height * size), (int)(width * size), " Transposed byte array demo", 2, 2);
 		int z = 0;

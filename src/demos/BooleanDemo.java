@@ -14,8 +14,10 @@ import beans.builder.RandomBeanBuilder;
 import beans.sampleBeans.AllFlavorBean;
 import imaging.colorInterpolator.SimpleBooleanColorInterpolator;
 import imaging.imagers.imagerData.ImagerData;
-import swing.stretchAndClick.PanelFactory;
+import sampling.Sampling;
 import swing.stretchAndClick.ObjectImagePanel;
+import swing.stretchAndClick.PanelFactory;
+import umontreal.ssj.rng.RandomStream;
 import utils.ColorUtils;
 import utils.FieldUtils;
 import utils.SwingUtils;
@@ -23,6 +25,7 @@ import utils.SwingUtils;
 public class BooleanDemo extends DemoConsts
 {
 
+	static RandomStream rs = Sampling.getDefaultRs();
 	public static void main(String[] args) 
 	{
 		asBooleanDemo(1000, 1200, 10, 14, true, false);
@@ -33,7 +36,7 @@ public class BooleanDemo extends DemoConsts
 	{
 		List<List<AllFlavorBean>> listData = NetCDFObjBuilder.factory2D(AllFlavorBean.class, inputNCDF, false);
 		c = SimpleBooleanColorInterpolator.factory(ColorUtils.REDS, Color.white);
-		listData = RandomBeanBuilder.randomFactory(AllFlavorBean.class, nRow, nCol, -4, 4);
+		listData = RandomBeanBuilder.randomFactory(AllFlavorBean.class, nRow, nCol, -4, 4, rs);
 		ImagerData<AllFlavorBean> dat = ImagerData.build(listData, false, false, false);
 		List<String> fNames = FieldUtils.getFieldNames(AllFlavorBean.class, ParsedField.class, true, true, false, true, true);
 
@@ -60,7 +63,7 @@ public class BooleanDemo extends DemoConsts
 	{
 		List<List<AllFlavorBean>> listData = NetCDFObjBuilder.factory2D(AllFlavorBean.class, inputNCDF, false);
 		c = SimpleBooleanColorInterpolator.factory(ColorUtils.REDS, Color.white);
-		listData = RandomBeanBuilder.randomFactory(AllFlavorBean.class, nRow, nCol, -4, 4);
+		listData = RandomBeanBuilder.randomFactory(AllFlavorBean.class, nRow, nCol, -4, 4, rs);
 		ImagerData<AllFlavorBean> dat = ImagerData.build(listData, false, false, false);
 		List<String> fNames = FieldUtils.getFieldNames(AllFlavorBean.class, ParsedField.class, true, true, false, true, true);
 		

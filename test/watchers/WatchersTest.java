@@ -11,9 +11,13 @@ import beans.builder.RandomBeanBuilder;
 import beans.memberState.FieldWatcher;
 import beans.memberState.SimpleFieldWatcher;
 import beans.sampleBeans.AllFlavorBean;
+import sampling.Sampling;
+import umontreal.ssj.rng.RandomStream;
 
 public class WatchersTest {
 
+	static RandomStream rs = Sampling.getDefaultRs();
+	
 	@Test
 	public void testInputs() 
 	{
@@ -30,7 +34,7 @@ public class WatchersTest {
 		
 		AllFlavorBean[][] bArray = new AllFlavorBean[20][20];
 		for (int i = 0; i < bArray.length; i++) for (int j = 0; j < bArray[0].length; j++) {
-			bArray[i][j] = RandomBeanBuilder.randomFactory(AllFlavorBean.class, -100, 100);
+			bArray[i][j] = RandomBeanBuilder.randomFactory(AllFlavorBean.class, -100, 100, rs);
 		}
 		
 		/* Passes if no exceptions are thrown. */		

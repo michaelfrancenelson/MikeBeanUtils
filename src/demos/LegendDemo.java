@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 
 import beans.builder.AnnotatedBeanReader.ParsedField;
 import beans.builder.NetCDFObjBuilder;
-import beans.sampleBeans.ForestCell;
 import beans.sampleBeans.ForestSubclass;
 import imaging.imagers.imagerData.ImagerData;
 import swing.stretchAndClick.LegendPanel;

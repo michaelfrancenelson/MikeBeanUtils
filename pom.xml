@@ -13,6 +13,8 @@
 <!-- 		<slf4j.version>1.7.5</slf4j.version> -->
 				<junit.version>4.12</junit.version>
 		<slf4j.version>2.11.0</slf4j.version>
+
+		<ssj.version>3.3.1</ssj.version>
 	
 	</properties>
 
@@ -58,6 +60,14 @@
 			<artifactId>log4j-slf4j-impl</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/ca.umontreal.iro/ssj -->
+		<dependency>
+			<groupId>ca.umontreal.iro.simul</groupId>
+			<artifactId>ssj</artifactId>
+			<version>${ssj.version}</version>
+		</dependency>
+
 
 	</dependencies>
 

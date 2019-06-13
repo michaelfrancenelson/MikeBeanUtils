@@ -2,7 +2,6 @@ package swing.stretchAndClick;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -27,23 +26,6 @@ public class MapAndLegendPanel<T> extends JPanel
 	protected LegendPanel<T> legend;
 	protected JComboBox<String> layerChooser;
 	protected JLabel layerChooserTitle;
-	
-	
-//	@Override public void paintComponent(Graphics g)
-//	{
-//		super.paintComponent(g);
-//		map.repaint();
-//		legend.repaint();
-////		map.paintComponent(g);
-////		legend.paintComponent(g);
-//	}
-	
-	
-//	@Override public void repaint()
-//	{
-//		map.repaint();
-//		legend.repaint();
-//	}
 	
 	public void setLayout(
 			int legPosition, 
@@ -147,7 +129,5 @@ public class MapAndLegendPanel<T> extends JPanel
 		c.weightx = controlWeight; c.weighty = controlWeight;
 		c.gridy = controlY;
 		add(controlPanel, c);
-//		repaint();
-//		legend.repaint();
 	}
 }
