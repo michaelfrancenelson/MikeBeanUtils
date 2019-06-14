@@ -15,10 +15,10 @@ import java.util.function.ToIntFunction;
 
 public class MethodUtils
 {
-
 	public static interface GetterComparator <T> extends Comparator<T>
 	{
 		public double getVal(T t);
+		public ToDoubleFunction<T> getGetter();
 	}
 
 	public static <T> void printListWithGetter(List<T> l, ToDoubleFunction<T> getter, int n, String message)
@@ -51,6 +51,7 @@ public class MethodUtils
 					if (v1 < v2) return -1;
 					return 0;
 				}
+				@Override public ToDoubleFunction<T> getGetter() { return getter; }
 			};
 		else
 			return new GetterComparator<T>()
@@ -66,6 +67,7 @@ public class MethodUtils
 				if (v1 < v2) return -1;
 				return 0;
 			}
+			@Override public ToDoubleFunction<T> getGetter() { return getter; }
 		};
 	}
 

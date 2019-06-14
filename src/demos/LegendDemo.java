@@ -30,8 +30,8 @@ public class LegendDemo extends DemoConsts
 
 	public static void main(String[] args) {
 
-//		legendDemo1(1200, 1000, 200, 200, 0);
-		mapAndLegendDemo(1200, 1000, 200, 200, 0);
+		legendDemo1(1200, 1000, 200, 200, 0);
+//		mapAndLegendDemo(1200, 1000, 200, 200, 0);
 		
 	}
 

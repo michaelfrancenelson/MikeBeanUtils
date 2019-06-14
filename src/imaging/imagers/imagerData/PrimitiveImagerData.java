@@ -12,28 +12,49 @@ import utils.Sequences;
 public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 {
 	public static Logger logger = LoggerFactory.getLogger(PrimitiveImagerData.class);
-	
+
 	private String type;
 	private boolean asBoolean = false;
+
+	@Override public int getDataIntMin() { return datIntMin; }
+	@Override public int getDataIntMax() { return datIntMax; }
+
 	
 	@Override public void setDataMinMax(FieldWatcher<T> w, ColorInterpolator ci)
 	{
 		double[] minmax = null;
-		switch(type)
+
+		if (type.equals("int"))
 		{
-		case("double"): minmax =  ArrayUtils.getArrMinMax(dblDat); break;
-		case("float"): minmax =  ArrayUtils.getArrMinMax(fltDat); break;
-		case("byte"): minmax =  ArrayUtils.getArrMinMax(bytDat); break;
-		case("short"): minmax =  ArrayUtils.getArrMinMax(shtDat); break;
-		case("int"): minmax =  ArrayUtils.getArrMinMax(intDat); break;
-		case("long"): minmax =  ArrayUtils.getArrMinMax(lngDat); break;
-		case("char"): minmax =  ArrayUtils.getArrMinMax(chrDat); break;
-		case("boolean"): minmax =  ArrayUtils.getArrMinMax(booDat); break;
-		default: minmax = new double[] {0, 0};
+			logger.debug("primitive image data type: int");
+			logger.debug("Is int? " + isInt);
+			int[] intMinmax = ArrayUtils.getIntArrMinMax(intDat, naInt);
+			
+			logger.debug("intMin: " + intMinmax[0] + " intMax: " + intMinmax[1]);
+			
+			if (ci != null) ci.updateMinMax(intMinmax[0], intMinmax[1]);
+			datIntMin = intMinmax[0];
+			datIntMax = intMinmax[1];
 		}
-		dataMin = minmax[0];
-		dataMax = minmax[1];
-		if (ci != null) ci.updateMinMax(dataMin, dataMax);
+
+		else
+		{
+			switch(type)
+			{
+			case("double"): minmax =  ArrayUtils.getArrMinMax(dblDat); break;
+			case("float"): minmax =  ArrayUtils.getArrMinMax(fltDat); break;
+			case("byte"): minmax =  ArrayUtils.getArrMinMax(bytDat); break;
+			case("short"): minmax =  ArrayUtils.getArrMinMax(shtDat); break;
+//			case("int"): minmax =  ArrayUtils.getArrMinMax(intDat); break;
+			case("long"): minmax =  ArrayUtils.getArrMinMax(lngDat); break;
+			case("char"): minmax =  ArrayUtils.getArrMinMax(chrDat); break;
+			case("boolean"): minmax =  ArrayUtils.getArrMinMax(booDat); break;
+			default: minmax = new double[] {0, 0};
+			}
+			dataMin = minmax[0];
+			dataMax = minmax[1];
+			if (ci != null) ci.updateMinMax(dataMin, dataMax);
+		}
 	}
 
 	@Override protected void setCurrentObj() {}
@@ -43,6 +64,14 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 	{
 		double val;
 		setDataCoords(x, y);
+
+		if (type.equals("int"))
+			if (intDat[dataX][dataY] == naInt)
+			{
+				int nnn = ci.getNAColor();
+				return nnn;
+			}
+
 		switch(type)
 		{
 		case("double"): val = dblDat[dataX][dataY]; break;
@@ -63,15 +92,16 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 	{
 		return (queryData(relativeX, relativeY, "%d", "%f", "%s"));
 	}
-	
+
 	public String queryData(double relativeX, double relativeY, String intFmt, String dblFmt, String strFmt)
 	{
 		if (intFmt == null) intFmt = "%d";
 		if (dblFmt == null) dblFmt = "%f";
 		if (strFmt == null) strFmt = "%s";
-
 		setDataCoords(relativeX, relativeY);
+		
 		String val;
+		
 		switch(type)
 		{
 		case("double"): val = ArrayUtils.stringCaster(dblDat[dataX][dataY], dblFmt); break;
@@ -91,10 +121,15 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 					type, val, 100 * relativeX, 100 * relativeY, val2));
 			return val2;
 		}
+		if (type.equals("int")) 
+		{
+			if (intDat[dataX][dataY] == naInt)
+				val = "NA";
+		}
 		logger.trace(String.format("Querying %s value at relative coords: (%.0f%%, %.0f%%): %s ", type, 100 * relativeX, 100 * relativeY, val));
 		return val;
 	}
-	
+
 	public PrimitiveImagerData(double[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{  
 		dblDat = dat;  type = "double";
@@ -135,13 +170,13 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 		booDat = dat; type = "boolean";  
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
-	
+
 	public PrimitiveImagerData(Boolean[][] dat, boolean flipX, boolean flipY, boolean transpose)
 	{ 
 		booleanDat = dat; type = "Boolean";  
 		setDims(dat.length, dat[0].length, flipX, flipY, transpose); setDataMinMax(null, null);
 	}
-	
+
 	public PrimitiveImagerData() {}
 
 	private double[][]  dblDat;
@@ -156,37 +191,37 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 
 	public void setAsBoolean(boolean b) { this.asBoolean = b; }
 
-	
-//	public static <T> PrimitiveImagerData<T> buildGradientData(
-//			Imager<?> imgr, 
-//			int nSteps, boolean horizontal, 
-////			boolean loToHi, 
-//			boolean includeBoolNA)
-//	{
-//		return buildGradientData(imgr.getFieldType(), imgr.getDataMin(), imgr.getDataMax(), nSteps, horizontal, loToHi, includeBoolNA);
-//	}
-	
-	
-	
+
+	//	public static <T> PrimitiveImagerData<T> buildGradientData(
+	//			Imager<?> imgr, 
+	//			int nSteps, boolean horizontal, 
+	////			boolean loToHi, 
+	//			boolean includeBoolNA)
+	//	{
+	//		return buildGradientData(imgr.getFieldType(), imgr.getDataMin(), imgr.getDataMax(), nSteps, horizontal, loToHi, includeBoolNA);
+	//	}
+
+
+
 	public static <T> PrimitiveImagerData<T> buildGradientData(
 			String type, double endpoint1, double endpoint2, 
 			int nSteps, boolean horizontal, 
-//			boolean loToHi, 
+			//			boolean loToHi, 
 			boolean includeBoolNA)
 	{
-		
-//		if (!horizontal)
-//		{
-//			
-//		}
-//		if (endpoint1 > endpoint2 && loToHi) 
-//		{ double t = endpoint1; endpoint1 = endpoint2; endpoint2 = t; }
-//		else if (endpoint1 < endpoint2 && !loToHi) 
-//		{ double t = endpoint1; endpoint1 = endpoint2; endpoint2 = t; }
-//
-//		
-		
-		
+
+		//		if (!horizontal)
+		//		{
+		//			
+		//		}
+		//		if (endpoint1 > endpoint2 && loToHi) 
+		//		{ double t = endpoint1; endpoint1 = endpoint2; endpoint2 = t; }
+		//		else if (endpoint1 < endpoint2 && !loToHi) 
+		//		{ double t = endpoint1; endpoint1 = endpoint2; endpoint2 = t; }
+		//
+		//		
+
+
 		/* Integer types can all use int primitives under the hood*/
 		switch(type.toLowerCase())
 		{
@@ -206,7 +241,7 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 		{
 			return new PrimitiveImagerData<T>(
 					Sequences.booleanGradient2D(includeBoolNA, horizontal),
-//					Sequences.booleanGradient2D(includeBoolNA, horizontal, loToHi),
+					//					Sequences.booleanGradient2D(includeBoolNA, horizontal, loToHi),
 					false, false, false);
 		}
 		}

@@ -44,7 +44,6 @@ public class PanelFactory
 			ImagerData<T> dat, Class<T> clazz,	Class<? extends Annotation> annClass,
 			String fieldName,
 			Color[] gradientColors, Color[] booleanColors,
-			//			Double naDouble, Integer naInt, 
 			Color naColor, 
 			String mapDblFmt, List<String> parsedBooleanFields,
 			boolean mapAspectRatio, 
@@ -63,8 +62,6 @@ public class PanelFactory
 			)
 	{
 
-		//		if (naDouble == null) naDouble = -Double.MAX_VALUE;
-		//		if (naInt == null) naInt = Integer.MIN_VALUE;
 		if (naColor == null) naColor = Color.gray;
 		if (mapDblFmt == null) mapDblFmt = "%.2f";
 		if (parsedBooleanFields == null) parsedBooleanFields = new ArrayList<String>();
@@ -75,7 +72,6 @@ public class PanelFactory
 				dat, fieldName, 
 				clazz, annClass,
 				gradientColors, booleanColors,
-				//				naDouble, naInt,
 				naColor,
 				mapDblFmt, parsedBooleanFields);
 
@@ -93,6 +89,7 @@ public class PanelFactory
 				legendAspectRatio, legendPointSize, 
 				legendFont, legendAnnotationColor,
 				legIntFmt, legDblFmt, legStrFmt);
+
 		map.setLegend(legend);
 		out.map = map; out.legend = legend;
 		out.setLayout(legPosition, controlPosition, controlTitle, controlFont, true);
@@ -278,7 +275,7 @@ public class PanelFactory
 	{
 
 		LegendPanel<T> legend = new LegendPanel<T>();
-		PrimitiveImager<T> imgr = imager.getLegendImager(nSteps, loToHi, horiz);
+		PrimitiveImager<?> imgr = imager.getLegendImager(nSteps, loToHi, horiz);
 
 		legend.initLegend(
 				nLabels, nSteps,
@@ -430,6 +427,7 @@ public class PanelFactory
 		{
 			addActionListener(new ActionListener()
 			{
+				@SuppressWarnings("unchecked")
 				@Override public void actionPerformed(ActionEvent e)
 				{
 					String item = getSelectedItem().toString();
@@ -439,17 +437,19 @@ public class PanelFactory
 					logger.trace("Has legend? " + (legPanel != null));
 					if (legPanel != null)
 					{
-						logger.trace("Updating legend image to " + tmp);
+						logger.debug("Updating legend image to " + tmp);
 						legPanel.setField(tmp);
 
 						Imager<T> imgr = panel.getImager();
-						Imager<T> legImgr = legPanel.getImager();
-						legImgr.setField(tmp);
-						PrimitiveImagerData<T> legDat = imgr.getLegendData(
+						Imager<T> legImgr =
+//								imgr.getLegendImager(legPanel.nSteps, legPanel.loToHi, legPanel.horiz);
+						legPanel.getImager();
+//						legImgr.setField(tmp);
+						PrimitiveImagerData<?> legDat = imgr.getLegendData(
 								legPanel.nSteps,
 								legPanel.loToHi,
 								legPanel.horiz);
-						legImgr.setImagerData(legDat);
+						legImgr.setImagerData((ImagerData<T>) legDat);
 						legPanel.buildLegendLabels();
 						legPanel.updateImage();
 					}

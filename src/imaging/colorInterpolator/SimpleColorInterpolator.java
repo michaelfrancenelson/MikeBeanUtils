@@ -174,7 +174,8 @@ public class SimpleColorInterpolator implements ColorInterpolator
 	 * @param val only the first is used
 	 * @return
 	 */
-	@Override public int getColor(byte... val) { return getColor((int) val[0]); }
+	@Override public int getColor(byte... val) { 
+		return getColor((int) val[0]); }
 	/**
 	 * @param val only the first is used
 	 * @return
@@ -183,7 +184,8 @@ public class SimpleColorInterpolator implements ColorInterpolator
 	@Override 
 	public int getColor(int... val) 
 	{
-		if (val[0] == naInt) return naColor.getRGB();
+		if (val[0] == naInt)
+			return naColor.getRGB();
 		return getColor((double) val[0]); 
 	}
 

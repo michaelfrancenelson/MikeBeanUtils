@@ -16,9 +16,11 @@ public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
 	private static final long serialVersionUID = -7971761341095269963L;
 	static Logger logger = LoggerFactory.getLogger(PrimitiveImagePanel.class);
 	protected String currentFieldName;
+//	Imager<T> imager;
 	
+	@SuppressWarnings("unchecked")
 	void init(
-			Imager<T> imgr, 
+			Imager<?> imgr, 
 			int width, int height, 
 			boolean keepAspectRatio)
 	{
@@ -41,7 +43,7 @@ public class PrimitiveImagePanel<T> extends ObjectImagePanel<T>
 			throw new IllegalArgumentException("Either an Image or a BeanImager must be passed to init()");
 		else
 		{
-			this.imager = imgr;
+			this.imager = (Imager<T>) imgr;
 			image = imager.getImage();
 
 			this.addMouseListener(new MouseListener() {

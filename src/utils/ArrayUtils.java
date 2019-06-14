@@ -154,16 +154,45 @@ public class ArrayUtils
 		}
 		return new double[] { dataMin, dataMax };
 	}
+	
 	public static double[] getArrMinMax(int[][] dat)
 	{
-		double dataMin = Double.MAX_VALUE; double dataMax = -dataMin;
+//		double dataMin = Double.MAX_VALUE;
+//		double dataMax = -dataMin;
+		int intMin = Integer.MAX_VALUE;
+		int intMax = Integer.MIN_VALUE;
+		
 		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++)
 		{
-			double val = doubleCaster(dat[i][j]);
-			if (val < dataMin) dataMin = val; if (val > dataMax) dataMax = val;
+			int val = dat[i][j];
+//			double val = doubleCaster(dat[i][j]);
+
+			if (val != Integer.MIN_VALUE) 
+			{
+				if (val < intMin) intMin = val;
+				if (val > intMax) intMax = val;
+			}
 		}
-		return new double[] { dataMin, dataMax };
+		return new double[] { intMin, intMax };
 	}
+
+	public static int[] getIntArrMinMax(int[][] dat, int naVal)
+	{
+		int intMin = Integer.MAX_VALUE;
+		int intMax = Integer.MIN_VALUE;
+		
+		for (int i = 0; i < dat.length; i++) for (int j = 0; j < dat[0].length; j++)
+		{
+			int val = dat[i][j];
+			if (val != naVal) 
+			{
+				if (val < intMin) intMin = val;
+				if (val > intMax) intMax = val;
+			}
+		}
+		return new int[] { intMin, intMax };
+	}
+	
 	public static double[] getArrMinMax(char[][] dat)
 	{
 		double dataMin = Double.MAX_VALUE; double dataMax = -dataMin;

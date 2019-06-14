@@ -63,7 +63,6 @@ public class ObjectImagePanel<T> extends JPanel
 	imgDisplayWidth, imgDisplayHeight, 
 	imgCornerX, imgCornerY;
 	
-	
 	public void setLegend(LegendPanel<T> legend) { this.legend = legend; }
 	public LegendPanel<T> getLegend() { return this.legend; }
 	

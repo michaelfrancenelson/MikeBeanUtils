@@ -39,10 +39,10 @@ public class PrimitiveImageFactoryDemo extends DemoConsts
 	public static void main(String[] args) 
 	{
 		boolean show = true, save = false;
-		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
+//		doubleDemo(50, 800, 600, 10, 200.1, 1.5, show, save);
 		intDemo(200, 300, 10, 20, 4.3, show, save);
-		booleanDemo(200, 300, 3.5, show, save);
-		byteDemo(200, 300, 4, show, save);
+//		booleanDemo(200, 300, 3.5, show, save);
+//		byteDemo(200, 300, 4, show, save);
 	}
 
 	static void byteDemo(int width, int height, double size, boolean show, boolean saveFile)

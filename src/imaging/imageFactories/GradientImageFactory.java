@@ -10,7 +10,6 @@ import utils.Sequences;
 public class GradientImageFactory 
 {
 
-
 	/**
 	 * Build an image showing a color gradient using double data.
 	 * @param min
@@ -49,7 +48,6 @@ public class GradientImageFactory
 		
 		int low = Math.min(min, max);
 		int hi  = Math.max(min, max);
-		
 		
 		if (nSteps == 1) nSteps++;
 		if (lowToHigh) { min = low; max = hi; }

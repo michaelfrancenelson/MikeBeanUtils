@@ -23,7 +23,6 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 	Color textColor;
 	double ptSize;
 
-
 	protected boolean loToHi, horiz;
 	String intFmt, dblFmt, strFmt;
 
@@ -40,15 +39,11 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 
 	@Override public void paintComponent(Graphics g)
 	{
-		//		if (sigFigs > 0)
-		//			for (PanelLabel p : valueLabels)
-		//				p.roundNumericLabel(sigFigs, );
 		roundLegendLabels();
 		super.paintComponent(g);
 	}
 
 	public void initLegend(
-			//			List<String> parsedBooleanFields,
 			int nLabels, int nSteps,
 			double offset1, double offset2, 
 			double textOffset, double pointOffset, 
@@ -56,7 +51,6 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 			boolean horiz, 
 			Font font, Color color, double ptSize,
 			String intFmt, String dblFmt, String strFmt
-
 			)
 	{
 
@@ -64,17 +58,6 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 		 * low-to-high vertical gradients must have low values at high 
 		 * indices.
 		 */
-		//		if (!horiz)
-		//		{
-		//			loToHi = !loToHi;
-		//			logger.debug("Vertical legend: java's image origin is in the upper left corner"
-		//					+ " of the monitor.  For values to increase toward the top of the screen,"
-		//					+ " high values  must have low indices: inverting 'loToHi' parameter");
-		//		}
-		//		
-
-		//		if (!horiz)	loToHi = !loToHi;
-
 		this.nLabels = nLabels;
 		this.nSteps = nSteps;
 		this.offset1 = offset1; this.offset2 = offset2;
@@ -136,7 +119,6 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 
 		if ( imager.getImagerData().getType().toLowerCase().equals("boolean"))
 		{
-
 			nLabels = Math.max(imager.getImagerData().getHeight(), imager.getImagerData().getWidth());
 			double offset = 1.0 / ((double) nLabels * 2.0);
 			labelPositions = Sequences.spacedIntervals(offset, 1.0 - offset, nLabels - 1);
@@ -172,7 +154,7 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 		String label = imager.queryData(relI, relJ, intFmt, dblFmt, strFmt);
 		labelFromImageRelCoords(relI, relJ, label, font, color, -9999, "value label");
 
-		logger.trace(String.format("Adding value "
+		logger.debug(String.format("Adding value "
 				+ "label %s at coords (%.0f%%, %.0f%%)",
 				label, 100 * relI, 100 * relJ));
 	}
