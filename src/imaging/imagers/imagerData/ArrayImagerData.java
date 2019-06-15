@@ -129,6 +129,9 @@ public class ArrayImagerData<T> implements ImagerData<T>
 			else dataY = inputX;
 		}
 
+		dataX = Math.max(0, Math.min(dataWidth - 1, dataX));
+		dataY = Math.max(0, Math.min(dataHeight - 1, dataY));
+		
 		logger.trace(String.format("Input coords: (%d, %d) data coords: (%d, %d)", inputX, inputY, dataX, dataY));
 		setCurrentObj();
 	}

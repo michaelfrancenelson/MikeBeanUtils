@@ -5,51 +5,21 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.function.ToDoubleFunction;
 
 import main.Main;
 import umontreal.ssj.randvar.UniformGen;
 import umontreal.ssj.randvar.UniformIntGen;
 import umontreal.ssj.rng.MRG31k3p;
 import umontreal.ssj.rng.RandomStream;
+import utils.ArrayUtils;
 import utils.Binary;
+import utils.MethodUtils.DoubleGetter;
+import utils.Sequences;
 
 /** Randomly choose elements from collections with possibly different probabilities associated with each item in the collection. */
 public class WeightedRandomSample {
 
 	public static final boolean LO_TO_HI = false, HI_TO_LO = true;
-
-	public static void _main(String[] args) 
-	{
-		RandomStream rs = new MRG31k3p();
-		double[] weights, invertWeights;
-
-		weights = new double[] {1, 2, 3, 4, 4.5};
-		invertWeights = invertWeights(weights, 1, 4.5);
-		int[] counts = new int[weights.length], invertCounts = new int[invertWeights.length];
-		int nTests = 100;
-		double sum1 = 0, sum2 = 0;
-		for (int i = 0; i < weights.length; i++) { sum1 += weights[i]; sum2 += invertWeights[i]; }
-
-		for (int i = 0; i < nTests; i++)
-		{
-			counts[sample(rs, weights)] ++;
-			invertCounts[sample(rs, invertWeights)] ++;
-		}
-
-		System.out.println("Test: weights");
-		for (int i = 0; i < counts.length; i++)
-		{
-			System.out.print(String.format("(%.2f/", sum1 * ((double) counts[i] / (double) nTests)));
-			System.out.print(String.format("%.2f) ",  weights[i]));
-		}
-		System.out.println("Test: inverted weights");
-		for (int i = 0; i < counts.length; i++)
-		{
-			System.out.print(String.format("(%.2f/", sum2 * ((double) invertCounts[i] / (double) nTests)));
-			System.out.print(String.format("%.2f) ",  invertWeights[i]));
-		}
-	}
 
 	/**
 	 *  Get a 1D array of weights calculated from the values
@@ -61,7 +31,7 @@ public class WeightedRandomSample {
 	 * @return
 	 */
 	public static<T> DblArrayMinMax weights(
-			List<T> s, ToDoubleFunction<T> getter,
+			List<T> s, DoubleGetter<T> getter,
 			boolean invert, double offset)
 	{
 		double min = Double.MAX_VALUE;
@@ -70,13 +40,77 @@ public class WeightedRandomSample {
 		double[] out = new double[s.size()];
 		for (int i = 0; i < s.size(); i++)
 		{
-			val = Math.max(0, getter.applyAsDouble(s.get(i)) - offset);
-			out[i] = val; if (val < min) min = val; if (val > max) max = val;
+			val = Math.max(0, getter.get(s.get(i)) - offset);
+			min = Math.min(min, val);
+			max = Math.max(max, val);
 		}
 		if (invert) out = invertWeights(out, min, max);
 		return new DblArrayMinMax(out, min, max);
 	}
 
+	
+	private static<T> DblArrayMinMax weights(
+			List<WeightedItem<T>> s, 
+			boolean invert, double offset)
+	{
+		double min = Double.MAX_VALUE;
+		double max = -Double.MAX_VALUE;
+		double val;
+		double[] out = new double[s.size()];
+		for (int i = 0; i < s.size(); i++)
+		{
+			val = Math.max(0, s.get(i).weight - offset);
+//			val = Math.max(0, weightedItemGetter.get(s.get(i)) - offset);
+			out[i] = val; 
+			min = Math.min(min, val);
+			max = Math.max(max, val);
+		}
+		if (invert) out = invertWeights(out, min, max);
+		return new DblArrayMinMax(out, min, max);
+	}
+
+	
+	
+	public static <T> T weightedRandomSingleSample(
+			List<WeightedItem<T>> ls, boolean inverse, double offset,
+			boolean normalize, double minWeight, double maxWeight,
+			RandomStream rs, boolean nullIfNoWeight)
+	{
+		DblArrayMinMax weights = 
+				weights(ls, inverse, offset);
+		if (weights.max == 0 && nullIfNoWeight) return null;
+
+		
+		if (normalize) 
+		{
+			double[] norm = Sequences.normalize2(weights.d, weights.min, weights.max, minWeight, maxWeight);
+			weights.d = norm;
+			weights.min = minWeight;
+			weights.max = maxWeight;
+		}
+		double[] cumulativeWeights = ArrayUtils.cumulativeSum(weights.d, true);
+		double key = cumulativeWeights[cumulativeWeights.length - 1] * rs.nextDouble();
+		
+		int index = Binary.insertionIndex(cumulativeWeights, key);
+		return ls.get(index).item;
+
+	}
+	
+	public static <T> T weightedRandomSingleSample(
+			List<T> ls, DoubleGetter<T> getter,
+			boolean inverse, double offset, RandomStream rs,
+			boolean nullIfNoWeight)
+	{
+		DblArrayMinMax weights = weights(ls, getter, inverse, offset);
+		if (weights.max == 0 && nullIfNoWeight) return null;
+		double[] cumulativeWeights = ArrayUtils.cumulativeSum(weights.d, true);
+		double key = cumulativeWeights[cumulativeWeights.length - 1] * rs.nextDouble();
+		
+		int index = Binary.insertionIndex(cumulativeWeights, key);
+		return ls.get(index);
+	}
+	
+	
 
 	/** 
 	 *  Perform a weighted random sample of k items from a list of
@@ -100,7 +134,7 @@ public class WeightedRandomSample {
 			RandomStream rs,
 			List<T> s, int k, 
 			Comparator<T> comp,
-			ToDoubleFunction<T> getter, 
+			DoubleGetter<T> getter, 
 			double offset, double propToSample
 			)
 	{
@@ -129,7 +163,7 @@ public class WeightedRandomSample {
 
 		if (propToSample < 1) n = Math.max(k, (int) ((double) n * propToSample));
 
-		if (getter.applyAsDouble(s2.get(0)) > getter.applyAsDouble(s2.get(n - 1)))
+		if (getter.get(s2.get(0)) > getter.get(s2.get(n - 1)))
 			invert = false;
 		else invert = true;
 
@@ -180,7 +214,7 @@ public class WeightedRandomSample {
 	public static <T> List<T> efraimidisWeightedSample(
 			RandomStream rs, List<T> s, int k, 
 			Comparator<T> comp,
-			ToDoubleFunction<T> getter, 
+			DoubleGetter<T> getter, 
 			double offset, double propToSample
 			)
 	{
@@ -209,7 +243,7 @@ public class WeightedRandomSample {
 
 		if (propToSample < 1) n = Math.max(k, (int) ((double) n * propToSample));
 
-		if (getter.applyAsDouble(s2.get(0)) > getter.applyAsDouble(s2.get(n - 1)))
+		if (getter.get(s2.get(0)) > getter.get(s2.get(n - 1)))
 			invert = false;
 		else invert = true;
 
@@ -457,6 +491,37 @@ public class WeightedRandomSample {
 		public DblArrayMinMax(double[] dbl, double mn, double mx)
 		{
 			this.d = dbl; this.min = mn; this.max = mx;
+		}
+	}
+	public static void _main(String[] args) 
+	{
+		RandomStream rs = new MRG31k3p();
+		double[] weights, invertWeights;
+
+		weights = new double[] {1, 2, 3, 4, 4.5};
+		invertWeights = invertWeights(weights, 1, 4.5);
+		int[] counts = new int[weights.length], invertCounts = new int[invertWeights.length];
+		int nTests = 100;
+		double sum1 = 0, sum2 = 0;
+		for (int i = 0; i < weights.length; i++) { sum1 += weights[i]; sum2 += invertWeights[i]; }
+
+		for (int i = 0; i < nTests; i++)
+		{
+			counts[sample(rs, weights)] ++;
+			invertCounts[sample(rs, invertWeights)] ++;
+		}
+
+		System.out.println("Test: weights");
+		for (int i = 0; i < counts.length; i++)
+		{
+			System.out.print(String.format("(%.2f/", sum1 * ((double) counts[i] / (double) nTests)));
+			System.out.print(String.format("%.2f) ",  weights[i]));
+		}
+		System.out.println("Test: inverted weights");
+		for (int i = 0; i < counts.length; i++)
+		{
+			System.out.print(String.format("(%.2f/", sum2 * ((double) invertCounts[i] / (double) nTests)));
+			System.out.print(String.format("%.2f) ",  invertWeights[i]));
 		}
 	}
 

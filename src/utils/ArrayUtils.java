@@ -4,6 +4,26 @@ public class ArrayUtils
 {
 	
 	
+		
+	public static double[] cumulativeSum(double[] in, boolean strictlyPositive)
+	{
+		double[] out = new double[in.length];
+		double val;
+		double sum = 0.0;
+		for (int i = 0; i < in.length; i++)
+		{
+			val = in[i];
+			if (strictlyPositive) sum += Math.max(0, val); 
+			else sum += in[i];
+
+			out[i] = sum;
+		}
+		return out;
+	}
+	
+	
+	
+	
 	/**
 	 * 
 	 * @param relCoord

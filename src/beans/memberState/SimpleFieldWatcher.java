@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 import beans.builder.GetterGetterGetter;
-import beans.builder.GetterGetterGetter.BooleanGetter;
-import beans.builder.GetterGetterGetter.ByteGetter;
-import beans.builder.GetterGetterGetter.CharGetter;
-import beans.builder.GetterGetterGetter.DoubleGetter;
+import beans.builder.GetterGetterGetter.BooleanFieldGetter;
+import beans.builder.GetterGetterGetter.ByteFieldGetter;
+import beans.builder.GetterGetterGetter.CharFieldGetter;
+import beans.builder.GetterGetterGetter.DoubleFieldGetter;
 import beans.builder.GetterGetterGetter.FormattedStringValGetter;
-import beans.builder.GetterGetterGetter.IntGetter;
+import beans.builder.GetterGetterGetter.IntFieldGetter;
 import beans.builder.GetterGetterGetter.ParsingBooleanGetter;
 import beans.builder.GetterGetterGetter.StringValGetter;
 import utils.FieldUtils;
@@ -29,14 +29,14 @@ public class SimpleFieldWatcher <T> implements FieldWatcher<T>
 	private Field field;
 	private Class<T> clazz;
 
-	private ByteGetter<T> byteGetter;
-	private IntGetter<T> intGetter;
-	private DoubleGetter<T> dblGetter;
+	private ByteFieldGetter<T> byteGetter;
+	private IntFieldGetter<T> intGetter;
+	private DoubleFieldGetter<T> dblGetter;
 	private StringValGetter<T> stringGetter;
 	private FormattedStringValGetter<T> formattedStringGetter;
-	private BooleanGetter<T> boolGetter;
+	private BooleanFieldGetter<T> boolGetter;
 	private ParsingBooleanGetter<T> parsingBoolGetter;
-	private CharGetter<T> charGetter;
+	private CharFieldGetter<T> charGetter;
 	private SimpleFieldWatcher() {}
 
 	/**

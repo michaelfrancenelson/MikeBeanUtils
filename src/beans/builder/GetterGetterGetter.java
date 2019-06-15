@@ -11,8 +11,6 @@ import java.util.List;
  */
 public class GetterGetterGetter
 {
-
-	
 	public static void main(String[] args) 
 	{
 		String dblFmt = "%.1f";
@@ -38,13 +36,13 @@ public class GetterGetterGetter
 	
 	@FunctionalInterface public interface FormattedStringValGetter<T> { String get(T t, String intFmt, String dblFmt, String strFmt); };
 
-	@FunctionalInterface public interface IntGetter <T> { int get(T obj); }
-	@FunctionalInterface public interface ByteGetter <T> { byte get(T obj); }
-	@FunctionalInterface public interface DoubleGetter<T> { double get(T obj); }
-	@FunctionalInterface public interface CharGetter<T> { char get(T obj); }
-	@FunctionalInterface public interface BooleanGetter<T> { boolean get(T obj); }
+	@FunctionalInterface public interface IntFieldGetter <T> { int get(T obj); }
+	@FunctionalInterface public interface ByteFieldGetter <T> { byte get(T obj); }
+	@FunctionalInterface public interface DoubleFieldGetter<T> { double get(T obj); }
+	@FunctionalInterface public interface CharFieldGetter<T> { char get(T obj); }
+	@FunctionalInterface public interface BooleanFieldGetter<T> { boolean get(T obj); }
 	@FunctionalInterface public interface ParsingBooleanGetter<T> { boolean get(T obj); }
-	@FunctionalInterface public interface StringGetter<T> { String get(T obj); }
+	@FunctionalInterface public interface StringFieldGetter<T> { String get(T obj); }
 	@FunctionalInterface interface ObjGetter <T> { Object get(T obj); }
 
 	/** Retrieve the names of the fields for annotated bean IO
@@ -97,21 +95,21 @@ public class GetterGetterGetter
 		{
 		case("int"): 
 		{
-			IntGetter<T> d = intGetterGetter(t, f);
+			IntFieldGetter<T> d = intGetterGetter(t, f);
 			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
 			break; 
 		} 
 
 		case("double"):  
 		{
-			DoubleGetter<T> d = doubleGetterGetter(t, f);
+			DoubleFieldGetter<T> d = doubleGetterGetter(t, f);
 			out = (T tt) -> { return String.format(dblFmt, d.get(tt)); }; 
 			break; 
 		} 
 
 		case("byte"): 
 		{
-			ByteGetter<T> d = byteGetterGetter(t, f);
+			ByteFieldGetter<T> d = byteGetterGetter(t, f);
 			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
 			break; 
 		} 
@@ -119,47 +117,47 @@ public class GetterGetterGetter
 
 		case("short"): 
 		{
-			IntGetter<T> d = intGetterGetter(t, f);
+			IntFieldGetter<T> d = intGetterGetter(t, f);
 			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
 			break; 
 		} 
 
 		case("long"): 
 		{
-			IntGetter<T> d = intGetterGetter(t, f);
+			IntFieldGetter<T> d = intGetterGetter(t, f);
 			out = (T tt) -> { return String.format("%d", d.get(tt)); };	
 			break; 
 		}
 
 		case("float"):  
 		{
-			DoubleGetter<T> d = doubleGetterGetter(t, f);
+			DoubleFieldGetter<T> d = doubleGetterGetter(t, f);
 			out = (T tt) -> { return String.format(dblFmt, d.get(tt)); }; 
 			break; 
 		}
 
 		case("boolean"): 
 		{
-			BooleanGetter<T> d = booleanGetterGetter(t, f);
+			BooleanFieldGetter<T> d = booleanGetterGetter(t, f);
 			out = (T tt) -> {return Boolean.toString(d.get(tt)); };
 			break; 
 		}
 
 		case("char"): 
 		{
-			CharGetter<T> d = charGetterGetter(t, f);
+			CharFieldGetter<T> d = charGetterGetter(t, f);
 			out = (T tt) -> { return String.valueOf(d.get(tt)); };
 		}
 
 		case("Character"): 
 		{
-			CharGetter<T> d = charGetterGetter(t, f);
+			CharFieldGetter<T> d = charGetterGetter(t, f);
 			out = (T tt) -> { return String.valueOf(d.get(tt)); };
 		}
 
 		case("String"):  
 		{
-			StringGetter<T> d = stringGetterGetter(t, f);
+			StringFieldGetter<T> d = stringGetterGetter(t, f);
 			out = (T tt) -> {return d.get(tt); };
 			break; 
 		}
@@ -195,14 +193,14 @@ public class GetterGetterGetter
 		{
 		case("int"): 
 		{
-			IntGetter<T> d = intGetterGetter(t, f);
+			IntFieldGetter<T> d = intGetterGetter(t, f);
 			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(intFmt, d.get(tt)); };	
 			break; 
 		} 
 
 		case("double"):  
 		{
-			DoubleGetter<T> d = doubleGetterGetter(t, f);
+			DoubleFieldGetter<T> d = doubleGetterGetter(t, f);
 			
 			out = (T tt, String intFmt, String dblFmt, String strFmt) -> {
 				double val = d.get(tt);
@@ -213,7 +211,7 @@ public class GetterGetterGetter
 
 		case("byte"): 
 		{
-			ByteGetter<T> d = byteGetterGetter(t, f);
+			ByteFieldGetter<T> d = byteGetterGetter(t, f);
 			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(intFmt, d.get(tt)); };	
 			break; 
 		} 
@@ -221,47 +219,47 @@ public class GetterGetterGetter
 
 		case("short"): 
 		{
-			IntGetter<T> d = intGetterGetter(t, f);
+			IntFieldGetter<T> d = intGetterGetter(t, f);
 			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(intFmt, d.get(tt)); };	
 			break; 
 		} 
 
 		case("long"): 
 		{
-			IntGetter<T> d = intGetterGetter(t, f);
+			IntFieldGetter<T> d = intGetterGetter(t, f);
 			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(intFmt, d.get(tt)); };	
 			break; 
 		}
 
 		case("float"):  
 		{
-			DoubleGetter<T> d = doubleGetterGetter(t, f);
+			DoubleFieldGetter<T> d = doubleGetterGetter(t, f);
 			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(dblFmt, d.get(tt)); };	
 			break; 
 		}
 
 		case("boolean"): 
 		{
-			BooleanGetter<T> d = booleanGetterGetter(t, f);
+			BooleanFieldGetter<T> d = booleanGetterGetter(t, f);
 			out = (T tt, String intFmt, String dblFmt, String strFmt) -> {return Boolean.toString(d.get(tt)); };
 			break; 
 		}
 
 		case("char"): 
 		{
-			CharGetter<T> d = charGetterGetter(t, f);
+			CharFieldGetter<T> d = charGetterGetter(t, f);
 			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.valueOf(d.get(tt)); };
 		}
 
 		case("Character"): 
 		{
-			CharGetter<T> d = charGetterGetter(t, f);
+			CharFieldGetter<T> d = charGetterGetter(t, f);
 			out = (T tt, String intFmt, String dblFmt, String strFmt) -> { return String.format(strFmt, String.valueOf(d.get(tt))); };
 		}
 
 		case("String"):  
 		{
-			StringGetter<T> d = stringGetterGetter(t, f);
+			StringFieldGetter<T> d = stringGetterGetter(t, f);
 			out = (T tt, String intFmt, String dblFmt, String strFmt) -> {return String.format(strFmt, d.get(tt)); };
 			break; 
 		}
@@ -285,11 +283,11 @@ public class GetterGetterGetter
 	 * @param <T> type of bean
 	 * @return a getter
 	 */
-	public static <T> IntGetter<T> 
+	public static <T> IntFieldGetter<T> 
 	intGetterGetter(Class<T> t, Field f)
 	{
 		String type = f.getType().getSimpleName();
-		IntGetter<T> out = null;
+		IntFieldGetter<T> out = null;
 
 		switch(type)
 		{
@@ -341,12 +339,12 @@ public class GetterGetterGetter
 	 * @param <T> type of bean
 	 * @return a getter
 	 */
-	public static <T> ByteGetter<T> 
+	public static <T> ByteFieldGetter<T> 
 	byteGetterGetter(Class<T> t, Field f)
 	{
 
 		String type = f.getType().getSimpleName();
-		ByteGetter<T> out = null;
+		ByteFieldGetter<T> out = null;
 		switch(type)
 		{
 		case("byte"):
@@ -392,11 +390,11 @@ public class GetterGetterGetter
 	 * @param <T> type of bean
 	 * @return a getter
 	 */
-	public static <T> DoubleGetter<T> 
+	public static <T> DoubleFieldGetter<T> 
 	doubleGetterGetter(Class<T> t, Field f)
 	{
 		String type = f.getType().getSimpleName();
-		DoubleGetter<T> out = null; 
+		DoubleFieldGetter<T> out = null; 
 		//		System.out.println("GetterGetterGetter.getDoubleGetter() field name = " + f.getName());
 		//		System.out.println("GetterGetterGetter.getDoubleGetter() field type = " + type);
 
@@ -447,11 +445,11 @@ public class GetterGetterGetter
 	 * @param <T> type of bean
 	 * @return a getter
 	 */
-	public static <T> BooleanGetter<T> 
+	public static <T> BooleanFieldGetter<T> 
 	booleanGetterGetter(Class<T> t, Field f)
 	{
 		String type = f.getType().getSimpleName();
-		BooleanGetter<T> out = null;
+		BooleanFieldGetter<T> out = null;
 		switch(type)
 		{
 		case("boolean"):
@@ -498,11 +496,11 @@ public class GetterGetterGetter
 	 * @param <T> type of bean
 	 * @return a getter
 	 */
-	public static <T> CharGetter<T> 
+	public static <T> CharFieldGetter<T> 
 	charGetterGetter(Class<T> t, Field f)
 	{
 		String type = f.getType().getSimpleName();
-		CharGetter<T> out = null; 
+		CharFieldGetter<T> out = null; 
 		switch(type)
 		{
 		case("char"):
@@ -583,10 +581,10 @@ public class GetterGetterGetter
 	 * @param <T> type of bean
 	 * @return a getter
 	 */
-	public static <T> StringGetter<T> 
+	public static <T> StringFieldGetter<T> 
 	stringGetterGetter(Class<T> t, Field f)
 	{
-		StringGetter<T> out = (T tt) ->
+		StringFieldGetter<T> out = (T tt) ->
 		{
 			try { return f.get(tt).toString();}
 			catch (IllegalArgumentException | IllegalAccessException e) 

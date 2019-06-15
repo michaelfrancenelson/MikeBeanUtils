@@ -15,10 +15,15 @@ import java.util.function.ToIntFunction;
 
 public class MethodUtils
 {
+	public static interface DoubleGetter<T>
+	{
+		public double get(T t);
+	}
+
 	public static interface GetterComparator <T> extends Comparator<T>
 	{
-		public double getVal(T t);
-		public ToDoubleFunction<T> getGetter();
+		public double get(T t);
+		public DoubleGetter<T> getGetter();
 	}
 
 	public static <T> void printListWithGetter(List<T> l, ToDoubleFunction<T> getter, int n, String message)
@@ -28,50 +33,65 @@ public class MethodUtils
 		{
 			System.out.println(message + "Element " + i + ": " + getter.applyAsDouble(l.get(i)));
 		}
-//		System.out.println();
 	}
-	
-	
+
 	public static <T> GetterComparator<T> getGetterComparator(
 			Class<T> clazz, String getterName, boolean hiToLo) throws Throwable 
 	{
-		ToDoubleFunction<T> getter = getDoubleGetter(getterName, clazz);
+		DoubleGetter<T> g;
 
+		Method m = clazz.getMethod(getterName);
+		String typ = m.getReturnType().getSimpleName();
+
+		switch(typ)
+		{
+		case("int"):
+			g = new DoubleGetter<T>() 
+		{
+			ToIntFunction<T> i = getIntGetter(getterName, clazz);
+			@Override public double get(T t) { return (double) i.applyAsInt(t); }
+		};
+		break;
+		case("double"):
+			g = new DoubleGetter<T>() 
+		{
+			ToDoubleFunction<T> d = getDoubleGetter(getterName, clazz);
+			@Override public double get(T t) { return d.applyAsDouble(t); }
+		};
+		break;
+		default: throw new IllegalArgumentException("Could not create a getter");
+		}
 		if (hiToLo)
-			return new GetterComparator<T>()
-			{
-				double v1, v2;
-				@Override public double getVal(T t) { return getter.applyAsDouble(t); }
-				@Override public int compare(T t1, T t2)
-				{
-					v2 = getter.applyAsDouble(t1);
-					v1 = getter.applyAsDouble(t2);
-					
-					if (v1 > v2) return 1;
-					if (v1 < v2) return -1;
-					return 0;
-				}
-				@Override public ToDoubleFunction<T> getGetter() { return getter; }
-			};
-		else
 			return new GetterComparator<T>()
 		{
 			double v1, v2;
-			@Override public double getVal(T t) { return getter.applyAsDouble(t); }
+			@Override public double get(T t) { return g.get(t); }
 			@Override public int compare(T t1, T t2)
 			{
-				v1 = getter.applyAsDouble(t1);
-				v2 = getter.applyAsDouble(t2);
-			
+				v2 = g.get(t1); v1 = g.get(t2);
+
 				if (v1 > v2) return 1;
 				if (v1 < v2) return -1;
 				return 0;
 			}
-			@Override public ToDoubleFunction<T> getGetter() { return getter; }
+			@Override public DoubleGetter<T> getGetter() { return g; }
+		};
+		else
+			return new GetterComparator<T>()
+		{
+			double v1, v2;
+			@Override public double get(T t) { return g.get(t); }
+			@Override public int compare(T t1, T t2)
+			{
+				v1 = g.get(t1);	v2 = g.get(t2);
+
+				if (v1 > v2) return 1;
+				if (v1 < v2) return -1;
+				return 0;
+			}
+			@Override public DoubleGetter<T> getGetter() { return g; }
 		};
 	}
-
-
 
 	/**
 	 *  Get a method handler for a getter
@@ -121,13 +141,13 @@ public class MethodUtils
 		return factoryInvoker;
 	}
 
-	public static <T> ToIntFunction<T> getIntGetter(String getterName, Class<T> beanClass) throws Throwable
+	private static <T> ToIntFunction<T> getIntGetter(String getterName, Class<T> beanClass) throws Throwable
 	{
 		MethodHandle mh = buildHandler(beanClass, ToIntFunction.class, getterName, "applyAsInt");
 		return (ToIntFunction<T>) mh.invoke();
 	}
-	
-	public static <T> ToDoubleFunction<T> getDoubleGetter(String getterName, Class<T> beanClass) throws Throwable
+
+	private static <T> ToDoubleFunction<T> getDoubleGetter(String getterName, Class<T> beanClass) throws Throwable
 	{
 		MethodHandle mh = buildHandler(beanClass, ToDoubleFunction.class, getterName, "applyAsDouble");
 		return (ToDoubleFunction<T>) mh.invoke();
@@ -135,10 +155,15 @@ public class MethodUtils
 
 	public static <T> void getterDemo(String intGetterName, String dblGetterName, Class<T> clazz, T t) throws Throwable
 	{
-		ToIntFunction<T> intGetter = getIntGetter(intGetterName, clazz);
-		ToDoubleFunction<T> dblGetter = getDoubleGetter(dblGetterName, clazz);
-		System.out.println(intGetter.applyAsInt(t));
-		System.out.println(dblGetter.applyAsDouble(t));
+//		ToIntFunction<T> intGetter = getIntGetter(intGetterName, clazz);
+//		ToDoubleFunction<T> dblGetter = getDoubleGetter(dblGetterName, clazz);
+		
+		GetterComparator<T> intComp = getGetterComparator(clazz, intGetterName, false);
+		GetterComparator<T> dblComp = getGetterComparator(clazz, dblGetterName, false);
+		System.out.println(intComp.getGetter().get(t));
+		System.out.println(intComp.get(t));
+		System.out.println(dblComp.getGetter().get(t));
+		System.out.println(dblComp.get(t));
 	}
 
 	public static void main(String... args) throws Throwable {

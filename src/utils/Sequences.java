@@ -3,6 +3,74 @@ package utils;
 public class Sequences
 {
 
+	public static double[] normalize1(double[] in, double min, double max)
+	{
+		double range = min - max;
+		double tol = 0.00001;
+		double vMin = Double.MAX_VALUE;
+		double vMax = -Double.MAX_VALUE;
+		
+		double[] out = new double[in.length];
+		if (range <= 0)
+		{
+			for (int i = 0; i < in.length; i++) out[i] = 1.0;
+			return out;
+		}
+
+		for (int i = 0; i < in.length; i++) 
+		{
+			double val = Math.max(0.0, Math.min(1.0, (in[i] - min) / range));
+			out[i] = val;
+			vMin = Math.min(val, vMin);
+			vMax = Math.min(val, vMax);
+			if (val > 1 || val < 0) throw new IllegalArgumentException ("value is outside range 0 - 1");
+			if (Math.abs(vMin - 0.0) > tol) throw new IllegalArgumentException("minimum value is not zero");
+			if (Math.abs(vMax - 1.0) > tol) throw new IllegalArgumentException("maximum value is not one");
+		}
+		return out;
+	}
+
+	/**
+	 * 
+	 * @param in
+	 * @param newMin
+	 * @param newMax
+	 * @return
+	 */
+	public static double[] normalize2(
+			double[] in, 
+			double min, double max, 
+			double newMin, double newMax)
+	{
+		double range = max - min;
+		double newRange = newMax - newMin;
+		double tol = 0.00001;
+		double vMin = Double.MAX_VALUE;
+		double vMax = -Double.MAX_VALUE;
+		
+		double[] out = new double[in.length];
+		if (range <= 0)
+		{
+			for (int i = 0; i < in.length; i++) out[i] = 1.0;
+			return out;
+		}
+
+		for (int i = 0; i < in.length; i++) 
+		{
+			double val = Math.max(0.0, Math.min(1.0, (in[i] - min) / range));
+			double val2 = newMin + val * newRange;
+			out[i] = val2;
+			vMin = Math.min(val2, vMin);
+			vMax = Math.max(val2, vMax);
+			if (val > 1 || val < 0) throw new IllegalArgumentException ("value is outside range 0 - 1");
+		}
+		if (Math.abs(vMin - newMin) > tol) throw new 
+		IllegalArgumentException("minimum value \n" + vMin + " \nis not the new min \n" + newMin);
+		if (Math.abs(vMax - newMax) > tol) throw new 
+		IllegalArgumentException("aximum value \n" + vMax + " \nis not the new max \n" + newMax);
+		return out;
+	}
+
 	/**
 	 * 
 	 * @param start interval endpoint

@@ -26,11 +26,11 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 
 		if (type.equals("int"))
 		{
-			logger.debug("primitive image data type: int");
-			logger.debug("Is int? " + isInt);
+			logger.trace("primitive image data type: int");
+			logger.trace("Is int? " + isInt);
 			int[] intMinmax = ArrayUtils.getIntArrMinMax(intDat, naInt);
 			
-			logger.debug("intMin: " + intMinmax[0] + " intMax: " + intMinmax[1]);
+			logger.trace("intMin: " + intMinmax[0] + " intMax: " + intMinmax[1]);
 			
 			if (ci != null) ci.updateMinMax(intMinmax[0], intMinmax[1]);
 			datIntMin = intMinmax[0];
@@ -117,7 +117,7 @@ public class PrimitiveImagerData<T> extends ArrayImagerData<T>
 		}
 		if (asBoolean) {
 			String val2 = FieldUtils.toBoolean(val);
-			logger.debug(String.format("Querying boolean value (from %s = %s) at relative coords: (%.2f, %.2f): %s",
+			logger.info(String.format("Querying boolean value (from %s = %s) at relative coords: (%.2f, %.2f): %s",
 					type, val, 100 * relativeX, 100 * relativeY, val2));
 			return val2;
 		}
