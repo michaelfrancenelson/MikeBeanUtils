@@ -9,7 +9,14 @@
 
 	<properties>
 
-		<LightweightJavaUtils.version>1.0.3</LightweightJavaUtils.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<github.global.server>github</github.global.server>
+
+		<maven.deploy.plugin.version>2.8.1</maven.deploy.plugin.version>
+		<maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
+		<skip.tests>false</skip.tests>
+		
+<!-- 		<LightweightJavaUtils.version>1.0.3</LightweightJavaUtils.version> -->
 		<netcdf.version>4.3.23</netcdf.version>
 		<!-- <slf4j.version>1.7.5</slf4j.version> -->
 		<junit.version>4.12</junit.version>
@@ -20,18 +27,38 @@
 	</properties>
 
 	<build>
+	
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
+
 		<plugins>
+
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
+				<version>${maven.compiler.plugin.version}</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+					<skipTests>${skip.tests}</skipTests>
 				</configuration>
 			</plugin>
+
 		</plugins>
+		
 	</build>
 
 	<dependencies>
@@ -80,11 +107,11 @@
 			<url>http://repo.boundlessgeo.com/main</url>
 		</repository>
 
-		<repository>
-			<id>michaelfrancenelson</id>
-			<name>maven-repos</name>
-			<url> https://raw.github.com/michaelfrancenelson/maven-repos/master/</url>
-		</repository>
+<!-- 		<repository> -->
+<!-- 			<id>michaelfrancenelson</id> -->
+<!-- 			<name>maven-repos</name> -->
+<!-- 			<url> https://raw.github.com/michaelfrancenelson/maven-repos/master/</url> -->
+<!-- 		</repository> -->
 
 	</repositories>
 
