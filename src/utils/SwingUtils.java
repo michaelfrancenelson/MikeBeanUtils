@@ -20,7 +20,8 @@ public class SwingUtils
 	{
 		JFrame f = new JFrame(title);
 		f.setSize(new Dimension(width, height));
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		return f;
 	}
 

@@ -5,7 +5,8 @@
 	<groupId>MikeBeanUtils</groupId>
 	<artifactId>MikeBeanUtils</artifactId>
 	<!-- <version>0.0.0-SNAPSHOT</version> -->
-	<version>0.1.0</version>
+	<!-- <version>0.1.0</version> -->
+	<version>0.1.1-SNAPSHOT</version>
 
 	<properties>
 
@@ -15,10 +16,11 @@
 		<maven.deploy.plugin.version>2.8.1</maven.deploy.plugin.version>
 		<maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
 		<skip.tests>false</skip.tests>
-		
-<!-- 		<LightweightJavaUtils.version>1.0.3</LightweightJavaUtils.version> -->
+
+		<jdk.version>1.8</jdk.version>
+
+
 		<netcdf.version>4.3.23</netcdf.version>
-		<!-- <slf4j.version>1.7.5</slf4j.version> -->
 		<junit.version>4.12</junit.version>
 		<slf4j.version>2.11.0</slf4j.version>
 
@@ -27,38 +29,64 @@
 	</properties>
 
 	<build>
-	
+
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
 
 		<plugins>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 
-			<plugin>
+		<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven.compiler.plugin.version}</version>
+				<version>3.8.0</version>
+
 				<configuration>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
-					<skipTests>${skip.tests}</skipTests>
+					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
 
+
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-compiler-plugin</artifactId> -->
+<!-- 				<version>3.8.0</version> -->
+
+<!-- 				<configuration> -->
+<!-- 					<source>${jdk.version}</source> -->
+<!-- 					<target>${jdk.version}</target> -->
+<!-- 					<skipTests>true</skipTests> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
+
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-source-plugin</artifactId> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<id>attach-sources</id> -->
+<!-- 						<goals> -->
+<!-- 							<goal>jar</goal> -->
+<!-- 						</goals> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
+
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-compiler-plugin</artifactId> -->
+<!-- 				<version>${maven.compiler.plugin.version}</version> -->
+<!-- 				<configuration> -->
+<!-- 					<source>${jdk.version}</source> -->
+<!-- 					<target>${jdk.version}</target> -->
+<!-- 					<skipTests>${skip.tests}</skipTests> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
+
 		</plugins>
-		
+
 	</build>
 
 	<dependencies>
@@ -107,11 +135,11 @@
 			<url>http://repo.boundlessgeo.com/main</url>
 		</repository>
 
-<!-- 		<repository> -->
-<!-- 			<id>michaelfrancenelson</id> -->
-<!-- 			<name>maven-repos</name> -->
-<!-- 			<url> https://raw.github.com/michaelfrancenelson/maven-repos/master/</url> -->
-<!-- 		</repository> -->
+		<!-- <repository> -->
+		<!-- <id>michaelfrancenelson</id> -->
+		<!-- <name>maven-repos</name> -->
+		<!-- <url> https://raw.github.com/michaelfrancenelson/maven-repos/master/</url> -->
+		<!-- </repository> -->
 
 	</repositories>
 

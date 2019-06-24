@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import imaging.imagers.Imager;
 import imaging.imagers.ObjectImager;
 import imaging.imagers.decorators.PanelLabel;
+import imaging.imagers.imagerData.ImagerData;
 import utils.ArrayUtils;
 import utils.FieldUtils;
 
@@ -45,9 +46,7 @@ public class ObjectImagePanel<T> extends JPanel
 	public List<PanelLabel> getPoints() {
 		return points;
 	}
-	public void setPoints(List<PanelLabel> points) {
-		this.points = points;
-	}
+	public void setPoints(List<PanelLabel> points) { this.points = points; }
 	protected List<PanelLabel> points = new ArrayList<>();
 
 	protected String currentClickValue;
@@ -130,6 +129,13 @@ public class ObjectImagePanel<T> extends JPanel
 		imgDisplayWidth = image.getWidth(null); imgDisplayHeight = image.getHeight(null);
 	}
 
+	public void update(ImagerData<T> dat)
+	{
+		imager.setImagerData(dat);
+		imager.buildImage();
+		updateImage();
+	}
+	
 	/** 
 	 *  If the image is derived form an <code>ObjectArrayImager</code>, refresh the image to
 	 *  reflect any changes in the objects' state. 

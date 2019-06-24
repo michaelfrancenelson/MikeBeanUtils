@@ -21,6 +21,7 @@ public class ObjectImager<T> implements Imager<T>
 	double datMin, datMax;
 	ImageMinMax img;
 
+	
 	protected ColorInterpolator ci;
 	protected ColorInterpolator booleanCI;
 	private Class<T> clazz;

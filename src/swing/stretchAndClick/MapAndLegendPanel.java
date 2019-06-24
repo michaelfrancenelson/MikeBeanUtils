@@ -14,6 +14,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import imaging.imagers.imagerData.ImagerData;
+
 public class MapAndLegendPanel<T> extends JPanel
 {
 	@Retention(RetentionPolicy.RUNTIME)
@@ -26,6 +28,12 @@ public class MapAndLegendPanel<T> extends JPanel
 	protected LegendPanel<T> legend;
 	protected JComboBox<String> layerChooser;
 	protected JLabel layerChooserTitle;
+	
+	public void update(ImagerData<T> dat)
+	{
+		map.update(dat);
+		
+	}
 	
 	public void update()
 	{
