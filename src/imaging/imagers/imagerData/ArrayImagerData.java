@@ -47,8 +47,8 @@ public class ArrayImagerData<T> implements ImagerData<T>
 		if (simpleName.equals("int")) isInt = true;
 		if (simpleName.equals("Integer")) isInt = true;
 
-		//		logger.debug("simple name: " + simpleName);
-		//		logger.debug("Is int? " + isInt);
+		//		logger.trace("simple name: " + simpleName);
+		//		logger.trace("Is int? " + isInt);
 
 		if (t.getClass().equals(Boolean.class))
 		{
@@ -70,7 +70,7 @@ public class ArrayImagerData<T> implements ImagerData<T>
 						if (val > intMax) intMax = val;
 					}
 				}
-			logger.debug("int data min: " + intMin + " int data max: " + intMax);
+			logger.trace("int data min: " + intMin + " int data max: " + intMax);
 			ci.updateMinMax(intMin, intMax);
 			datIntMin = intMin; datIntMax = intMax;
 		}
@@ -213,8 +213,8 @@ public class ArrayImagerData<T> implements ImagerData<T>
 		//			if (simpleName.equals("int")) isInt = true;
 		//			if (simpleName.equals("Integer")) isInt = true;
 		//
-		//			logger.debug("simple name: " + simpleName);
-		//			logger.debug("Is int? " + isInt);
+		//			logger.trace("simple name: " + simpleName);
+		//			logger.trace("Is int? " + isInt);
 		//
 		//			if (t.getClass().equals(Boolean.class))
 		//			{
@@ -235,7 +235,7 @@ public class ArrayImagerData<T> implements ImagerData<T>
 		//							if (val > intMax) intMax = val;
 		//						}
 		//					}
-		//				Main.logger.debug("int data min: " + intMin + " int data max: " + intMax);
+		//				Main.logger.trace("int data min: " + intMin + " int data max: " + intMax);
 		//				ci.updateMinMax(intMin, intMax);
 		//			}
 		//			else

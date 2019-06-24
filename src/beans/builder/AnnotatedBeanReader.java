@@ -369,7 +369,7 @@ public class AnnotatedBeanReader
 		else if (presentInFirstRow.size() < presentInFirstCol.size())
 		{
 			message2 += "columns, ";
-			message4 = AnnotatedBeanReporter.concat(absentInFirstCol, " ,");
+			message4 = AnnotatedBeanReporter.concat(absentInFirstCol, ", ");
 			throw new IllegalArgumentException(
 					message1 + message2 + message3 + message4);
 		}

@@ -9,7 +9,7 @@ public class Sequences
 		double tol = 0.00001;
 		double vMin = Double.MAX_VALUE;
 		double vMax = -Double.MAX_VALUE;
-		
+
 		double[] out = new double[in.length];
 		if (range <= 0)
 		{
@@ -47,7 +47,7 @@ public class Sequences
 		double tol = 0.00001;
 		double vMin = Double.MAX_VALUE;
 		double vMax = -Double.MAX_VALUE;
-		
+
 		double[] out = new double[in.length];
 		if (range <= 0)
 		{
@@ -228,5 +228,33 @@ public class Sequences
 			for (int j = startIndex; j != endIndex; j++) out[0][j] = dat[j];
 		}
 		return out;
+	}
+
+	/**
+	 * Calculate the sum of all the <code>double</code> elements of a  
+	 * 1D array.
+	 *  
+	 * @param dd input array
+	 * @return sum of elements in dd
+	 */
+	public static double arraySum(double[] dd) 
+	{
+		double sum = 0.0;
+		for (int i = 0; i < dd.length; i++) sum += dd[i];
+		return sum;
+	}
+
+	/** 
+	 * Calculate the sum of all the <code>int</code> elements of a  
+	 * 1D array.
+	 * 
+	 * @param ii input array
+	 * @return sum of elements in ii
+	 */
+	public static int arraySum(int[] ii) 
+	{
+		int sum = 0;
+		for (int i = 0; i < ii.length; i++) sum += ii[i];
+		return sum;
 	}
 }

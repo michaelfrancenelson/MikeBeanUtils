@@ -154,7 +154,7 @@ public class LegendPanel<T> extends PrimitiveImagePanel<T>
 		String label = imager.queryData(relI, relJ, intFmt, dblFmt, strFmt);
 		labelFromImageRelCoords(relI, relJ, label, font, color, -9999, "value label");
 
-		logger.debug(String.format("Adding value "
+		logger.trace(String.format("Adding value "
 				+ "label %s at coords (%.0f%%, %.0f%%)",
 				label, 100 * relI, 100 * relJ));
 	}

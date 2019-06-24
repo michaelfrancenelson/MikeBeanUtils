@@ -22,10 +22,15 @@ public class MapAndLegendPanel<T> extends JPanel
 	 */
 	private static final long serialVersionUID = -3342833816567614979L;
 
-	protected ObjectImagePanel<T> map;
+	private ObjectImagePanel<T> map;
 	protected LegendPanel<T> legend;
 	protected JComboBox<String> layerChooser;
 	protected JLabel layerChooserTitle;
+	
+	public void update()
+	{
+		getMap().updateImage();
+	}
 	
 	public void setLayout(
 			int legPosition, 
@@ -40,7 +45,7 @@ public class MapAndLegendPanel<T> extends JPanel
 			layerChooserTitle.setFont(controlFont);
 		}
 		
-		layerChooser = map.getMapLayerComboBox(controlFont);
+		layerChooser = getMap().getMapLayerComboBox(controlFont);
 		
 		JPanel controlPanel = new JPanel();
 		if (layerChooserTitle != null)
@@ -90,7 +95,7 @@ public class MapAndLegendPanel<T> extends JPanel
 		
 		c.weightx = mapWeight; c.weighty = mapWeight;
 		c.gridx = mapX; c.gridy = mapY;
-		mapPanel.add(map, c);
+		mapPanel.add(getMap(), c);
 		
 		c.weightx = legendWeight; c.weighty = legendWeight;
 		c.gridx = legendX; c.gridy = legendY;
@@ -112,7 +117,7 @@ public class MapAndLegendPanel<T> extends JPanel
 		{
 			Border b1 = BorderFactory.createLineBorder(Color.black);
 			Border b2 = BorderFactory.createLineBorder(Color.black);
-			map.setBorder(b2);
+			getMap().setBorder(b2);
 			legend.setBorder(b2);
 			
 			mapPanel.setBorder(b1);
@@ -129,5 +134,13 @@ public class MapAndLegendPanel<T> extends JPanel
 		c.weightx = controlWeight; c.weighty = controlWeight;
 		c.gridy = controlY;
 		add(controlPanel, c);
+	}
+
+	public ObjectImagePanel<T> getMap() {
+		return map;
+	}
+
+	public void setMap(ObjectImagePanel<T> map) {
+		this.map = map;
 	}
 }

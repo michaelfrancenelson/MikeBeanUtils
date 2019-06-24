@@ -91,7 +91,7 @@ public class PanelFactory
 				legIntFmt, legDblFmt, legStrFmt);
 
 		map.setLegend(legend);
-		out.map = map; out.legend = legend;
+		out.setMap(map); out.legend = legend;
 		out.setLayout(legPosition, controlPosition, controlTitle, controlFont, true);
 //		legend.repaint();
 		legend.buildLegendLabels();

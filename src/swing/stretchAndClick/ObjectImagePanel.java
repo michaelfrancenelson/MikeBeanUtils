@@ -42,6 +42,12 @@ public class ObjectImagePanel<T> extends JPanel
 
 	protected List<PanelLabel> labels = new ArrayList<>();
 	protected List<PanelLabel> valueLabels = new ArrayList<>();
+	public List<PanelLabel> getPoints() {
+		return points;
+	}
+	public void setPoints(List<PanelLabel> points) {
+		this.points = points;
+	}
 	protected List<PanelLabel> points = new ArrayList<>();
 
 	protected String currentClickValue;

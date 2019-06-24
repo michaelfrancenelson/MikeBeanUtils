@@ -14,7 +14,6 @@ import beans.builder.AnnotatedBeanReader.ParsedField;
 import swing.stretchAndClick.MapAndLegendPanel.MapLayer;
 
 
-@SuppressWarnings("unused")
 public class ForestCell
 {
 	@Retention(RetentionPolicy.RUNTIME)

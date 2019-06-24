@@ -45,8 +45,8 @@ public class ImageFactory
 		dat.setDataMinMax(null, ci);
 		BufferedImage out = new BufferedImage(dat.getWidth(), dat.getHeight(), ColorUtils.RGB_TYPE);
 		
-		int width = dat.getWidth();
-		int height = dat.getHeight();
+//		int width = dat.getWidth();
+//		int height = dat.getHeight();
 		for (int i = 0; i < dat.getWidth(); i++) for (int j = 0; j < dat.getHeight(); j++)
 		{
 			int rgb = dat.getRGBInt(i, j, ci, null);

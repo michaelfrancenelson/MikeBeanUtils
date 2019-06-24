@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,8 @@ import utils.FieldUtils;
  */
 public class AnnotatedBeanReporter<T>
 {
+	@Retention(RetentionPolicy.RUNTIME)
+	public static @interface Report{}
 	private String dblFmt, sep;
 	private Class<T> clazz;
 	private List<StringValGetter<T>> getters;

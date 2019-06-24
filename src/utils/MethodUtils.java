@@ -26,6 +26,16 @@ public class MethodUtils
 		public DoubleGetter<T> getGetter();
 	}
 
+	public static <T> void printListWithGetter(List<T> l, DoubleGetter<T> getter, int n, String message)
+	{
+		n = Math.min(n, l.size());
+		for (int i = 0; i < n; i++)
+		{
+			System.out.println(message + "Element " + i + ": " + getter.get(l.get(i)));
+		}
+	}
+	
+	@Deprecated
 	public static <T> void printListWithGetter(List<T> l, ToDoubleFunction<T> getter, int n, String message)
 	{
 		n = Math.min(n, l.size());

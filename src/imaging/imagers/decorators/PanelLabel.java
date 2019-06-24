@@ -22,10 +22,8 @@ public class PanelLabel
 	private Color color;
 	private String label;
 
-
 	public void setDblFmt(String d) { dblFmt = d; } 
 	public String getDblFmt() { return dblFmt; } 
-
 
 	public static void _main(String[] args) 
 	{
@@ -45,64 +43,9 @@ public class PanelLabel
 		logger.debug(String.format("Significant figures = %d, input val = %s, output val = %s", n,d, NumberUtils.roundNumeric(d, n, dblFmt)));
 	}
 
-	
-
 	public void roundNumericLabel(int nSigFigs, String dblFmt)
 	{
 		this.label = NumberUtils.roundNumeric(this.label, nSigFigs, dblFmt);
-		
-//		String out = label.toString();
-//		double d = 0;
-//		try
-//		{
-//			logger.debug("label currently: " + label);
-//			d = Double.parseDouble(label);
-//			logger.debug("Double parsed value: " + String.format("%f", d));
-//		}
-//		catch (Exception e) 
-//		{
-//			logger.debug("Could not parse the label " + label + " as a double.");
-//
-//		}
-//		logger.debug("label parsed as double: " + String.format("%f", d));
-//		out = "";
-//		String o1 = String.format("%f", d);
-//		int fig = 0;
-//		for (int i = 0; i < o1.length(); i++)
-//		{
-//
-//			String letter = String.format("%s", o1.charAt(i));
-//			logger.debug("current digit is: " + letter);
-//			if (fig < nSigFigs)
-//			{
-//				out += letter;
-//				//				if (!letter.equals("\\."))
-//				//				{
-//				//					fig ++;
-//				//
-//				//				}
-//
-//			}
-//			else 
-//			{
-//				if (!letter.equals("."))
-//					out += "0";
-//				//				out += letter;
-//				//				else break;
-//			}
-//			if (!letter.equals("\\."))
-//			{
-//				fig ++;
-//
-//			}
-//		}
-//		//	} catch (Exception e) 
-//		//	{
-//		//
-//		//	} finally {}
-//		logger.error("Rounded value is " + out);
-//
-//		label = out;
 	}
 
 
@@ -218,18 +161,10 @@ public class PanelLabel
 			logger.trace(String.format("\ncellHeight = %d\nstringWidth = %d\n stringHeight = %d\n heightOffset = %d\n widthOffset = %d\n fontHeightOffset = %d", cellHeight,
 					stringWidth, stringHeight, heightOffset, widthOffset, fontHeightOffset));
 
-			int x = coords[0] + 
-					widthOffset; // -
-			//					stringWidth / 2;
-			int y = coords[1] +
-					//					heightOffset + 
-					stringHeight / 2 - fontHeightOffset;
-			//			-
-			//					font.getSize();
+			int x = coords[0] +	widthOffset; 
+			int y = coords[1] +	stringHeight / 2 - fontHeightOffset;
 			g.setFont(font);
 			logger.trace(String.format("Drawing text label '%s' at (%d, %d)", label, x, y));
-			//			label = String.format("%-8s", label);
-			//			label = String.format("%+8s", label);
 			label = String.format("%s", label);
 			g.drawString(label, x, y);
 		}
