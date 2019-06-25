@@ -16,7 +16,8 @@ public class Terrain
 	@ParsedField public int age;
 	@ParsedField boolean stream = false;
 	@ParsedField double elevation;
-	@ParsedField byte road = 0;
+//	@ParsedField 
+	byte road = 0;
 
 	public Terrain() {}
 	
