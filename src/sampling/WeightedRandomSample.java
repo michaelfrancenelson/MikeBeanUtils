@@ -26,35 +26,7 @@ public class WeightedRandomSample {
 
 	public static final boolean LO_TO_HI = false, HI_TO_LO = true;
 
-	/**
-	 *  Get a 1D array of weights calculated from the values
-	 *  retrieved by the getter.
-	 * @param l
-	 * @param getter
-	 * @param invert
-	 * @param offset
-	 * @return
-	 */
-	//	@Deprecated
-	//	public static<T> DblArrayMinMax weights(
-	//			List<T> l, DoubleGetter<T> getter,
-	//			boolean invert, double offset)
-	//	{
-	//		List<WeightedItem<T>> s;
-	//		double min = Double.MAX_VALUE;
-	//		double max = -Double.MAX_VALUE;
-	//		double val;
-	//		double[] out = new double[l.size()];
-	//		for (int i = 0; i < l.size(); i++)
-	//		{
-	//			val = Math.max(0, getter.get(l.get(i)) - offset);
-	//			min = Math.min(min, val);
-	//			max = Math.max(max, val);
-	//		}
-	//		if (invert) out = invertWeights(out, min, max);
-	//		return new DblArrayMinMax(out, min, max);
-	//	}
-
+	
 	/**
 	 * Calculate a set of weights to associate with a set of objects.
 	 * 
@@ -83,107 +55,7 @@ public class WeightedRandomSample {
 		return new DblArrayMinMax(out, min, max);
 	}
 
-	//	@Deprecated
-	//	private static<T> DblArrayMinMax weights(
-	//			List<WeightedItem<T>> s, 
-	//			boolean invert, double offset)
-	//	{
-	//		double min = Double.MAX_VALUE;
-	//		double max = -Double.MAX_VALUE;
-	//		double val;
-	//		double[] out = new double[s.size()];
-	//		for (int i = 0; i < s.size(); i++)
-	//		{
-	//			val = Math.max(0, s.get(i).weight - offset);
-	//			out[i] = val; 
-	//			min = Math.min(min, val);
-	//			max = Math.max(max, val);
-	//		}
-	//		if (invert) out = invertWeights(out, min, max);
-	//		return new DblArrayMinMax(out, min, max);
-	//	}
-	//
-	//	/**
-	//	 *  Retrieve a randomly selected item from a list of 
-	//	 *  objects with associated weights.
-	//	 * 
-	//	 * @param ls
-	//	 * @param inverse if true, inverts the weights so that the transformed 
-	//	 *                weight of the lowest cell is equal to the untransformed
-	//	 *                weight of the highest cell and vice versa. Interpolates
-	//	 *                intermediate values.
-	//	 * @param offset
-	//	 * @param normalize if true, normalizes the weights to be within the range of 'minWeight' and 'maxWeight'
-	//	 * @param minWeight ignored if normalize is false
-	//	 * @param maxWeight ignored if normalize is false
-	//	 * @param rs source of pseudorandom numbers
-	//	 * @param nullIfNoWeight if true, returns a null value if all input
-	//	 *                       items have zero weight.  Otherwise returns
-	//	 *                       if false, returns a uniformly chosen item
-	//	 *                       if all the input items have zero weight.
-	//	 * @return
-	//	 */
-	//	@Deprecated
-	//	public static <T> T weightedRandomSingleSample(
-	//			List<WeightedItem<T>> ls, boolean inverse, double offset,
-	//			boolean normalize, double minWeight, double maxWeight,
-	//			RandomStream rs, boolean nullIfNoWeight)
-	//	{
-	//		DblArrayMinMax weights = weights(ls, inverse, offset);
-	//		if (weights.max == 0 && nullIfNoWeight) return null;
-	//
-	//		if (normalize) 
-	//		{
-	//			double[] norm = Sequences.normalize2(weights.d, weights.min, weights.max, minWeight, maxWeight);
-	//			weights.d = norm;
-	//			weights.min = minWeight;
-	//			weights.max = maxWeight;
-	//		}
-	//		double[] cumulativeWeights = ArrayUtils.cumulativeSum(weights.d, true);
-	//		double key = cumulativeWeights[cumulativeWeights.length - 1] * rs.nextDouble();
-	//
-	//		int index = Binary.insertionIndex(cumulativeWeights, key);
-	//		return ls.get(index).item;
-	//	}
-	//
-	//	/**
-	//	 *  Retrieve a randomly selected item from a list.  
-	//	 *  The items' probability weights are calculated from
-	//	 *  the input getter.
-	//	 *  
-	//	 * @param ls
-	//	 * @param getter
-	//	 * @param inverse if true, inverts the weights so that the transformed 
-	//	 *                weight of the lowest cell is equal to the untransformed
-	//	 *                weight of the highest cell and vice versa. Interpolates
-	//	 *                intermediate values.
-	//	 * @param offset
-	//	 * @param rs source of pseudorandom numbers
-	//	 * @param nullIfNoWeight if true, returns a null value if all input
-	//	 *                       items have zero weight.  Otherwise returns
-	//	 *                       if false, returns a uniformly chosen item
-	//	 *                       if all the input items have zero weight.
-	//	 * @return
-	//	 */
-	//	@Deprecated
-	//	public static <T> T weightedRandomSingleSample(
-	//			List<T> ls, DoubleGetter<T> getter,
-	//			boolean inverse, double offset, RandomStream rs,
-	//			boolean nullIfNoWeight)
-	//	{
-	//		List<WeightedItem<T>> s = WeightedItem.getWeightedList(ls, getter);
-	//		return weightedRandomSingleSample(ls, inverse, offset, normalize, minWeight, maxWeight, rs, nullIfNoWeight);
-	//
-	//		DblArrayMinMax weights = weights(s, inverse, offset);
-	//		if (weights.max == 0 && nullIfNoWeight) return null;
-	//
-	//
-	//		double[] cumulativeWeights = ArrayUtils.cumulativeSum(weights.d, true);
-	//		double key = cumulativeWeights[cumulativeWeights.length - 1] * rs.nextDouble();
-	//
-	//		int index = Binary.insertionIndex(cumulativeWeights, key);
-	//		return ls.get(index);
-	//	}
+	
 
 	/**
 	 * @param w
@@ -487,85 +359,85 @@ public class WeightedRandomSample {
 		
 	}
 	
-	/**
-	 * A struct to hold an item and an associated weight.
-	 * Useful for weighted selection algorithms.
-	 * 
-	 * @author michaelfrancenelson
-	 *
-	 * @param <T>
-	 * @param <S>
-	 */
-	public static class WeightedItem<T> implements Comparable<WeightedItem<T>>
-	{
-		public T item;
-		public double weight;
-
-		public WeightedItem() {;}
-		
-		public static <T> Comparator<WeightedItem<T>> getComparator(Class<T> clazz, boolean loToHi)
-		{
-			
-			if (loToHi)
-			return new Comparator<WeightedItem<T>>() {
-				@Override
-				public int compare(WeightedItem<T> arg0, WeightedItem<T> arg1) {
-					if (arg0.weight < arg1.weight) return  -1;
-					if (arg0.weight > arg1.weight) return  1;
-					return 0;
-				}
-			};
-			else 
-				return new Comparator<WeightedItem<T>>() {
-				@Override
-				public int compare(WeightedItem<T> arg0, WeightedItem<T> arg1) {
-					if (arg0.weight < arg1.weight) return  1;
-					if (arg0.weight > arg1.weight) return  -1;
-					return 0;
-				}
-			};
-		}
-
-		public WeightedItem(T t, double w) { item = t; weight = w; }
-
-		/** Convert a list of unweighted items to a list of weighted items
-		 *  using an input getter to set weights.
-		 * 
-		 * @param l
-		 * @param g if null, assigns every WeightedItem in the output a weight of 1.0
-		 * @return
-		 */
-		public static <T> List<WeightedItem<T>> getWeightedList(
-				List<T> l, DoubleGetter<T> g)
-		{
-			List<WeightedItem<T>> out = new ArrayList<>();
-			if (g == null)
-				for (T t : l) out.add (new WeightedItem<T>(t, 1.0));
-
-			else for (T t : l) 
-				out.add (new WeightedItem<T>(t, g.get(t)));
-			return out;
-		}
-		
-		public static <T> List<T> getList(
-				List<WeightedItem<T>> l)
-		{
-			List<T> out = new ArrayList<>();
-			for (WeightedItem<T> w : l)
-				out.add(w.item);
-			return out;
-		}
-
-		
-		
-		@Override
-		public int compareTo(WeightedItem<T> t) 
-		{
-			if (t.weight < weight) return -1;
-			if (weight > t.weight) return 1;
-			return 0;
-		}
-	}
+//	/**
+//	 * A struct to hold an item and an associated weight.
+//	 * Useful for weighted selection algorithms.
+//	 * 
+//	 * @author michaelfrancenelson
+//	 *
+//	 * @param <T>
+//	 * @param <S>
+//	 */
+//	public static class WeightedItem<T> implements Comparable<WeightedItem<T>>
+//	{
+//		public T item;
+//		public double weight;
+//
+//		public WeightedItem() {;}
+//		
+//		public static <T> Comparator<WeightedItem<T>> getComparator(Class<T> clazz, boolean loToHi)
+//		{
+//			
+//			if (loToHi)
+//			return new Comparator<WeightedItem<T>>() {
+//				@Override
+//				public int compare(WeightedItem<T> arg0, WeightedItem<T> arg1) {
+//					if (arg0.weight < arg1.weight) return  -1;
+//					if (arg0.weight > arg1.weight) return  1;
+//					return 0;
+//				}
+//			};
+//			else 
+//				return new Comparator<WeightedItem<T>>() {
+//				@Override
+//				public int compare(WeightedItem<T> arg0, WeightedItem<T> arg1) {
+//					if (arg0.weight < arg1.weight) return  1;
+//					if (arg0.weight > arg1.weight) return  -1;
+//					return 0;
+//				}
+//			};
+//		}
+//
+//		public WeightedItem(T t, double w) { item = t; weight = w; }
+//
+//		/** Convert a list of unweighted items to a list of weighted items
+//		 *  using an input getter to set weights.
+//		 * 
+//		 * @param l
+//		 * @param g if null, assigns every WeightedItem in the output a weight of 1.0
+//		 * @return
+//		 */
+//		public static <T> List<WeightedItem<T>> getWeightedList(
+//				List<T> l, DoubleGetter<T> g)
+//		{
+//			List<WeightedItem<T>> out = new ArrayList<>();
+//			if (g == null)
+//				for (T t : l) out.add (new WeightedItem<T>(t, 1.0));
+//
+//			else for (T t : l) 
+//				out.add (new WeightedItem<T>(t, g.get(t)));
+//			return out;
+//		}
+//		
+//		public static <T> List<T> getList(
+//				List<WeightedItem<T>> l)
+//		{
+//			List<T> out = new ArrayList<>();
+//			for (WeightedItem<T> w : l)
+//				out.add(w.item);
+//			return out;
+//		}
+//
+//		
+//		
+//		@Override
+//		public int compareTo(WeightedItem<T> t) 
+//		{
+//			if (t.weight < weight) return -1;
+//			if (weight > t.weight) return 1;
+//			return 0;
+//		}
+//	}
 
 
 	/**  Randomly choose an object from a list, weighted by the value of 
@@ -1025,7 +897,7 @@ public class WeightedRandomSample {
 				q.add(w);
 			}
 		}
-		for (WeightedItem<T> w : q) out.add(w.item);
+		for (WeightedItem<T> w : q) out.add(w.getItem());
 		out.sort(comp);
 		return out;
 	}
@@ -1173,3 +1045,132 @@ public class WeightedRandomSample {
 //	out.sort(comp);
 //	return out;
 //}
+//@Deprecated
+//	private static<T> DblArrayMinMax weights(
+//			List<WeightedItem<T>> s, 
+//			boolean invert, double offset)
+//	{
+//		double min = Double.MAX_VALUE;
+//		double max = -Double.MAX_VALUE;
+//		double val;
+//		double[] out = new double[s.size()];
+//		for (int i = 0; i < s.size(); i++)
+//		{
+//			val = Math.max(0, s.get(i).weight - offset);
+//			out[i] = val; 
+//			min = Math.min(min, val);
+//			max = Math.max(max, val);
+//		}
+//		if (invert) out = invertWeights(out, min, max);
+//		return new DblArrayMinMax(out, min, max);
+//	}
+//
+//	/**
+//	 *  Retrieve a randomly selected item from a list of 
+//	 *  objects with associated weights.
+//	 * 
+//	 * @param ls
+//	 * @param inverse if true, inverts the weights so that the transformed 
+//	 *                weight of the lowest cell is equal to the untransformed
+//	 *                weight of the highest cell and vice versa. Interpolates
+//	 *                intermediate values.
+//	 * @param offset
+//	 * @param normalize if true, normalizes the weights to be within the range of 'minWeight' and 'maxWeight'
+//	 * @param minWeight ignored if normalize is false
+//	 * @param maxWeight ignored if normalize is false
+//	 * @param rs source of pseudorandom numbers
+//	 * @param nullIfNoWeight if true, returns a null value if all input
+//	 *                       items have zero weight.  Otherwise returns
+//	 *                       if false, returns a uniformly chosen item
+//	 *                       if all the input items have zero weight.
+//	 * @return
+//	 */
+//	@Deprecated
+//	public static <T> T weightedRandomSingleSample(
+//			List<WeightedItem<T>> ls, boolean inverse, double offset,
+//			boolean normalize, double minWeight, double maxWeight,
+//			RandomStream rs, boolean nullIfNoWeight)
+//	{
+//		DblArrayMinMax weights = weights(ls, inverse, offset);
+//		if (weights.max == 0 && nullIfNoWeight) return null;
+//
+//		if (normalize) 
+//		{
+//			double[] norm = Sequences.normalize2(weights.d, weights.min, weights.max, minWeight, maxWeight);
+//			weights.d = norm;
+//			weights.min = minWeight;
+//			weights.max = maxWeight;
+//		}
+//		double[] cumulativeWeights = ArrayUtils.cumulativeSum(weights.d, true);
+//		double key = cumulativeWeights[cumulativeWeights.length - 1] * rs.nextDouble();
+//
+//		int index = Binary.insertionIndex(cumulativeWeights, key);
+//		return ls.get(index).item;
+//	}
+//
+//	/**
+//	 *  Retrieve a randomly selected item from a list.  
+//	 *  The items' probability weights are calculated from
+//	 *  the input getter.
+//	 *  
+//	 * @param ls
+//	 * @param getter
+//	 * @param inverse if true, inverts the weights so that the transformed 
+//	 *                weight of the lowest cell is equal to the untransformed
+//	 *                weight of the highest cell and vice versa. Interpolates
+//	 *                intermediate values.
+//	 * @param offset
+//	 * @param rs source of pseudorandom numbers
+//	 * @param nullIfNoWeight if true, returns a null value if all input
+//	 *                       items have zero weight.  Otherwise returns
+//	 *                       if false, returns a uniformly chosen item
+//	 *                       if all the input items have zero weight.
+//	 * @return
+//	 */
+//	@Deprecated
+//	public static <T> T weightedRandomSingleSample(
+//			List<T> ls, DoubleGetter<T> getter,
+//			boolean inverse, double offset, RandomStream rs,
+//			boolean nullIfNoWeight)
+//	{
+//		List<WeightedItem<T>> s = WeightedItem.getWeightedList(ls, getter);
+//		return weightedRandomSingleSample(ls, inverse, offset, normalize, minWeight, maxWeight, rs, nullIfNoWeight);
+//
+//		DblArrayMinMax weights = weights(s, inverse, offset);
+//		if (weights.max == 0 && nullIfNoWeight) return null;
+//
+//
+//		double[] cumulativeWeights = ArrayUtils.cumulativeSum(weights.d, true);
+//		double key = cumulativeWeights[cumulativeWeights.length - 1] * rs.nextDouble();
+//
+//		int index = Binary.insertionIndex(cumulativeWeights, key);
+//		return ls.get(index);
+//	}
+/**
+ *  Get a 1D array of weights calculated from the values
+ *  retrieved by the getter.
+ * @param l
+ * @param getter
+ * @param invert
+ * @param offset
+ * @return
+ */
+//	@Deprecated
+//	public static<T> DblArrayMinMax weights(
+//			List<T> l, DoubleGetter<T> getter,
+//			boolean invert, double offset)
+//	{
+//		List<WeightedItem<T>> s;
+//		double min = Double.MAX_VALUE;
+//		double max = -Double.MAX_VALUE;
+//		double val;
+//		double[] out = new double[l.size()];
+//		for (int i = 0; i < l.size(); i++)
+//		{
+//			val = Math.max(0, getter.get(l.get(i)) - offset);
+//			min = Math.min(min, val);
+//			max = Math.max(max, val);
+//		}
+//		if (invert) out = invertWeights(out, min, max);
+//		return new DblArrayMinMax(out, min, max);
+//	}

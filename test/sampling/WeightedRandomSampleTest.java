@@ -101,11 +101,11 @@ public class WeightedRandomSampleTest {
 		
 //		MethodUtils.printListWithGetter(WeightedItem.getList(lHiLoChao), getter, toPrint, "Chao: hi to lo ");
 		MethodUtils.printListWithGetter(lHiLoChao, getter, toPrint, "Chao: hi to lo ");
-		MethodUtils.printListWithGetter(WeightedItem.getList(lHiLoRes), getter, toPrint, "Res : hi to lo ");
+		MethodUtils.printListWithGetter(WeightedItem.getItemList(lHiLoRes), getter, toPrint, "Res : hi to lo ");
 
 		MethodUtils.printListWithGetter(lLoHiChao, getter, toPrint, "Chao: lo to hi ");
 //		MethodUtils.printListWithGetter(WeightedItem.getList(lLoHiChao), getter, toPrint, "Chao: lo to hi ");
-		MethodUtils.printListWithGetter(WeightedItem.getList(lLoHiRes), getter, toPrint, "Res : lo to hi ");
+		MethodUtils.printListWithGetter(WeightedItem.getItemList(lLoHiRes), getter, toPrint, "Res : lo to hi ");
 
 		System.out.println("Chao time: " + tChao + "ms");
 		System.out.println("Res time : " + tRes + "ms");

@@ -5,7 +5,6 @@ import java.util.function.ToDoubleFunction;
 
 import beans.builder.RandomBeanBuilder;
 import beans.sampleBeans.Terrain;
-import sampling.WeightedRandomSample.WeightedItem;
 import umontreal.ssj.rng.RandomStream;
 import utils.MethodUtils;
 import utils.MethodUtils.GetterComparator;
