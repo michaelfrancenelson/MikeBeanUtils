@@ -22,11 +22,11 @@ import utils.MethodUtils.DoubleGetter;
  *  each associated with (potentially) different weighted probabilities 
  *  to be selected.
  *   */
+@Deprecated
 public class WeightedRandomSample {
 
 	public static final boolean LO_TO_HI = false, HI_TO_LO = true;
 
-	
 	/**
 	 * Calculate a set of weights to associate with a set of objects.
 	 * 
@@ -46,16 +46,14 @@ public class WeightedRandomSample {
 		double[] out = new double[s.size()];
 		for (int i = 0; i < s.size(); i++)
 		{
-			val = Math.max(0, s.get(i).weight);
+			val = Math.max(0, s.get(i).getWeight());
 			out[i] = val; 
 			min = Math.min(min, val);
 			max = Math.max(max, val);
 		}
-		if (invert) out = invertWeights(out, min, max);
+		if (invert) out = Weighting.invertWeights(out, min, max);
 		return new DblArrayMinMax(out, min, max);
 	}
-
-	
 
 	/**
 	 * @param w
@@ -143,18 +141,13 @@ public class WeightedRandomSample {
 
 		if (propToSample < 1) n = Math.max(k, (int) ((double) n * propToSample));
 
-		if (s2.get(0).weight > s2.get(s2.size() - 1).weight)
+		if (s2.get(0).getWeight() > s2.get(s2.size() - 1).getWeight())
 			invert = false;
 		else invert = true;
 
 		out = new ArrayList<>(k);
 
 		DblArrayMinMax weights = weights(s2, invert); 
-
-
-
-
-
 
 		int[] indices = new int[k];
 		double weightSum = 0;
@@ -179,265 +172,11 @@ public class WeightedRandomSample {
 		}
 
 		for (int i : indices) out.add(s2.get(i));
-		Collections.sort(out);
 
 		return out;
 	}
 
 
-	/** Randomly select k items from a weighted list of n items,
-	 *  using reservoir sampling.
-	 * 
-	 * adapted from 
-	 *  <a href="https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Res">https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Res</a>}
-	 *  <a href="https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Chao">https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Chao</a>}
-	 * 	 
-	 * @param rs source of pseudorandom numbers
-	 * @param s 
-	 * @param k number of items to select from the input list
-	 * @param propToSample if this is less than 1, the input array is sorted according
-	 *                     to the input comparator and the final selection
-	 *                     of k items is selected from the first propToSample * n items 
-	 *                     of the original list.  <br>
-	 *                     If the value is less than 1.0, it has the effect of making
-	 *                     the sampling less 'random' by increasing the weight of
-	 *                     objects that have the highest probability weights.
-	 *                   
-	 * @param chao if true, sampling uses the interpretation 2 Chao 
-	 *             algorithm A weighted reservoir sampling, <br>
-	 *             if false sampling is via the interpretation 1 algorithm A 
-	 *             weighted reservoir method of Efraimidis and Spirakis  
-	 * @return a random sample of k items.
-	 */
-	public static <T> List<WeightedItem<T>> weightedRandomSample(
-			RandomStream rs, 
-			List<WeightedItem<T>> s,
-			Comparator<WeightedItem<T>> comp,
-			int k, 
-			double propToSample,
-			boolean chao
-			)
-	{
-		List<WeightedItem<T>> out;
-		boolean invert;
-		int n =  s.size();
-
-		/* If k == 1, then the sampling reduces to a simple weighted selection: */
-		if (k == 1)
-			return Arrays.asList(weightedRandomSample(s, false, rs, false));
-
-		/* If the input list is smaller than the requested sample, return the
-		 * original list, as if all had been 'randomly' chosen.  */
-		if (n <= k) 
-		{
-			out = new ArrayList<>(s.size());
-			for (WeightedItem<T> t : s) out.add(t);
-			Collections.sort(out);
-			return out;
-		}
-
-		/* need a defensive copy so that the input list is not 
-		 * unintentionally sorted; */
-		List<WeightedItem<T>> s2;
-
-		s2 = new ArrayList<>(n);
-		for (WeightedItem<T> t : s) s2.add(t);
-		//		Collections.sort(s2);
-
-		s2.sort(comp);
-
-		if (propToSample < 1) n = Math.max(k, (int) ((double) n * propToSample));
-
-		if (s2.get(0).weight > s2.get(s2.size() - 1).weight)
-			invert = false;
-		else invert = true;
-
-		out = new ArrayList<>(k);
-
-		DblArrayMinMax weights = weights(s2, invert); 
-
-		if (invert)
-		{
-			for (int i = 0; i < s2.size(); i++)
-			{
-				s2.get(i).weight = weights.d[i];
-			}
-		}
-		
-		/* Chao sampling */
-		if (chao)
-		{
-			int[] indices = new int[k];
-			double weightSum = 0;
-			double weightI = 0;
-			double p, j;
-
-			for (int i = 0; i < k; i++)
-			{
-				indices[i] = i;
-				weightSum += weights.d[i];
-			}
-
-			for (int i = k; i < n; i++)
-			{
-				weightI = weights.d[i];
-				weightSum += weightI;
-
-				p = weightI / weightSum;
-				j = rs.nextDouble();
-
-				if (j <= p) indices[rs.nextInt(0, k - 1)] = i;
-			}
-
-			for (int i : indices) out.add(s2.get(i));
-		}
-
-		/*Reservoir Sampling */
-		else
-		{
-			
-			PriorityQueue<WeightedItem<T>> q = new PriorityQueue<WeightedItem<T>>(k);
-
-			double test, testAdj;
-
-			for (int i = 0; i < n; i++)
-			{
-				WeightedItem<T> w = s2.get(i);
-
-				test = rs.nextDouble();
-				testAdj = Math.pow(test, 1.0 / w.weight);
-
-				w.weight = testAdj;
-
-				if (q.size() < k) q.add(w);
-				else if (q.peek().weight < testAdj)
-				{
-					q.poll();
-					q.add(w);
-				}
-			}
-			for (WeightedItem<T> w : q) out.add(w);
-		}
-
-		out.sort(comp);
-		return out;
-
-		//		Collections.sort(out);
-	}
-
-	
-//	public static <T> WeightedItem<T> sampleWithoutReplacement(List<WeightedItem<T>> items, int nItems)
-//	{
-//		List<WeightedItem<T>> out;
-//		boolean invert;
-//		int n =  s.size();
-//
-//		/* If k == 1, then the sampling reduces to a simple weighted selection: */
-//		if (nItems == 1)
-//			return Arrays.asList(weightedRandomSample(s, false, rs, false));
-//
-//		/* If the input list is smaller than the requested sample, return the
-//		 * original list, as if all had been 'randomly' chosen.  */
-//		if (n <= nItems) 
-//		{
-//			out = new ArrayList<>(s.size());
-//			for (WeightedItem<T> t : s) out.add(t);
-//			Collections.sort(out);
-//			return out;
-//		}
-//		
-//	}
-	
-	
-	
-	public static class WeightedIndices
-	{
-		double[] weights;
-		public WeightedIndices(double[] w) { weights = w; }
-		
-		
-		
-	}
-	
-//	/**
-//	 * A struct to hold an item and an associated weight.
-//	 * Useful for weighted selection algorithms.
-//	 * 
-//	 * @author michaelfrancenelson
-//	 *
-//	 * @param <T>
-//	 * @param <S>
-//	 */
-//	public static class WeightedItem<T> implements Comparable<WeightedItem<T>>
-//	{
-//		public T item;
-//		public double weight;
-//
-//		public WeightedItem() {;}
-//		
-//		public static <T> Comparator<WeightedItem<T>> getComparator(Class<T> clazz, boolean loToHi)
-//		{
-//			
-//			if (loToHi)
-//			return new Comparator<WeightedItem<T>>() {
-//				@Override
-//				public int compare(WeightedItem<T> arg0, WeightedItem<T> arg1) {
-//					if (arg0.weight < arg1.weight) return  -1;
-//					if (arg0.weight > arg1.weight) return  1;
-//					return 0;
-//				}
-//			};
-//			else 
-//				return new Comparator<WeightedItem<T>>() {
-//				@Override
-//				public int compare(WeightedItem<T> arg0, WeightedItem<T> arg1) {
-//					if (arg0.weight < arg1.weight) return  1;
-//					if (arg0.weight > arg1.weight) return  -1;
-//					return 0;
-//				}
-//			};
-//		}
-//
-//		public WeightedItem(T t, double w) { item = t; weight = w; }
-//
-//		/** Convert a list of unweighted items to a list of weighted items
-//		 *  using an input getter to set weights.
-//		 * 
-//		 * @param l
-//		 * @param g if null, assigns every WeightedItem in the output a weight of 1.0
-//		 * @return
-//		 */
-//		public static <T> List<WeightedItem<T>> getWeightedList(
-//				List<T> l, DoubleGetter<T> g)
-//		{
-//			List<WeightedItem<T>> out = new ArrayList<>();
-//			if (g == null)
-//				for (T t : l) out.add (new WeightedItem<T>(t, 1.0));
-//
-//			else for (T t : l) 
-//				out.add (new WeightedItem<T>(t, g.get(t)));
-//			return out;
-//		}
-//		
-//		public static <T> List<T> getList(
-//				List<WeightedItem<T>> l)
-//		{
-//			List<T> out = new ArrayList<>();
-//			for (WeightedItem<T> w : l)
-//				out.add(w.item);
-//			return out;
-//		}
-//
-//		
-//		
-//		@Override
-//		public int compareTo(WeightedItem<T> t) 
-//		{
-//			if (t.weight < weight) return -1;
-//			if (weight > t.weight) return 1;
-//			return 0;
-//		}
-//	}
 
 
 	/**  Randomly choose an object from a list, weighted by the value of 
@@ -450,6 +189,7 @@ public class WeightedRandomSample {
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
+	@Deprecated
 	public static <T> T sample(RandomStream rs, List<T> objects, Field f, boolean inverse) 
 			throws IllegalArgumentException, IllegalAccessException
 	{
@@ -487,42 +227,14 @@ public class WeightedRandomSample {
 
 		if (inverse) 
 		{
-			double[] inverseWeights = invertWeights(weights, minWeight, maxWeight);
+			double[] inverseWeights = Weighting.invertWeights(weights, minWeight, maxWeight);
 			index = inverseSample(rs, inverseWeights);
 		}
 		else index = sample(rs, weights);
 		return objects.get(index);
 	}
 
-	/** Invert input weights such that: <br>
-	 *  <li> the element in the output array corresponding to
-	 *       the greatest element in the input array
-	 *       has the value of the input min value;
-	 *  <li> the element in the output array corresponding to
-	 *       the smallest element in the input array
-	 *       has the value of the input max value;
-	 * 
-	 * @param weights
-	 * @param minWeight
-	 * @param maxWeight
-	 * @return
-	 */
-	public static double[] invertWeights(double[] weights, double minWeight, double maxWeight)
-	{
-		if (Math.min(maxWeight, minWeight) < 0) 
-			throw new IllegalArgumentException("All weights must be nonnegative");
-
-		double[] inverseWeights = new double[weights.length];
-
-		double newWeight = 0.0, diff = 0.0;
-		for (int i = 0; i < weights.length; i++)
-		{
-			diff = maxWeight - weights[i];
-			newWeight = minWeight + diff;
-			inverseWeights[i] = newWeight;
-		}
-		return inverseWeights;
-	}
+	
 
 	/**
 	 * 
@@ -540,7 +252,7 @@ public class WeightedRandomSample {
 		if (((1.0 - (minWeight / maxWeight)) < tol) || (maxWeight < tol))
 			return rs.nextInt(0, weights.length);
 
-		double[] inverseWeights = invertWeights(weights, minWeight, maxWeight);
+		double[] inverseWeights = Weighting.invertWeights(weights, minWeight, maxWeight);
 		return sample(rs, inverseWeights);
 	}
 
@@ -552,6 +264,7 @@ public class WeightedRandomSample {
 	 * @param weights
 	 * @return
 	 */
+	@Deprecated
 	public static int sample(RandomStream rs, double[] weights)
 	{
 		double sum = 0.0;
@@ -583,6 +296,7 @@ public class WeightedRandomSample {
 	 * @param weights
 	 * @return
 	 */
+	@Deprecated
 	public static int inverseSample(RandomStream rs, double[] weights)
 	{
 		double sum = 0.0, const1 = 0.0, const2 = 0.0;
@@ -642,7 +356,7 @@ public class WeightedRandomSample {
 		double[] weights, invertWeights;
 
 		weights = new double[] {1, 2, 3, 4, 4.5};
-		invertWeights = invertWeights(weights, 1, 4.5);
+		invertWeights = Weighting.invertWeights(weights, 1, 4.5);
 		int[] counts = new int[weights.length], invertCounts = new int[invertWeights.length];
 		int nTests = 100;
 		double sum1 = 0, sum2 = 0;
@@ -691,7 +405,7 @@ public class WeightedRandomSample {
 			min = Math.min(min, val);
 			max = Math.max(max, val);
 		}
-		if (invert) out = invertWeights(out, min, max);
+		if (invert) out = Weighting.invertWeights(out, min, max);
 		return new DblArrayMinMax(out, min, max);
 	}
 	
@@ -706,13 +420,13 @@ public class WeightedRandomSample {
 		double[] out = new double[s.size()];
 		for (int i = 0; i < s.size(); i++)
 		{
-			val = Math.max(0, s.get(i).weight - offset);
+			val = Math.max(0, s.get(i).getWeight() - offset);
 //			val = Math.max(0, weightedItemGetter.get(s.get(i)) - offset);
 			out[i] = val; 
 			min = Math.min(min, val);
 			max = Math.max(max, val);
 		}
-		if (invert) out = invertWeights(out, min, max);
+		if (invert) out = Weighting.invertWeights(out, min, max);
 		return new DblArrayMinMax(out, min, max);
 	}
 
@@ -882,12 +596,12 @@ public class WeightedRandomSample {
 			WeightedItem<T> w = s3.get(i);
 
 			test = rs.nextDouble();
-			testAdj = Math.pow(test, 1.0 / w.weight);
+			testAdj = Math.pow(test, 1.0 / w.getWeight());
 
-			w.weight = testAdj;
+			w.setWeight(testAdj);
 
 			if (q.size() < k) q.add(w);
-			else if (q.peek().weight < testAdj)
+			else if (q.peek().getWeight() < testAdj)
 			{
 				//				System.out.println(String.format("weight : %.4f", q.peek().weight));
 				//				System.out.println(String.format("test   : %.4f", test));
@@ -1174,3 +888,254 @@ public class WeightedRandomSample {
 //		if (invert) out = invertWeights(out, min, max);
 //		return new DblArrayMinMax(out, min, max);
 //	}
+
+///** Randomly select k items from a weighted list of n items,
+// *  using reservoir sampling.
+// * 
+// * adapted from 
+// *  <a href="https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Res">https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Res</a>}
+// *  <a href="https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Chao">https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Chao</a>}
+// * 	 
+// * @param rs source of pseudorandom numbers
+// * @param s 
+// * @param k number of items to select from the input list
+// * @param propToSample if this is less than 1, the input array is sorted according
+// *                     to the input comparator and the final selection
+// *                     of k items is selected from the first propToSample * n items 
+// *                     of the original list.  <br>
+// *                     If the value is less than 1.0, it has the effect of making
+// *                     the sampling less 'random' by increasing the weight of
+// *                     objects that have the highest probability weights.
+// *                   
+// * @param chao if true, sampling uses the interpretation 2 Chao 
+// *             algorithm A weighted reservoir sampling, <br>
+// *             if false sampling is via the interpretation 1 algorithm A 
+// *             weighted reservoir method of Efraimidis and Spirakis  
+// * @return a random sample of k items.
+// */
+//public static <T> List<WeightedItem<T>> weightedRandomSample(
+//		RandomStream rs, 
+//		List<WeightedItem<T>> s,
+//		Comparator<WeightedItem<T>> comp,
+//		int k, 
+//		double propToSample,
+//		boolean chao
+//		)
+//{
+//	List<WeightedItem<T>> out;
+//	boolean invert;
+//	int n =  s.size();
+//
+//	/* If k == 1, then the sampling reduces to a simple weighted selection: */
+//	if (k == 1)
+//		return Arrays.asList(weightedRandomSample(s, false, rs, false));
+//
+//	/* If the input list is smaller than the requested sample, return the
+//	 * original list, as if all had been 'randomly' chosen.  */
+//	if (n <= k) 
+//	{
+//		out = new ArrayList<>(s.size());
+//		for (WeightedItem<T> t : s) out.add(t);
+//		Collections.sort(out);
+//		return out;
+//	}
+//
+//	/* need a defensive copy so that the input list is not 
+//	 * unintentionally sorted; */
+//	List<WeightedItem<T>> s2;
+//
+//	s2 = new ArrayList<>(n);
+//	for (WeightedItem<T> t : s) s2.add(t);
+//	//		Collections.sort(s2);
+//
+//	s2.sort(comp);
+//
+//	if (propToSample < 1) n = Math.max(k, (int) ((double) n * propToSample));
+//
+//	if (s2.get(0).weight > s2.get(s2.size() - 1).weight)
+//		invert = false;
+//	else invert = true;
+//
+//	out = new ArrayList<>(k);
+//
+//	DblArrayMinMax weights = weights(s2, invert); 
+//
+//	if (invert)
+//	{
+//		for (int i = 0; i < s2.size(); i++)
+//		{
+//			s2.get(i).weight = weights.d[i];
+//		}
+//	}
+//	
+//	/* Chao sampling */
+//	if (chao)
+//	{
+//		int[] indices = new int[k];
+//		double weightSum = 0;
+//		double weightI = 0;
+//		double p, j;
+//
+//		for (int i = 0; i < k; i++)
+//		{
+//			indices[i] = i;
+//			weightSum += weights.d[i];
+//		}
+//
+//		for (int i = k; i < n; i++)
+//		{
+//			weightI = weights.d[i];
+//			weightSum += weightI;
+//
+//			p = weightI / weightSum;
+//			j = rs.nextDouble();
+//
+//			if (j <= p) indices[rs.nextInt(0, k - 1)] = i;
+//		}
+//
+//		for (int i : indices) out.add(s2.get(i));
+//	}
+//
+//	/*Reservoir Sampling */
+//	else
+//	{
+//		
+//		PriorityQueue<WeightedItem<T>> q = new PriorityQueue<WeightedItem<T>>(k);
+//
+//		double test, testAdj;
+//
+//		for (int i = 0; i < n; i++)
+//		{
+//			WeightedItem<T> w = s2.get(i);
+//
+//			test = rs.nextDouble();
+//			testAdj = Math.pow(test, 1.0 / w.weight);
+//
+//			w.weight = testAdj;
+//
+//			if (q.size() < k) q.add(w);
+//			else if (q.peek().weight < testAdj)
+//			{
+//				q.poll();
+//				q.add(w);
+//			}
+//		}
+//		for (WeightedItem<T> w : q) out.add(w);
+//	}
+//
+//	out.sort(comp);
+//	return out;
+//
+//	//		Collections.sort(out);
+//}
+//
+//public static <T> WeightedItem<T> sampleWithoutReplacement(List<WeightedItem<T>> items, int nItems)
+//{
+//	List<WeightedItem<T>> out;
+//	boolean invert;
+//	int n =  s.size();
+//
+//	/* If k == 1, then the sampling reduces to a simple weighted selection: */
+//	if (nItems == 1)
+//		return Arrays.asList(weightedRandomSample(s, false, rs, false));
+//
+//	/* If the input list is smaller than the requested sample, return the
+//	 * original list, as if all had been 'randomly' chosen.  */
+//	if (n <= nItems) 
+//	{
+//		out = new ArrayList<>(s.size());
+//		for (WeightedItem<T> t : s) out.add(t);
+//		Collections.sort(out);
+//		return out;
+//	}
+//	
+//}
+//
+//public static class WeightedIndices
+//{
+//	double[] weights;
+//	public WeightedIndices(double[] w) { weights = w; }
+//	
+//	
+//	
+//}
+//
+///**
+// * A struct to hold an item and an associated weight.
+// * Useful for weighted selection algorithms.
+// * 
+// * @author michaelfrancenelson
+// *
+// * @param <T>
+// * @param <S>
+// */
+//public static class WeightedItem<T> implements Comparable<WeightedItem<T>>
+//{
+//	public T item;
+//	public double weight;
+//
+//	public WeightedItem() {;}
+//	
+//	public static <T> Comparator<WeightedItem<T>> getComparator(Class<T> clazz, boolean loToHi)
+//	{
+//		
+//		if (loToHi)
+//		return new Comparator<WeightedItem<T>>() {
+//			@Override
+//			public int compare(WeightedItem<T> arg0, WeightedItem<T> arg1) {
+//				if (arg0.weight < arg1.weight) return  -1;
+//				if (arg0.weight > arg1.weight) return  1;
+//				return 0;
+//			}
+//		};
+//		else 
+//			return new Comparator<WeightedItem<T>>() {
+//			@Override
+//			public int compare(WeightedItem<T> arg0, WeightedItem<T> arg1) {
+//				if (arg0.weight < arg1.weight) return  1;
+//				if (arg0.weight > arg1.weight) return  -1;
+//				return 0;
+//			}
+//		};
+//	}
+//
+//	public WeightedItem(T t, double w) { item = t; weight = w; }
+//
+//	/** Convert a list of unweighted items to a list of weighted items
+//	 *  using an input getter to set weights.
+//	 * 
+//	 * @param l
+//	 * @param g if null, assigns every WeightedItem in the output a weight of 1.0
+//	 * @return
+//	 */
+//	public static <T> List<WeightedItem<T>> getWeightedList(
+//			List<T> l, DoubleGetter<T> g)
+//	{
+//		List<WeightedItem<T>> out = new ArrayList<>();
+//		if (g == null)
+//			for (T t : l) out.add (new WeightedItem<T>(t, 1.0));
+//
+//		else for (T t : l) 
+//			out.add (new WeightedItem<T>(t, g.get(t)));
+//		return out;
+//	}
+//	
+//	public static <T> List<T> getList(
+//			List<WeightedItem<T>> l)
+//	{
+//		List<T> out = new ArrayList<>();
+//		for (WeightedItem<T> w : l)
+//			out.add(w.item);
+//		return out;
+//	}
+//
+//	
+//	
+//	@Override
+//	public int compareTo(WeightedItem<T> t) 
+//	{
+//		if (t.weight < weight) return -1;
+//		if (weight > t.weight) return 1;
+//		return 0;
+//	}
+//}

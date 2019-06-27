@@ -9,6 +9,7 @@ import umontreal.ssj.rng.RandomStream;
 import utils.MethodUtils;
 import utils.MethodUtils.GetterComparator;
 
+@Deprecated
 public class WeightTest 
 {
 
@@ -33,10 +34,6 @@ public class WeightTest
 		List<Terrain> s = RandomBeanBuilder.randomFactory(
 				Terrain.class, length, randMin, randMax, rs);
 
-		WeightedItem<Integer> wi;
-		
-		
-		
 		GetterComparator<Terrain> elevCompHiLo = MethodUtils.getGetterComparator(Terrain.class, "getElevation", WeightedRandomSample.HI_TO_LO);
 		GetterComparator<Terrain> elevCompLoHi = MethodUtils.getGetterComparator(Terrain.class, "getElevation", WeightedRandomSample.LO_TO_HI);
 

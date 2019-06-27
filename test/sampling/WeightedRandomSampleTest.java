@@ -8,13 +8,13 @@ import org.junit.Test;
 
 import beans.builder.RandomBeanBuilder;
 import beans.sampleBeans.Terrain;
-import sampling.WeightedRandomSample.WeightedItem;
 import umontreal.ssj.rng.RandomStream;
 import utils.MethodUtils;
 import utils.MethodUtils.DoubleGetter;
 import utils.MethodUtils.GetterComparator;
 
 @SuppressWarnings("unused")
+@Deprecated
 public class WeightedRandomSampleTest {
 
 	static boolean hiToLo = true, loToHi = false;
@@ -84,13 +84,13 @@ public class WeightedRandomSampleTest {
 		tChao = end - start;
 
 		start = System.currentTimeMillis(); 
-		for (int rep = 0; rep < reps; rep++)
-		{
-			lHiLoRes = WeightedRandomSample.weightedRandomSample(
-					rs, s, compHiLo, k, prop, !chao);
-			lLoHiRes = WeightedRandomSample.weightedRandomSample(
-					rs, s, compLoHi, k, prop, !chao);
-		}
+//		for (int rep = 0; rep < reps; rep++)
+//		{
+//			lHiLoRes = WeightedRandomSample.weightedRandomSample(
+//					rs, s, compHiLo, k, prop, !chao);
+//			lLoHiRes = WeightedRandomSample.weightedRandomSample(
+//					rs, s, compLoHi, k, prop, !chao);
+//		}
 
 		end = System.currentTimeMillis(); 
 		tRes = end - start;

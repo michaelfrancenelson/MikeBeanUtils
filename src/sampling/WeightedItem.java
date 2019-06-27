@@ -1,6 +1,7 @@
 package sampling;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import utils.MethodUtils.DoubleGetter;
@@ -63,29 +64,30 @@ public class WeightedItem<T> implements Comparable<WeightedItem<T>>
 
 	public double getWeight() { return weight; }
 	public void setWeight(double weight) { this.weight = weight; }
+
+	public static <T> Comparator<WeightedItem<T>> getComparator(Class<T> clazz, boolean loToHi)
+{
+	
+	if (loToHi)
+	return new Comparator<WeightedItem<T>>() {
+		@Override
+		public int compare(WeightedItem<T> item1, WeightedItem<T> item2) {
+			if (item1.weight < item2.weight) return  -1;
+			if (item1.weight > item2.weight) return  1;
+			return 0;
+		}
+	};
+	else 
+		return new Comparator<WeightedItem<T>>() {
+		@Override
+		public int compare(WeightedItem<T> item1, WeightedItem<T> item2) {
+			if (item1.weight < item2.weight) return  1;
+			if (item1.weight > item2.weight) return  -1;
+			return 0;
+		}
+	};
+}
 }
 
 
-//public static <T> Comparator<WeightedItem<T>> getComparator(Class<T> clazz, boolean loToHi)
-//{
-//	
-//	if (loToHi)
-//	return new Comparator<WeightedItem<T>>() {
-//		@Override
-//		public int compare(WeightedItem<T> item1, WeightedItem<T> item2) {
-//			if (item1.weight < item2.weight) return  -1;
-//			if (item1.weight > item2.weight) return  1;
-//			return 0;
-//		}
-//	};
-//	else 
-//		return new Comparator<WeightedItem<T>>() {
-//		@Override
-//		public int compare(WeightedItem<T> item1, WeightedItem<T> item2) {
-//			if (item1.weight < item2.weight) return  1;
-//			if (item1.weight > item2.weight) return  -1;
-//			return 0;
-//		}
-//	};
-//}
 

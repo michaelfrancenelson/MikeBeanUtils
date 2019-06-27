@@ -1,5 +1,8 @@
 package utils;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.invoke.CallSite;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
@@ -10,14 +13,192 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
+import java.util.stream.Stream;
+
+import beans.builder.AnnotatedBeanReader;
+import beans.builder.RandomBeanBuilder;
+import beans.sampleBeans.AllFlavorBean;
 
 public class MethodUtils
 {
+
+	public static void main(String[] args) throws Throwable 
+	{
+		Class<Demo> clazz = Demo.class;
+		String getterName = "getI1";
+		Demo d1 = new Demo(1.1, 2.2, 3.3, 111, 222, 333);
+
+		getterDemo(getterName, "getD2", clazz, d1);
+
+		AllFlavorBean b = RandomBeanBuilder.randomFactory(AllFlavorBean.class, 1, 10, RandomBeanBuilder.r);
+
+		Getter<AllFlavorBean> byteGetter = buildFieldGetter(AllFlavorBean.class, "bytePrim");
+		Getter<AllFlavorBean> intGetter = getIntGetter(AllFlavorBean.class, "getIntPrim");
+		Getter<AllFlavorBean> doubleGetter = getDoubleGetter(AllFlavorBean.class, "getDoublePrim");
+
+		System.out.println(byteGetter.getByte(b));
+		System.out.println(intGetter.getInt(b));
+		System.out.println(doubleGetter.getDouble(b));
+	}
+
+
 	public static interface DoubleGetter<T>
 	{
 		public double get(T t);
+	}
+
+	public static interface Getter<T>
+	{
+		public double  getDouble(T t);
+		public int     getInt(T t);
+		public boolean getBool(T t);
+		public byte    getByte(T t);
+		public String  getString(T t);
+	}
+
+	public static <T> Getter<T> getIntGetter(Class<T> beanClass, String getterName) throws Throwable
+	{
+		Getter<T> g = new Getter<T>() 
+		{
+			ToIntFunction<T> i = getIntGetter(getterName, beanClass);
+			@Override public double  getDouble(T t) { return (double) i.applyAsInt(t); }
+			@Override public int     getInt(T t)    { return i.applyAsInt(t); }
+			@Override public byte    getByte(T t)   { return (byte) i.applyAsInt(t); }
+			@Override public boolean getBool(T t)   { return AnnotatedBeanReader.parseBool(i.applyAsInt(t)); }
+			@Override public String  getString(T t) { return String.format("%d", i.applyAsInt(t)); }
+		};
+		return g;
+	}
+
+	public static <T> Getter<T> getDoubleGetter(Class<T> beanClass, String getterName) throws Throwable
+	{
+		Getter<T> g = new Getter<T>() 
+		{
+			ToDoubleFunction<T> i = getDoubleGetter(getterName, beanClass);
+			@Override public double  getDouble(T t) { return i.applyAsDouble(t); }
+			@Override public int     getInt(T t)    { return (int) i.applyAsDouble(t); }
+			@Override public byte    getByte(T t)   { return (byte) i.applyAsDouble(t); }
+			@Override public boolean getBool(T t)   { return AnnotatedBeanReader.parseBool(i.applyAsDouble(t)); }
+			@Override public String  getString(T t) { return String.format("%f", i.applyAsDouble(t)); }
+		};
+		return g;
+	}
+
+	public static <T> Getter<T> buildFieldGetter(Class<T> beanClass, String fieldName) throws Throwable
+	{
+		Getter<T> g;
+		PropertyDescriptor valueProperty;
+		final BeanInfo beanInfo = Introspector.getBeanInfo(beanClass);
+		final Function<String, PropertyDescriptor> property = name -> 
+		Stream.of(beanInfo.getPropertyDescriptors())
+		.filter(p -> name.equals(p.getName()))
+		.findFirst()
+		.orElseThrow(() -> new IllegalStateException("Not found: " + name));
+		valueProperty = property.apply(fieldName);
+
+		final MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+
+		//		switch(typ)
+		//		{
+		//		case("int"):
+		//			final ToIntFunction<T> valueGetter = (ToIntFunction<T>) createGetter(lookup, lookup.unreflect(valueProperty.getReadMethod()));
+		//			g = new Getter<T>() 
+		//		{
+		//			ToIntFunction<T> i = getIntGetter(getterName, beanClass);
+		//			@Override public double  getDouble(T t) { return (double) i.applyAsInt(t); }
+		//			@Override public int     getInt(T t)    { return i.applyAsInt(t); }
+		//			@Override public byte    getByte(T t)   { return (byte) i.applyAsInt(t); }
+		//			@Override public boolean getBool(T t)   { return AnnotatedBeanReader.parseBool(i.applyAsInt(t)); }
+		//			@Override public String  getString(T t) { return String.format("%d", i.applyAsInt(t)); }
+		//		};
+		//		return g;
+		//		//		break;
+		//		case("double"):
+		//			g = new Getter<T>() 
+		//		{
+		//			ToDoubleFunction<T> i = getDoubleGetter(getterName, beanClass);
+		//			@Override public double  getDouble(T t) { return i.applyAsDouble(t); }
+		//			@Override public int     getInt(T t)    { return (int) i.applyAsDouble(t); }
+		//			@Override public byte    getByte(T t)   { return (byte) i.applyAsDouble(t); }
+		//			@Override public boolean getBool(T t)   { return AnnotatedBeanReader.parseBool(i.applyAsDouble(t)); }
+		//			@Override public String  getString(T t) { return String.format("%f", i.applyAsDouble(t)); }
+		//		};
+		//		return g;
+		//		}	
+
+		final Function<T, ?> valueGetter = createGetter(lookup, lookup.unreflect(valueProperty.getReadMethod()));
+		//		final Function<T, ?> nameGetter = createGetter(lookup, lookup.unreflect(nameProperty.getReadMethod()));
+
+		g = new Getter<T>() 
+		{
+			@Override public double  getDouble(T t) { return (double) valueGetter.apply(t); }
+			@Override public int     getInt(T t)    { return (int)    valueGetter.apply(t); }
+			@Override public byte    getByte(T t)   { return (byte)   valueGetter.apply(t); }
+			@Override public boolean getBool(T t)   { return AnnotatedBeanReader.parseBool((double) valueGetter.apply(t)); }
+			@Override public String  getString(T t) { return String.format("%d", valueGetter.apply(t)); }
+		};
+		return g;
+	}
+
+
+	public static <T> Function<T, ?> createGetter(
+			final MethodHandles.Lookup lookup,
+			final MethodHandle getter) throws Exception
+	{
+		final CallSite site = LambdaMetafactory.metafactory(
+				lookup, "apply",
+				MethodType.methodType(Function.class),
+				MethodType.methodType(Object.class, Object.class), //signature of method Function.apply after type erasure
+				getter,
+				getter.type()); //actual signature of getter
+		try {
+			return (Function<T, ?>) site.getTarget().invokeExact();
+		} catch (final Exception e) {
+			throw e;
+		} catch (final Throwable e) {
+			throw new Error(e);
+		}
+	}
+	public static <T> ToIntFunction<T> createIntGetter(
+			final MethodHandles.Lookup lookup,
+			final MethodHandle getter) throws Exception
+	{
+		final CallSite site = LambdaMetafactory.metafactory(
+				lookup, "apply",
+				MethodType.methodType(Function.class),
+				MethodType.methodType(Object.class, Object.class), //signature of method Function.apply after type erasure
+				getter,
+				getter.type()); //actual signature of getter
+		try {
+			return (ToIntFunction<T>) site.getTarget().invokeExact();
+		} catch (final Exception e) {
+			throw e;
+		} catch (final Throwable e) {
+			throw new Error(e);
+		}
+	}
+
+	public static <T> ToDoubleFunction<T> createDoubleGetter(
+			final MethodHandles.Lookup lookup,
+			final MethodHandle getter) throws Exception
+	{
+		final CallSite site = LambdaMetafactory.metafactory(
+				lookup, "apply",
+				MethodType.methodType(Function.class),
+				MethodType.methodType(Object.class, Object.class), //signature of method Function.apply after type erasure
+				getter,
+				getter.type()); //actual signature of getter
+		try {
+			return (ToDoubleFunction<T>) site.getTarget().invokeExact();
+		} catch (final Exception e) {
+			throw e;
+		} catch (final Throwable e) {
+			throw new Error(e);
+		}
 	}
 
 	public static interface GetterComparator <T> extends Comparator<T>
@@ -77,27 +258,6 @@ public class MethodUtils
 	{
 		DoubleGetter<T> g = buildDoubleGetter(clazz, getterName);
 
-//		Method m = clazz.getMethod(getterName);
-		//		String typ = m.getReturnType().getSimpleName();
-
-		//		switch(typ)
-		//		{
-		//		case("int"):
-		//			g = new DoubleGetter<T>() 
-		//		{
-		//			ToIntFunction<T> i = getIntGetter(getterName, clazz);
-		//			@Override public double get(T t) { return (double) i.applyAsInt(t); }
-		//		};
-		//		break;
-		//		case("double"):
-		//			g = new DoubleGetter<T>() 
-		//		{
-		//			ToDoubleFunction<T> d = getDoubleGetter(getterName, clazz);
-		//			@Override public double get(T t) { return d.applyAsDouble(t); }
-		//		};
-		//		break;
-		//		default: throw new IllegalArgumentException("Could not create a getter");
-		//		}
 		if (hiToLo)
 			return new GetterComparator<T>() {
 			double v1, v2;
@@ -112,7 +272,7 @@ public class MethodUtils
 			}
 			@Override public DoubleGetter<T> getGetter() { return g; }
 		};
-		
+
 		else
 			return new GetterComparator<T>() {
 			double v1, v2;
@@ -189,6 +349,8 @@ public class MethodUtils
 		return (ToDoubleFunction<T>) mh.invoke();
 	}
 
+	
+	
 	public static <T> void getterDemo(String intGetterName, String dblGetterName, Class<T> clazz, T t) throws Throwable
 	{
 		//		ToIntFunction<T> intGetter = getIntGetter(intGetterName, clazz);
@@ -200,14 +362,6 @@ public class MethodUtils
 		System.out.println(intComp.get(t));
 		System.out.println(dblComp.getGetter().get(t));
 		System.out.println(dblComp.get(t));
-	}
-
-	public static void main(String... args) throws Throwable {
-		Class<Demo> clazz = Demo.class;
-		String getterName = "getI1";
-		Demo d1 = new Demo(1.1, 2.2, 3.3, 111, 222, 333);
-
-		getterDemo(getterName, "getD2", clazz, d1);
 	}
 
 	/**

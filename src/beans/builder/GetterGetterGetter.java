@@ -73,9 +73,6 @@ public class GetterGetterGetter
 		return out;
 	}
 
-	
-	
-	
 	/** Create a getter function to return a string representation 
 	 *  of an annotated bean's field
 	 * 
@@ -172,7 +169,6 @@ public class GetterGetterGetter
 		return out;
 	}
 
-	
 	/** Create a getter function to return a string representation 
 	 *  of an annotated bean's field
 	 * 

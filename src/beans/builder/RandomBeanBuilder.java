@@ -11,7 +11,7 @@ import utils.FieldUtils;
 public class RandomBeanBuilder extends AnnotatedBeanReader 
 {
 
-	private static RandomStream r = new MRG31k3p();
+	public static RandomStream r = new MRG31k3p();
 	
 	@Deprecated	public static <T> List<List<T>> randomFactory(Class<T> clazz, int nRow, int nCol, int min, int max) { return randomFactory(clazz, nRow, nCol, min, max, r); }
 	@Deprecated public static <T> T randomFactory(Class<T> clazz, int min, int max) { return randomFactory(clazz, min, max, r); }

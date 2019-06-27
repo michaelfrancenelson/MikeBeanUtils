@@ -5,7 +5,6 @@ import umontreal.ssj.rng.RandomStream;
 
 public class Sampling 
 {
-
 	public static RandomStream getDefaultRs()
 	{
 		RandomStream rs = new MRG31k3p();
