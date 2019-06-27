@@ -319,49 +319,6 @@ public class WeightedRandomSample {
 	 * adapted from 
 	 *  <a href="https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Res">https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Res</a>}
 	 *  <a href="https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Chao">https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Chao</a>}
-	 * 
-	 * @param rs source of pseudorandom numbers
-	 * @param s 
-	 * @param k number of items to select from the input list
-	 * @param comp comparator for calculating weights.
-	 * @param getter
-	 * @param propToSample if this is less than 1, the input array is sorted according
-	 *                     to the input comparator and the final selection
-	 *                     of k items is selected from the first propToSample * n items 
-	 *                     of the original list.  <br>
-	 *                     If the value is less than 1.0, it has the effect of making
-	 *                     the sampling less 'random' by increasing the weight of
-	 *                     objects that have the highest probability weights.
-	 * @return a random sample of k items.
-	 */
-	//	
-	/** 
-	 *  Perform a weighted random sample of k items from a list of
-	 *  length n using the Chao or reservoir sampling method
-	 * 
-	 * adapted from:
-	 * 
-	 * @param rs source of pseudorandom numbers
-	 * @param s 
-	 * @param k number of items to select from the input list
-	 * @param comp comparator for calculating weights.
-	 * @param getter
-	 * @param propToSample if this is less than 1, the input array is sorted according
-	 *                     to the input comparator and the final selection
-	 *                     of k items is selected from the first propToSample * n items 
-	 *                     of the original list.  <br>
-	 *                     If the value is less than 1.0, it has the effect of making
-	 *                     the sampling less 'random' by increasing the weight of
-	 *                     objects that have the highest probability weights.
-	 * @return a random sample of k items.
-	 */
-
-	/** Randomly select k items from a weighted list of n items,
-	 *  using reservoir sampling.
-	 * 
-	 * adapted from 
-	 *  <a href="https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Res">https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Res</a>}
-	 *  <a href="https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Chao">https://en.wikipedia.org/wiki/Reservoir_sampling#Algorithm_A-Chao</a>}
 	 * 	 
 	 * @param rs source of pseudorandom numbers
 	 * @param s 
@@ -466,8 +423,6 @@ public class WeightedRandomSample {
 		/*Reservoir Sampling */
 		else
 		{
-	
-			
 			
 			PriorityQueue<WeightedItem<T>> q = new PriorityQueue<WeightedItem<T>>(k);
 
@@ -498,6 +453,40 @@ public class WeightedRandomSample {
 		//		Collections.sort(out);
 	}
 
+	
+//	public static <T> WeightedItem<T> sampleWithoutReplacement(List<WeightedItem<T>> items, int nItems)
+//	{
+//		List<WeightedItem<T>> out;
+//		boolean invert;
+//		int n =  s.size();
+//
+//		/* If k == 1, then the sampling reduces to a simple weighted selection: */
+//		if (nItems == 1)
+//			return Arrays.asList(weightedRandomSample(s, false, rs, false));
+//
+//		/* If the input list is smaller than the requested sample, return the
+//		 * original list, as if all had been 'randomly' chosen.  */
+//		if (n <= nItems) 
+//		{
+//			out = new ArrayList<>(s.size());
+//			for (WeightedItem<T> t : s) out.add(t);
+//			Collections.sort(out);
+//			return out;
+//		}
+//		
+//	}
+	
+	
+	
+	public static class WeightedIndices
+	{
+		double[] weights;
+		public WeightedIndices(double[] w) { weights = w; }
+		
+		
+		
+	}
+	
 	/**
 	 * A struct to hold an item and an associated weight.
 	 * Useful for weighted selection algorithms.
@@ -509,9 +498,11 @@ public class WeightedRandomSample {
 	 */
 	public static class WeightedItem<T> implements Comparable<WeightedItem<T>>
 	{
-		T item;
-		double weight;
+		public T item;
+		public double weight;
 
+		public WeightedItem() {;}
+		
 		public static <T> Comparator<WeightedItem<T>> getComparator(Class<T> clazz, boolean loToHi)
 		{
 			
@@ -957,8 +948,7 @@ public class WeightedRandomSample {
 	 * @param propToSample
 	 * @return
 	 */
-	public static <T> List<T> 
-(
+	public static <T> List<T> efraimidisWeightedSample(
 			RandomStream rs, 
 			List<T> s, int k, 
 			Comparator<T> comp,
