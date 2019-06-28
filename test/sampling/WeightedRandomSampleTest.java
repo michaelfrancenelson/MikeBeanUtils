@@ -28,6 +28,7 @@ public class WeightedRandomSampleTest {
 	@Test
 	public void test() throws Throwable 
 	{
+		/*
 		rs = Sampling.getDefaultRs();
 
 		int length = 4000;
@@ -45,9 +46,9 @@ public class WeightedRandomSampleTest {
 		List<WeightedItem<Terrain>> lHiLoRes = null, lLoHiRes = null;
 		List<WeightedItem<Terrain>> s = WeightedItem.getWeightedList(l, getter);
 
-		GetterComparator<Terrain> elevCompHiLo = MethodUtils.getGetterComparator(Terrain.class, "getElevation", WeightedRandomSample.HI_TO_LO);
-		GetterComparator<Terrain> elevCompLoHi = MethodUtils.getGetterComparator(Terrain.class, "getElevation", WeightedRandomSample.LO_TO_HI);
-		
+		GetterComparator<Terrain> elevCompHiLo = MethodUtils.getGetterComparator(Terrain.class, "getElevation", WeightedRandomSampling.HI_TO_LO);
+		GetterComparator<Terrain> elevCompLoHi = MethodUtils.getGetterComparator(Terrain.class, "getElevation", WeightedRandomSampling.LO_TO_HI);
+
 		Comparator<WeightedItem<Terrain>> compLoHi = WeightedItem.getComparator(Terrain.class, true); 
 		Comparator<WeightedItem<Terrain>> compHiLo = WeightedItem.getComparator(Terrain.class, false); 
 
@@ -59,7 +60,7 @@ public class WeightedRandomSampleTest {
 		for (int rep = 0; rep < reps; rep++)
 		{
 			lHiLoChao = 
-					WeightedRandomSample.chaoSample(
+					WeightedRandomSampling.chaoSample(
 							rs,
 							l, k, 
 							elevCompLoHi,
@@ -67,30 +68,30 @@ public class WeightedRandomSampleTest {
 							0.0, prop);
 
 			lLoHiChao = 
-					WeightedRandomSample.chaoSample(
+					WeightedRandomSampling.chaoSample(
 							rs,
 							l, k, 
 							elevCompHiLo,
 							getter, 
 							0.0, prop);
 
-			
-//					WeightedRandomSample.weightedRandomSample(
-//					rs, s, compHiLo, k, prop, chao);
-//			lLoHiChao = WeightedRandomSample.weightedRandomSample(
-//					rs, s, compLoHi, k, prop, chao);
+
+					WeightedRandomSample.weightedRandomSample(
+					rs, s, compHiLo, k, prop, chao);
+			lLoHiChao = WeightedRandomSample.weightedRandomSample(
+					rs, s, compLoHi, k, prop, chao);
 		}
 		end = System.currentTimeMillis(); 
 		tChao = end - start;
 
 		start = System.currentTimeMillis(); 
-//		for (int rep = 0; rep < reps; rep++)
-//		{
-//			lHiLoRes = WeightedRandomSample.weightedRandomSample(
-//					rs, s, compHiLo, k, prop, !chao);
-//			lLoHiRes = WeightedRandomSample.weightedRandomSample(
-//					rs, s, compLoHi, k, prop, !chao);
-//		}
+		for (int rep = 0; rep < reps; rep++)
+		{
+			lHiLoRes = WeightedRandomSample.weightedRandomSample(
+					rs, s, compHiLo, k, prop, !chao);
+			lLoHiRes = WeightedRandomSample.weightedRandomSample(
+					rs, s, compLoHi, k, prop, !chao);
+		}
 
 		end = System.currentTimeMillis(); 
 		tRes = end - start;
@@ -98,7 +99,7 @@ public class WeightedRandomSampleTest {
 
 		int toPrint = 2;
 
-		
+
 //		MethodUtils.printListWithGetter(WeightedItem.getList(lHiLoChao), getter, toPrint, "Chao: hi to lo ");
 		MethodUtils.printListWithGetter(lHiLoChao, getter, toPrint, "Chao: hi to lo ");
 		MethodUtils.printListWithGetter(WeightedItem.getItemList(lHiLoRes), getter, toPrint, "Res : hi to lo ");
@@ -110,15 +111,8 @@ public class WeightedRandomSampleTest {
 		System.out.println("Chao time: " + tChao + "ms");
 		System.out.println("Res time : " + tRes + "ms");
 
-
-		//		MethodUtils.printListWithGetter(s, getter, toPrint, "unsorted ");
-
-
-
-
-
-
 		//		fail("Not yet implemented");
+		 */
 	}
 
 }

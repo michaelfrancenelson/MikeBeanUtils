@@ -34,8 +34,8 @@ public class WeightTest
 		List<Terrain> s = RandomBeanBuilder.randomFactory(
 				Terrain.class, length, randMin, randMax, rs);
 
-		GetterComparator<Terrain> elevCompHiLo = MethodUtils.getGetterComparator(Terrain.class, "getElevation", WeightedRandomSample.HI_TO_LO);
-		GetterComparator<Terrain> elevCompLoHi = MethodUtils.getGetterComparator(Terrain.class, "getElevation", WeightedRandomSample.LO_TO_HI);
+		GetterComparator<Terrain> elevCompHiLo = MethodUtils.getGetterComparator(Terrain.class, "getElevation", Weighting.HI_TO_LO);
+		GetterComparator<Terrain> elevCompLoHi = MethodUtils.getGetterComparator(Terrain.class, "getElevation", Weighting.LO_TO_HI);
 
 		ToDoubleFunction<Terrain> getter = MethodUtils.getDoubleGetter("getElevation", Terrain.class);
 
@@ -45,13 +45,13 @@ public class WeightTest
 		start = System.currentTimeMillis(); 
 		for (int rep = 0; rep < reps; rep++)
 		{
-			lHiLoChao = WeightedRandomSample.chaoSample(
+			lHiLoChao = WeightedRandomSampling.chaoSample(
 					rs, 
 					s, k, 
 					elevCompHiLo,
 					elevCompHiLo.getGetter(),
 					0, prop);
-			lLoHiChao = WeightedRandomSample.chaoSample(
+			lLoHiChao = WeightedRandomSampling.chaoSample(
 					rs, 
 					s, k, 
 					elevCompLoHi,
@@ -64,9 +64,9 @@ public class WeightTest
 		start = System.currentTimeMillis(); 
 		for (int rep = 0; rep < reps; rep++)
 		{
-			lHiLoRes = WeightedRandomSample.efraimidisWeightedSample(
+			lHiLoRes = WeightedRandomSampling.efraimidisWeightedSample(
 					rs, s, k, elevCompHiLo, elevCompHiLo.getGetter(), 0, prop);
-			lLoHiRes = WeightedRandomSample.efraimidisWeightedSample(
+			lLoHiRes = WeightedRandomSampling.efraimidisWeightedSample(
 					rs, s, k, elevCompLoHi, elevCompHiLo.getGetter(), 0, prop);
 		}
 

@@ -9,6 +9,8 @@ public class SampledItem <T> implements Comparable<SampledItem<T>>
 	{
 		this.wItem = item; this.weight = d;
 	}
+	
+	
 	@Override
 	public int compareTo(SampledItem<T> arg0) {
 		return Double.compare(weight, arg0.weight);

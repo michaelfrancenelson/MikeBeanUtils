@@ -7,10 +7,9 @@ import java.util.PriorityQueue;
 import umontreal.ssj.rng.RandomStream;
 
 /**
- * 
  * @author michaelfrancenelson
  *
- * adapted from the ES stream sampler at:
+ * adapted and simplified from the ES stream sampler at:
  * http://utopia.duth.gr/~pefraimi/projects/WRS/
  * 
  * An easy to understand explanation of WRS
@@ -18,13 +17,11 @@ import umontreal.ssj.rng.RandomStream;
  *
  * @param <T>
  */
-
 public class StreamSampleES <T>
 {
 	private RandomStream rs;
 	private PriorityQueue<SampledItem<T>> q;
 	private int itemsProcessed;
-	private int numOfInsertions;
 	private int sampleSize;
 
 	public StreamSampleES(int sampleSize, RandomStream rs)
@@ -38,7 +35,6 @@ public class StreamSampleES <T>
 	{
 		q.clear();
 		itemsProcessed = 0;
-		numOfInsertions = 0;
 	}
 
 	public void feedItems(List<WeightedItem<T>> items)
@@ -48,7 +44,7 @@ public class StreamSampleES <T>
 
 	public void feedItem(WeightedItem<T> newItem)
 	{
-		double key = genKey(newItem);
+		double key = genKey(newItem, rs);
 		if (itemsProcessed < sampleSize)
 		{
 			q.add(new SampledItem<>(newItem, key));
@@ -61,7 +57,6 @@ public class StreamSampleES <T>
 			{
 				q.poll();
 				q.add(new SampledItem<>(newItem, key));
-				numOfInsertions++;
 			}
 		}
 		itemsProcessed++;
@@ -74,9 +69,8 @@ public class StreamSampleES <T>
 		return out;
 	}
 
-	public double genKey(WeightedItem<T> item)
+	public static <T> double genKey(WeightedItem<T> item, RandomStream rs)
 	{
 		return Math.pow(rs.nextDouble(), 1.0 / item.getWeight());
 	}
-	
 }

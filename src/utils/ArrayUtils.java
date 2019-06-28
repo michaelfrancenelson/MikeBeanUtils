@@ -2,8 +2,31 @@ package utils;
 
 public class ArrayUtils 
 {
+	/**
+	 *  A struct to hold a 1D array and its minimum and maximum values;
+	 * 
+	 * @author michaelfrancenelson
+	 *
+	 */
+	public static class DblArrayMinMax1D
+	{
+		private double[] d;
+		private double min;
+		private double max;
+
+		public DblArrayMinMax1D(double[] dbl, double mn, double mx)
+		{
+			this.d = dbl; this.min = mn; this.max = mx;
+		}
+		
+		public double getMin() { return min; }
+		public double getMax() { return max; }
+		public double[] getData() { return this.d; }
+
 	
 	
+	}
+
 		
 	public static double[] cumulativeSum(double[] in, boolean strictlyPositive)
 	{
@@ -54,9 +77,9 @@ public class ArrayUtils
 	 * @author michaelfrancenelson
 	 *
 	 */
-	public static class IntArrayMinMax
+	public static class IntArrayMinMax2D
 	{
-		public IntArrayMinMax(int[][] d, int mn, int mx)
+		public IntArrayMinMax2D(int[][] d, int mn, int mx)
 		{this.data = d; this.min = mn; this.max = mx; }
 		int[][] data; int min; int max;
 		public int[][] getDat() { return this.data; }
@@ -70,9 +93,9 @@ public class ArrayUtils
 	 * @author michaelfrancenelson
 	 *
 	 */
-	public static class ByteArrayMinMax
+	public static class ByteArrayMinMax2D
 	{
-		public ByteArrayMinMax(byte[][] d, byte mn, byte mx)
+		public ByteArrayMinMax2D(byte[][] d, byte mn, byte mx)
 		{this.data = d; this.min = mn; this.max = mx; }
 		byte[][] data; byte min; byte max;
 		public byte[][] getDat() { return this.data; }
@@ -86,9 +109,9 @@ public class ArrayUtils
 	 * @author michaelfrancenelson
 	 *
 	 */
-	public static class DblArrayMinMax
+	public static class DblArrayMinMax2D
 	{
-		public DblArrayMinMax(double[][] d, double mn, double mx)
+		public DblArrayMinMax2D(double[][] d, double mn, double mx)
 		{this.data = d; this.min = mn; this.max = mx; }
 		double[][] data; double min; double max;
 		public double[][] getDat() { return this.data; }

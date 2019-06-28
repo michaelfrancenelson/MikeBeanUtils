@@ -52,11 +52,9 @@ public class WeightedItem<T> implements Comparable<WeightedItem<T>>
 	}
 	
 	@Override
-	public int compareTo(WeightedItem<T> t) 
+	public int compareTo(WeightedItem<T> t)
 	{
-		if (t.weight < weight) return -1;
-		if (weight > t.weight) return 1;
-		return 0;
+		return Double.compare(weight, t.weight);
 	}
 
 	public T getItem() { return item;}
