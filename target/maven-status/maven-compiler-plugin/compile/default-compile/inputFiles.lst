@@ -1,10 +1,11 @@
 C:\github\MikeBeanUtils\src\beans\memberState\SimpleFieldWatcher.java
+C:\github\MikeBeanUtils\src\demos\SamplingDemos.java
 C:\github\MikeBeanUtils\src\beans\sampleBeans\Terrain.java
+C:\github\MikeBeanUtils\src\sampling\GetterGetter.java
 C:\github\MikeBeanUtils\src\imaging\imagers\imagerData\ImagerData.java
 C:\github\MikeBeanUtils\src\beans\builder\AnnotatedBeanInitializer.java
 C:\github\MikeBeanUtils\src\imaging\imagers\decorators\PanelLabel.java
 C:\github\MikeBeanUtils\src\demos\LegendDemo.java
-C:\github\MikeBeanUtils\src\sampling\ReservoirSampling.java
 C:\github\MikeBeanUtils\src\beans\builder\AnnotatedBeanReader.java
 C:\github\MikeBeanUtils\src\imaging\imageFactories\GradientImageFactory.java
 C:\github\MikeBeanUtils\src\imaging\imagers\ImagerFactory.java
@@ -15,10 +16,13 @@ C:\github\MikeBeanUtils\src\swing\MemberWatcherJLabel.java
 C:\github\MikeBeanUtils\src\beans\sampleBeans\AllFlavorBean.java
 C:\github\MikeBeanUtils\src\demos\BooleanDemo.java
 C:\github\MikeBeanUtils\src\imaging\colorInterpolator\SimpleColorInterpolator.java
+C:\github\MikeBeanUtils\src\sampling\Weighting.java
 C:\github\MikeBeanUtils\src\main\Main.java
 C:\github\MikeBeanUtils\src\imaging\imagers\Imager.java
+C:\github\MikeBeanUtils\src\sampling\WeightedRandomSampling.java
 C:\github\MikeBeanUtils\src\beans\builder\RandomBeanBuilder.java
 C:\github\MikeBeanUtils\src\demos\RotationDemo.java
+C:\github\MikeBeanUtils\src\sampling\WeightedItem.java
 C:\github\MikeBeanUtils\src\demos\ImagePanelDemo.java
 C:\github\MikeBeanUtils\src\beans\memberState\FieldWatcher.java
 C:\github\MikeBeanUtils\src\swing\MemberSetterTextField.java
@@ -27,6 +31,7 @@ C:\github\MikeBeanUtils\src\beans\sampleBeans\ForestSubclass.java
 C:\github\MikeBeanUtils\src\swing\stretchAndClick\LegendPanel.java
 C:\github\MikeBeanUtils\src\imaging\imagers\imagerData\PrimitiveImagerData.java
 C:\github\MikeBeanUtils\src\beans\sampleBeans\ForestCell.java
+C:\github\MikeBeanUtils\src\sampling\SampledItem.java
 C:\github\MikeBeanUtils\src\utils\SwingUtils.java
 C:\github\MikeBeanUtils\src\beans\builder\NetCDFObjBuilder.java
 C:\github\MikeBeanUtils\src\beans\memberState\BeanStateSetterFactory.java

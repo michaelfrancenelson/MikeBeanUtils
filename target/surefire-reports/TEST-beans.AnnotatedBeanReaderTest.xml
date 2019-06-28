@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="2" failures="0" name="beans.AnnotatedBeanReaderTest" time="0.697" errors="0" skipped="0">
+<testsuite tests="2" failures="0" name="beans.AnnotatedBeanReaderTest" time="0.973" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk1.8.0_191\jre\bin"/>
@@ -63,6 +63,6 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="beans.AnnotatedBeanReaderTest" name="allFlavorBeanTest" time="0.533"/>
-  <testcase classname="beans.AnnotatedBeanReaderTest" name="allFlavorNCDFTest" time="0.164"/>
+  <testcase classname="beans.AnnotatedBeanReaderTest" name="allFlavorBeanTest" time="0.762"/>
+  <testcase classname="beans.AnnotatedBeanReaderTest" name="allFlavorNCDFTest" time="0.211"/>
 </testsuite>
