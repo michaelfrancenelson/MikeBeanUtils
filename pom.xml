@@ -20,7 +20,7 @@
 
 
 		<netcdf.version>4.3.23</netcdf.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13.1</junit.version>
 		<slf4j.version>2.11.0</slf4j.version>
 
 		<ssj.version>3.3.1</ssj.version>
