@@ -38,8 +38,10 @@ public class ImagerFactory
 	 */
 	public static <T> ObjectImager<T> factory(
 			ImagerData<T> dat,
-			String field, Class<T> clazz, 
-			Color[] gradColors, Color[] boolColors)
+			String field, 
+			Class<T> clazz, 
+			Color[] gradColors,
+			Color[] boolColors)
 	{
 		return  ImagerFactory.factory(
 				dat,
