@@ -46,59 +46,22 @@
 				</configuration>
 			</plugin>
 
-
-			<!-- <plugin> -->
-			<!-- <groupId>org.apache.maven.plugins</groupId> -->
-			<!-- <artifactId>maven-compiler-plugin</artifactId> -->
-			<!-- <version>3.8.0</version> -->
-
-			<!-- <configuration> -->
-			<!-- <source>${jdk.version}</source> -->
-			<!-- <target>${jdk.version}</target> -->
-			<!-- <skipTests>true</skipTests> -->
-			<!-- </configuration> -->
-			<!-- </plugin> -->
-
-			<!-- <plugin> -->
-			<!-- <groupId>org.apache.maven.plugins</groupId> -->
-			<!-- <artifactId>maven-source-plugin</artifactId> -->
-			<!-- <executions> -->
-			<!-- <execution> -->
-			<!-- <id>attach-sources</id> -->
-			<!-- <goals> -->
-			<!-- <goal>jar</goal> -->
-			<!-- </goals> -->
-			<!-- </execution> -->
-			<!-- </executions> -->
-			<!-- </plugin> -->
-
-			<!-- <plugin> -->
-			<!-- <groupId>org.apache.maven.plugins</groupId> -->
-			<!-- <artifactId>maven-compiler-plugin</artifactId> -->
-			<!-- <version>${maven.compiler.plugin.version}</version> -->
-			<!-- <configuration> -->
-			<!-- <source>${jdk.version}</source> -->
-			<!-- <target>${jdk.version}</target> -->
-			<!-- <skipTests>${skip.tests}</skipTests> -->
-			<!-- </configuration> -->
-			<!-- </plugin> -->
-
 		</plugins>
 
 	</build>
 
 	<dependencies>
 
-		<!-- <dependency> -->
-		<!-- <groupId>michaelfrancenelson</groupId> -->
-		<!-- <artifactId>LightweightJavaUtils</artifactId> -->
-		<!-- <version>${LightweightJavaUtils.version}</version> -->
-		<!-- </dependency> -->
-
 		<dependency>
 			<groupId>edu.ucar</groupId>
 			<artifactId>netcdf</artifactId>
 			<version>${netcdf.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.kunalk16</groupId>
+			<artifactId>lightExcelReader</artifactId>
+			<version>1.0.2</version>
 		</dependency>
 
 		<dependency>
@@ -120,17 +83,6 @@
 			<groupId>ca.umontreal.iro.simul</groupId>
 			<artifactId>ssj</artifactId>
 			<version>${ssj.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>5.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>5.1.0</version>
 		</dependency>
 
 	</dependencies>
