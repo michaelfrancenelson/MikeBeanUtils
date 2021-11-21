@@ -425,7 +425,6 @@ Class<Person> clazz = Person.class;
 	{
 		private final DoubleGetter<T> getterFunction;
 
-		@SuppressWarnings("unchecked")
 		public DoubleAccessor(Class<T> clazz, String getterName, DoubleGetter<T> getterFunction) throws Throwable
 		{
 			this.getterFunction = getterFunction;
@@ -450,7 +449,6 @@ Class<Person> clazz = Person.class;
 	{
 		private final Function<T, Integer> getterFunction;
 
-		@SuppressWarnings("unchecked")
 		public IntAccessor(Class<T> clazz, String getterName) throws Throwable
 		{
 			MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -516,7 +514,6 @@ Class<Person> clazz = Person.class;
 		 * 	at design.PrivateTargetLambdaGeneric.main(PrivateTargetLambdaGeneric.java:100)
 		 * </pre>
 		 */
-		@SuppressWarnings("unchecked")
 		final T lambda = (T) factoryInvoker.invokeExact();
 
 		return lambda;

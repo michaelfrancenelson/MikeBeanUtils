@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.michaelfrancenelson.mikebeansutils.io.CSVHelper;
-import com.github.michaelfrancenelson.mikebeansutils.io.XLSXHelper;
+//import com.github.michaelfrancenelson.mikebeansutils.io.XLSXHelper;
 import com.github.michaelfrancenelson.mikebeansutils.utils.FieldUtils;
 
 public class AnnotatedBeanReader 
@@ -294,14 +294,22 @@ public class AnnotatedBeanReader
 	 * @param filename data file
 	 * @return data rows
 	 */
+//	protected static List<List<String>> getData(String filename) {
+//		if (filename.endsWith("xlsx"))
+//			return XLSXHelper.readXLSX(filename);
+//		else if (filename.endsWith(".csv"))
+//			return CSVHelper.readFile(filename);
+//		throw new IllegalArgumentException(
+//				"Input file " + filename + " does not appear " + 
+//				"to be in either the XLSX or CSV format.");
+//	}
+//	
 	protected static List<List<String>> getData(String filename) {
-		if (filename.endsWith("xlsx"))
-			return XLSXHelper.readXLSX(filename);
-		else if (filename.endsWith(".csv"))
+		 if (filename.endsWith(".csv"))
 			return CSVHelper.readFile(filename);
 		throw new IllegalArgumentException(
 				"Input file " + filename + " does not appear " + 
-				"to be in either the XLSX or CSV format.");
+				"to be CSV format.");
 	}
 
 	/**

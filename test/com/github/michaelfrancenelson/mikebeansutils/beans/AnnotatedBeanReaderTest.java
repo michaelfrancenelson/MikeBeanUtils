@@ -41,8 +41,8 @@ public class AnnotatedBeanReaderTest
 	public void allFlavorBeanTest()
 	{
 		String[] filenames = new String[] {
-				"testData/allFlavorBeans.xlsx",
-				"testData/allFlavorBeansTransposed.xlsx",
+//				"testData/allFlavorBeans.xlsx",
+//				"testData/allFlavorBeansTransposed.xlsx",
 				"testData/allFlavorBeansTransposed.csv",
 				"testData/allFlavorBeans.csv"
 		};

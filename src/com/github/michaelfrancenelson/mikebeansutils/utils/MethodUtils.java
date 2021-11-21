@@ -126,7 +126,6 @@ public class MethodUtils
 				getter.type()); //actual signature of getter
 		try {
 			
-			@SuppressWarnings("unchecked")
 			Function<T, ?> fncFunction = (Function<T, ?>) site.getTarget().invokeExact();
 			return fncFunction;
 		} catch (final Exception e) {
@@ -147,7 +146,6 @@ public class MethodUtils
 				getter.type()); //actual signature of getter
 		try {
 			
-			@SuppressWarnings("unchecked")
 			ToIntFunction<T> mh_out = (ToIntFunction<T>) site.getTarget().invokeExact();
 			return mh_out;
 			
@@ -158,7 +156,6 @@ public class MethodUtils
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> ToDoubleFunction<T> createDoubleGetter(
 			final MethodHandles.Lookup lookup,
 			final MethodHandle getter) throws Exception
@@ -319,7 +316,6 @@ public class MethodUtils
 //		MethodHandle mh = buildHandler(beanClass, ToIntFunction.class, getterName, "applyAsInt");
 //		return (ToIntFunction<T>) mh.invoke();
 
-		@SuppressWarnings("unchecked")
 		ToIntFunction<T> mh = (ToIntFunction<T>)buildHandler(beanClass, ToIntFunction.class, getterName, "applyAsInt").invoke();
 		return mh;
 	}
@@ -329,7 +325,6 @@ public class MethodUtils
 //		MethodHandle mh = buildHandler(beanClass, ToDoubleFunction.class, getterName, "applyAsDouble");
 		
 		
-		@SuppressWarnings("unchecked")
 		ToDoubleFunction<T> fnc = (ToDoubleFunction<T>)buildHandler(beanClass, ToDoubleFunction.class, getterName, "applyAsDouble").invoke();
 		return(fnc);
 	}

@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.List;
-import java.util.Random;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -22,7 +21,6 @@ import com.github.michaelfrancenelson.mikebeansutils.utils.ColorUtils;
 import com.github.michaelfrancenelson.mikebeansutils.utils.FieldUtils;
 import com.github.michaelfrancenelson.mikebeansutils.utils.SwingUtils;
 
-import umontreal.ssj.mcqmctools.anova.RandomSampler;
 import umontreal.ssj.rng.RandomStream;
 
 public class BooleanDemo extends DemoConsts
